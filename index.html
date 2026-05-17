@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Templates de Denúncia</title>
+    <meta name="description" content="Automatize a criação de denúncias e envie diretamente para o Telegram.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="favicon.png?v=2">
+</head>
+<body>
+    <!-- Login Overlay -->
+    <div id="login-overlay">
+        <div class="login-card">
+            <div class="logo-icon" style="margin: 0 auto 1rem auto;">
+                <img src="favicon.png?v=2" alt="Ícone Tracking" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            </div>
+            <h2 style="text-align: center; margin-bottom: 1.5rem;">Acesso Restrito</h2>
+            <div class="form-group">
+                <label>Usuário</label>
+                <input type="text" id="login-username" placeholder="Digite o usuário...">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="login-password" placeholder="Digite a senha...">
+            </div>
+            <p id="login-error" style="color: var(--color-error); font-size: 0.875rem; text-align: center; display: none; margin-bottom: 1rem;">Usuário ou senha incorretos.</p>
+            <button type="button" id="login-btn" class="submit-btn">Entrar</button>
+        </div>
+    </div>
+    <main class="container">
+        <header class="header">
+            <div class="logo-icon">
+                <img src="favicon.png?v=2" alt="Ícone Tracking" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            </div>
+            <h1>Gerador de Templates de Denúncia</h1>
+            <p>Crie denúncias padronizadas e envie em um clique.</p>
+        </header>
+
+        <section class="card">
+            <form id="report-form">
+                <div id="clients-container" style="margin-bottom: 2.5rem;">
+                    <div class="form-group client-group" id="client-group-1">
+                        <label>Cliente 1 <span class="required">*</span></label>
+                        <div class="input-row">
+                            <input type="text" id="client1" placeholder="Nome da marca..." required>
+                            <input type="url" class="client1-url" placeholder="URL principal..." required>
+                        </div>
+                        <div id="extra-urls-1"></div>
+                        <button type="button" class="add-url-btn" onclick="addUrlField(1)">+ Adicionar outra URL</button>
+                    </div>
+                </div>
+                
+                <button type="button" id="add-client-btn" class="secondary-btn" style="margin-bottom: 1.5rem; width: auto; padding: 0.5rem 1rem;" onclick="addClient()">+ Adicionar Cliente</button>
+            </form>
+        </section>
+
+        <section class="card preview-card">
+            <div class="preview-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <h2 style="margin-bottom: 0;">Pré-visualização da Mensagem</h2>
+                <button type="button" id="reset-template-btn" style="display: none; background: none; border: none; color: var(--color-primary); text-decoration: underline; cursor: pointer; font-size: 0.875rem;">Restaurar Automático</button>
+            </div>
+            <textarea id="preview-text" placeholder="Sua mensagem aparecerá aqui..."></textarea>
+            
+            <div class="actions">
+                <button id="submit-btn" class="submit-btn" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                    Enviar para Telegram
+                </button>
+                <button id="copy-btn" class="secondary-btn" disabled>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                    Copiar Mensagem
+                </button>
+            </div>
+        </section>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
