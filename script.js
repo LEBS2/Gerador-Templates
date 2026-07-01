@@ -1,7 +1,6 @@
 const elements = {
     form: document.getElementById('report-form'),
     previewText: document.getElementById('preview-text'),
-    submitBtn: document.getElementById('submit-btn'),
     copyBtn: document.getElementById('copy-btn'),
     clientsContainer: document.getElementById('clients-container'),
     addClientBtn: document.getElementById('add-client-btn'),
@@ -168,13 +167,11 @@ function generateTemplate() {
         if (!isTemplateEdited) {
             elements.previewText.value = 'O Cliente 1 (Nome e URL) é obrigatório para gerar a mensagem.';
         }
-        elements.submitBtn.disabled = true;
         elements.copyBtn.disabled = true;
         return;
     }
 
     if (isTemplateEdited) {
-        elements.submitBtn.disabled = false;
         elements.copyBtn.disabled = false;
         return;
     }
@@ -202,7 +199,6 @@ Can you help us by removing them from Telegram?`;
     }
 
     elements.previewText.value = template;
-    elements.submitBtn.disabled = false;
     elements.copyBtn.disabled = false;
 }
 
@@ -212,12 +208,9 @@ elements.previewText.addEventListener('input', () => {
     elements.previewText.classList.add('edited-template');
     elements.resetBtn.style.display = 'inline-block';
     
-    // Check required fields to enable/disable buttons even during manual edit
     const c1Input = document.getElementById('client1');
     const u1Input = document.querySelector('.client1-url');
     const isValid = c1Input && u1Input && c1Input.value.trim() && u1Input.value.trim();
-    
-    elements.submitBtn.disabled = !isValid;
     elements.copyBtn.disabled = !isValid;
 });
 
@@ -231,56 +224,6 @@ elements.resetBtn.addEventListener('click', () => {
 // Event Listeners for Real-time update
 document.getElementById('client1').addEventListener('input', generateTemplate);
 document.querySelector('.client1-url').addEventListener('input', generateTemplate);
-
-// Form submission / Button Click
-elements.submitBtn.addEventListener('click', async (e) => {
-    e.preventDefault();
-
-    const c1 = document.getElementById('client1').value.trim();
-    const u1 = document.querySelector('.client1-url').value.trim();
-
-    if (!c1 || !u1) {
-        alert("Por favor, preencha o Nome e a URL principal do Cliente 1.");
-        return;
-    }
-
-    const message = elements.previewText.value;
-    
-    // Feedback visual de carregamento
-    const originalText = elements.submitBtn.innerHTML;
-    elements.submitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-5.46-1.5"></path></svg> Enviando...`;
-    elements.submitBtn.disabled = true;
-
-    try {
-        const response = await fetch('http://localhost:3000/api/send-report', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ message })
-        });
-
-        const data = await response.json();
-
-        if (data.success) {
-            elements.submitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Enviado com Sucesso!`;
-            elements.submitBtn.style.backgroundColor = '#10B981';
-            
-            setTimeout(() => {
-                elements.submitBtn.innerHTML = originalText;
-                elements.submitBtn.style.backgroundColor = '';
-                elements.submitBtn.disabled = false;
-            }, 3000);
-        } else {
-            throw new Error(data.error || "Erro desconhecido");
-        }
-    } catch (error) {
-        console.error("Erro na requisição:", error);
-        alert("Erro ao enviar a mensagem: " + error.message + "\n\nVerifique se o servidor Node.js está rodando!");
-        elements.submitBtn.innerHTML = originalText;
-        elements.submitBtn.disabled = false;
-    }
-});
 
 // Copy Button Logic
 elements.copyBtn.addEventListener('click', (e) => {
