@@ -57,6 +57,8 @@ function addClient() {
     updateClientLabels();
 }
 
+elements.addClientBtn.addEventListener('click', addClient);
+
 function removeClient(index) {
     const group = document.getElementById(`client-group-${index}`);
     if (group) {
@@ -304,25 +306,40 @@ elements.copyBtn.addEventListener('click', (e) => {
 });
 
 // --- Login Logic ---
-document.getElementById('login-btn').addEventListener('click', () => {
+const loginBtn = document.getElementById('login-btn');
+const loginError = document.getElementById('login-error');
+
+loginBtn.addEventListener('click', async () => {
     const userVal = document.getElementById('login-username').value.trim();
     const passVal = document.getElementById('login-password').value.trim();
-    const errorMsg = document.getElementById('login-error');
 
-    const validUser = "7B735636DD532E7DBF979D9B2023735DA8168ADE";
-    const validPass = "7F56D3F17078531A3613DD907020F7C0B18CE09F";
+    const originalText = loginBtn.textContent;
+    loginBtn.textContent = 'Verificando...';
+    loginBtn.disabled = true;
+    loginError.style.display = 'none';
 
-    if (userVal === validUser && passVal === validPass) {
-        document.getElementById('login-overlay').style.display = 'none';
-        errorMsg.style.display = 'none';
-    } else {
-        errorMsg.style.display = 'block';
+    try {
+        const response = await fetch('http://localhost:3000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user: userVal, pass: passVal }),
+        });
+        const data = await response.json();
+
+        if (data.success) {
+            document.getElementById('login-overlay').style.display = 'none';
+        } else {
+            loginError.style.display = 'block';
+            loginBtn.textContent = originalText;
+            loginBtn.disabled = false;
+        }
+    } catch {
+        loginError.style.display = 'block';
+        loginBtn.textContent = originalText;
+        loginBtn.disabled = false;
     }
 });
 
-// Permitir o Enter no campo de senha para logar
-document.getElementById('login-password').addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        document.getElementById('login-btn').click();
-    }
+document.getElementById('login-password').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') loginBtn.click();
 });
