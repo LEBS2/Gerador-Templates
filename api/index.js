@@ -1,3 +1,14 @@
+// --- Versão do backend adaptada para rodar como função serverless na Vercel ---
+//
+// Diferenças importantes em relação ao server.js (usado no seu PC):
+// 1. Não existe conexão "permanente" com o Telegram guardada em memória —
+//    cada requisição em /api/send-report abre uma conexão nova usando a
+//    SESSION_STRING (variável de ambiente) e fecha ao final.
+// 2. Não faz login interativo (telefone/código) — isso exige um terminal,
+//    que não existe na Vercel. A SESSION_STRING já deve estar pronta e
+//    configurada como variável de ambiente no painel da Vercel.
+// 3. Os usuários (cadastro/aprovação) ficam salvos no Vercel KV em vez de
+//    um arquivo users.json, porque a Vercel não permite gravar arquivos.
 require('dotenv').config();
 
 const express = require('express');
@@ -5,14 +16,11 @@ const cors = require('cors');
 const crypto = require('crypto');
 const { TelegramClient } = require('telegram');
 const { StringSession } = require('telegram/sessions');
-const input = require('input');
-const fs = require('fs');
+const { kv } = require('@vercel/kv');
 
 const app = express();
 
 // --- Credenciais do dono/admin (mesmas usadas no login do frontend) ---
-// Usadas para proteger as rotas /api/admin/* — só quem sabe esses valores
-// (o dono do sistema) consegue listar, aprovar ou negar cadastros.
 const ADMIN_USER = "7B735636DD532E7DBF979D9B2023735DA8168ADE";
 const ADMIN_PASS = "7F56D3F17078531A3613DD907020F7C0B18CE09F";
 
@@ -24,37 +32,6 @@ function requireAdmin(req, res, next) {
     }
     return res.status(401).json({ success: false, error: "Não autorizado." });
 }
-
-// --- Armazenamento simples de usuários (arquivo local users.json) ---
-const USERS_FILE = 'users.json';
-
-function loadUsers() {
-    try {
-        if (!fs.existsSync(USERS_FILE)) return [];
-        const raw = fs.readFileSync(USERS_FILE, 'utf8').trim();
-        if (!raw) return [];
-        return JSON.parse(raw);
-    } catch (error) {
-        console.error("❌ Erro ao ler users.json:", error.message);
-        return [];
-    }
-}
-
-function saveUsers(users) {
-    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
-}
-
-function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
-    const hash = crypto.scryptSync(password, salt, 64).toString('hex');
-    return { salt, hash };
-}
-
-function verifyPassword(password, salt, hash) {
-    const attempt = crypto.scryptSync(password, salt, 64).toString('hex');
-    return crypto.timingSafeEqual(Buffer.from(attempt, 'hex'), Buffer.from(hash, 'hex'));
-}
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 app.use((req, res, next) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -69,76 +46,70 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-const chatId = Number(process.env.CHAT_ID);
-const apiId = Number(process.env.API_ID);
-const apiHash = process.env.API_HASH;
-const stringSession = new StringSession(process.env.SESSION_STRING || '');
+// --- Armazenamento de usuários via Vercel KV (substitui o users.json local) ---
+const USERS_KV_KEY = 'gt_users';
 
-let client;
-
-async function startTelegramClient() {
-    if (!apiId || !apiHash) {
-        console.error("\n⚠️ AVISO: API_ID e API_HASH não encontrados no arquivo .env");
-        console.error("Por favor, preencha o arquivo .env com suas credenciais do my.telegram.org e reinicie o servidor.\n");
-        return;
-    }
-
-    client = new TelegramClient(stringSession, apiId, apiHash, {
-        connectionRetries: 5,
-    });
-
-    try {
-        await client.start({
-            phoneNumber: async () => await input.text('📱 Por favor digite seu número de telefone (ex: +5511999999999): '),
-            password: async () => await input.text('🔒 Por favor digite sua senha de verificação em duas etapas (se tiver): '),
-            phoneCode: async () => await input.text('📩 Por favor digite o código recebido no seu Telegram: '),
-            onError: (err) => console.log(err),
-        });
-
-        console.log("\n✅ Conectado ao Telegram!");
-        
-        // Salva a sessão no .env para não precisar logar de novo
-        const sessionString = client.session.save();
-        if (sessionString !== process.env.SESSION_STRING) {
-            let envContent = fs.readFileSync('.env', 'utf8');
-            if (envContent.includes('SESSION_STRING=')) {
-                envContent = envContent.replace(/SESSION_STRING=.*/, `SESSION_STRING=${sessionString}`);
-            } else {
-                envContent += `\nSESSION_STRING=${sessionString}`;
-            }
-            fs.writeFileSync('.env', envContent);
-            console.log("💾 Sessão salva no .env com sucesso. Você não precisará logar novamente.");
-        }
-    } catch (error) {
-        console.error("\n❌ Erro ao conectar ao Telegram:", error.message);
-    }
+async function loadUsers() {
+    const users = await kv.get(USERS_KV_KEY);
+    return Array.isArray(users) ? users : [];
 }
 
-app.post('/api/send-report', async (req, res) => {
-    if (!client || !client.connected) {
-        return res.status(500).json({ success: false, error: "Servidor não está conectado ao Telegram." });
+async function saveUsers(users) {
+    await kv.set(USERS_KV_KEY, users);
+}
+
+function hashPassword(password, salt = crypto.randomBytes(16).toString('hex')) {
+    const hash = crypto.scryptSync(password, salt, 64).toString('hex');
+    return { salt, hash };
+}
+
+function verifyPassword(password, salt, hash) {
+    const attempt = crypto.scryptSync(password, salt, 64).toString('hex');
+    return crypto.timingSafeEqual(Buffer.from(attempt, 'hex'), Buffer.from(hash, 'hex'));
+}
+
+// --- Conexão com o Telegram sob demanda (sem login interativo) ---
+async function getTelegramClient() {
+    const apiId = Number(process.env.API_ID);
+    const apiHash = process.env.API_HASH;
+    const sessionString = process.env.SESSION_STRING;
+
+    if (!apiId || !apiHash || !sessionString) {
+        throw new Error("Credenciais do Telegram ausentes nas variáveis de ambiente da Vercel (API_ID, API_HASH, SESSION_STRING).");
     }
 
-    const { message } = req.body;
+    const client = new TelegramClient(new StringSession(sessionString), apiId, apiHash, {
+        connectionRetries: 3,
+    });
+    await client.connect();
+    return client;
+}
+
+// --- Enviar denúncia para o Telegram ---
+app.post('/api/send-report', async (req, res) => {
+    const { message } = req.body || {};
     if (!message) {
         return res.status(400).json({ success: false, error: "Mensagem vazia." });
     }
 
+    let client;
     try {
+        client = await getTelegramClient();
         const targetChat = /^-?\d+$/.test(process.env.CHAT_ID) ? BigInt(process.env.CHAT_ID) : process.env.CHAT_ID;
-        console.log("Enviando mensagem para:", targetChat);
-        
-        await client.sendMessage(targetChat, { message: message });
-        
+        await client.sendMessage(targetChat, { message });
         res.json({ success: true, message: "Enviado com sucesso!" });
     } catch (error) {
         console.error("❌ Erro ao enviar mensagem:", error.message);
         res.status(500).json({ success: false, error: error.message });
+    } finally {
+        if (client) {
+            try { await client.disconnect(); } catch (e) { /* ignore */ }
+        }
     }
 });
 
 // --- Solicitação de cadastro de novo usuário ---
-app.post('/api/register', (req, res) => {
+app.post('/api/register', async (req, res) => {
     const { email, password } = req.body || {};
 
     if (!email || !String(email).trim()) {
@@ -149,7 +120,7 @@ app.post('/api/register', (req, res) => {
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
-    const users = loadUsers();
+    const users = await loadUsers();
 
     if (users.some(u => u.email === normalizedEmail)) {
         return res.status(409).json({ success: false, error: "Já existe uma solicitação para este e-mail." });
@@ -161,17 +132,16 @@ app.post('/api/register', (req, res) => {
         email: normalizedEmail,
         salt,
         hash,
-        status: 'pending', // pending | approved | denied
+        status: 'pending',
         createdAt: new Date().toISOString(),
     });
-    saveUsers(users);
+    await saveUsers(users);
 
-    console.log(`📝 Nova solicitação de cadastro: ${normalizedEmail}`);
     res.json({ success: true, message: "Solicitação enviada. Aguarde a aprovação do administrador." });
 });
 
 // --- Login de usuário aprovado (por e-mail) ---
-app.post('/api/login', (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { email, password } = req.body || {};
 
     if (!email || !password) {
@@ -179,7 +149,7 @@ app.post('/api/login', (req, res) => {
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
-    const users = loadUsers();
+    const users = await loadUsers();
     const user = users.find(u => u.email === normalizedEmail);
 
     if (!user) {
@@ -199,46 +169,39 @@ app.post('/api/login', (req, res) => {
 });
 
 // --- Admin: listar todas as solicitações/usuários ---
-app.get('/api/admin/users', requireAdmin, (req, res) => {
-    const users = loadUsers().map(({ id, email, status, createdAt }) => ({ id, email, status, createdAt }));
+app.get('/api/admin/users', requireAdmin, async (req, res) => {
+    const users = (await loadUsers()).map(({ id, email, status, createdAt }) => ({ id, email, status, createdAt }));
     res.json({ success: true, users });
 });
 
 // --- Admin: aprovar cadastro ---
-app.post('/api/admin/approve', requireAdmin, (req, res) => {
+app.post('/api/admin/approve', requireAdmin, async (req, res) => {
     const { email } = req.body || {};
     const normalizedEmail = String(email || '').trim().toLowerCase();
-    const users = loadUsers();
+    const users = await loadUsers();
     const user = users.find(u => u.email === normalizedEmail);
 
     if (!user) {
         return res.status(404).json({ success: false, error: "Usuário não encontrado." });
     }
     user.status = 'approved';
-    saveUsers(users);
-    console.log(`✅ Cadastro aprovado: ${normalizedEmail}`);
+    await saveUsers(users);
     res.json({ success: true });
 });
 
 // --- Admin: negar cadastro ---
-app.post('/api/admin/deny', requireAdmin, (req, res) => {
+app.post('/api/admin/deny', requireAdmin, async (req, res) => {
     const { email } = req.body || {};
     const normalizedEmail = String(email || '').trim().toLowerCase();
-    const users = loadUsers();
+    const users = await loadUsers();
     const user = users.find(u => u.email === normalizedEmail);
 
     if (!user) {
         return res.status(404).json({ success: false, error: "Usuário não encontrado." });
     }
     user.status = 'denied';
-    saveUsers(users);
-    console.log(`⛔ Cadastro negado: ${normalizedEmail}`);
+    await saveUsers(users);
     res.json({ success: true });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
-    console.log(`\n🚀 Servidor rodando na porta ${PORT}`);
-    console.log("⏳ Iniciando conexão com o Telegram...\n");
-    await startTelegramClient();
-});
+module.exports = app;

@@ -29,8 +29,79 @@
             </div>
             <p id="login-error" style="color: var(--color-error); font-size: 0.875rem; text-align: center; display: none; margin-bottom: 1rem;">Usuário ou senha incorretos.</p>
             <button type="button" id="login-btn" class="submit-btn">Entrar</button>
+            <p style="text-align: center; margin-top: 1.25rem; font-size: 0.875rem; color: var(--color-text-light);">
+                Não tem acesso? <a href="#" id="show-register-link" style="color: var(--color-primary); font-weight: 600; text-decoration: none;">Solicitar cadastro</a>
+            </p>
         </div>
     </div>
+
+    <!-- Register Overlay -->
+    <div id="register-overlay" style="display: none;">
+        <div class="login-card">
+            <div class="logo-icon" style="margin: 0 auto 1rem auto;">
+                <img src="favicon.png?v=2" alt="Ícone Tracking" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            </div>
+            <h2 style="text-align: center; margin-bottom: 1.5rem;">Solicitar Cadastro</h2>
+            <div class="form-group">
+                <label>E-mail</label>
+                <input type="email" id="register-email" placeholder="seu@email.com">
+            </div>
+            <div class="form-group">
+                <label>Senha</label>
+                <input type="password" id="register-password" placeholder="Crie uma senha (mín. 6 caracteres)...">
+            </div>
+            <div class="form-group">
+                <label>Confirmar Senha</label>
+                <input type="password" id="register-password-confirm" placeholder="Repita a senha...">
+            </div>
+            <p id="register-message" style="font-size: 0.875rem; text-align: center; display: none; margin-bottom: 1rem;"></p>
+            <button type="button" id="register-btn" class="submit-btn">Solicitar Acesso</button>
+            <p style="text-align: center; margin-top: 1.25rem; font-size: 0.875rem; color: var(--color-text-light);">
+                Já tem acesso? <a href="#" id="show-login-link" style="color: var(--color-primary); font-weight: 600; text-decoration: none;">Entrar</a>
+            </p>
+        </div>
+    </div>
+
+    <!-- Admin Overlay -->
+    <div id="admin-overlay" style="display: none;">
+        <div class="login-card" style="max-width: 560px; max-height: 85vh; overflow-y: auto;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                <h2 style="margin-bottom: 0;">Painel de Administração</h2>
+                <button type="button" id="close-admin-btn" style="background: none; border: none; font-size: 1.5rem; line-height: 1; cursor: pointer; color: var(--color-text-light);">✕</button>
+            </div>
+            <p style="font-size: 0.875rem; color: var(--color-text-light); margin-bottom: 1rem;">Aprove ou negue as solicitações de cadastro de novos usuários.</p>
+            <div id="admin-users-list"></div>
+        </div>
+    </div>
+
+    <button type="button" id="open-admin-btn" style="display: none; position: fixed; top: 1.25rem; right: 1.25rem; z-index: 100; background-color: var(--color-surface); color: var(--color-text); font-weight: 600; font-size: 0.875rem; padding: 0.6rem 1rem; border: 1px solid var(--color-border); border-radius: var(--radius-md); cursor: pointer; box-shadow: var(--shadow-md);">⚙ Painel Admin</button>
+
+    <!-- Offer Overlay (Qual oferta? / Primeira notificação?) -->
+    <div id="offer-overlay" style="display: none;">
+        <div class="login-card" style="max-width: 460px;">
+            <div class="logo-icon" style="margin: 0 auto 1rem auto;">
+                <img src="favicon.png?v=2" alt="Ícone Tracking" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+            </div>
+
+            <!-- Etapa 1: Qual oferta -->
+            <div id="offer-step-oferta">
+                <h2 style="text-align: center; margin-bottom: 0.5rem;">Qual oferta?</h2>
+                <p style="text-align: center; color: var(--color-text-light); font-size: 0.875rem; margin-bottom: 1.5rem;">Escolha o tipo de denúncia que você vai criar.</p>
+                <button type="button" class="secondary-btn offer-choice-btn" data-oferta="fsp" style="margin-bottom: 0.75rem;">Fake social media (FSP)</button>
+                <button type="button" class="secondary-btn offer-choice-btn" data-oferta="efsp">Executive fake social media profile</button>
+            </div>
+
+            <!-- Etapa 2: Primeira notificação -->
+            <div id="offer-step-notificacao" style="display: none;">
+                <h2 style="text-align: center; margin-bottom: 0.5rem;">Primeira notificação?</h2>
+                <p style="text-align: center; color: var(--color-text-light); font-size: 0.875rem; margin-bottom: 1.5rem;">Isso define qual texto será sugerido na denúncia.</p>
+                <button type="button" class="secondary-btn notificacao-choice-btn" data-primeira="sim" style="margin-bottom: 0.75rem;">Sim, primeira notificação</button>
+                <button type="button" class="secondary-btn notificacao-choice-btn" data-primeira="nao">Não, já foi notificado</button>
+                <button type="button" id="offer-back-btn" style="width: 100%; background: none; border: none; color: var(--color-text-light); text-decoration: underline; cursor: pointer; font-size: 0.8rem; margin-top: 1.25rem;">← Voltar</button>
+            </div>
+        </div>
+    </div>
+
     <main class="container">
         <header class="header">
             <div class="logo-icon">
@@ -38,6 +109,11 @@
             </div>
             <h1>Gerador de Templates de Denúncia</h1>
             <p>Crie denúncias padronizadas e envie em um clique.</p>
+            <p id="current-offer-label" style="margin-top: 0.5rem; font-size: 0.875rem;">
+                <span id="current-offer-text"></span> ·
+                <a href="#" id="change-offer-link" style="color: var(--color-primary); text-decoration: underline;">Trocar oferta</a> ·
+                <a href="#" id="logout-link" style="color: rgba(255,255,255,0.6); text-decoration: underline;">Sair</a>
+            </p>
         </header>
 
         <section class="card">
@@ -80,6 +156,6 @@
             </div>
         </section>
     </main>
-    <script src="script.js"></script>
+    <script src="script.js?v=2"></script>
 </body>
 </html>

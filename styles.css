@@ -344,8 +344,11 @@ textarea:focus {
     }
 }
 
-/* Login Overlay Styles */
-#login-overlay {
+/* Login / Register / Admin / Offer Overlay Styles */
+#login-overlay,
+#register-overlay,
+#admin-overlay,
+#offer-overlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -357,6 +360,28 @@ textarea:focus {
     justify-content: center;
     align-items: center;
     padding: 1rem;
+}
+
+#admin-overlay {
+    background-color: rgba(15, 23, 42, 0.85);
+}
+
+input[type="email"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-family: inherit;
+    color: var(--color-text);
+    background-color: var(--color-surface);
+    transition: var(--transition);
+}
+
+input[type="email"]:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px rgba(36, 161, 222, 0.2);
 }
 
 .login-card {
