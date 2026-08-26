@@ -281,7 +281,7 @@ elements.submitBtn.addEventListener('click', async (e) => {
     elements.submitBtn.disabled = true;
 
     try {
-        const response = await fetch('http://localhost:3000/api/send-report', {
+        const response = await fetch(`${API_BASE}/api/send-report`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
