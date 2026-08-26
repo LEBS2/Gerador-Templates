@@ -7,6 +7,7 @@ const { TelegramClient } = require('telegram');
 const { StringSession } = require('telegram/sessions');
 const input = require('input');
 const fs = require('fs');
+const path = require('path');
 
 const app = express();
 
@@ -69,6 +70,9 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
+// --- Serve o frontend estático (index.html, script.js, styles.css, favicon.png) ---
+app.use(express.static(path.join(__dirname)));
+
 const chatId = Number(process.env.CHAT_ID);
 const apiId = Number(process.env.API_ID);
 const apiHash = process.env.API_HASH;
@@ -96,7 +100,7 @@ async function startTelegramClient() {
         });
 
         console.log("\n✅ Conectado ao Telegram!");
-        
+
         // Salva a sessão no .env para não precisar logar de novo
         const sessionString = client.session.save();
         if (sessionString !== process.env.SESSION_STRING) {
@@ -127,9 +131,9 @@ app.post('/api/send-report', async (req, res) => {
     try {
         const targetChat = /^-?\d+$/.test(process.env.CHAT_ID) ? BigInt(process.env.CHAT_ID) : process.env.CHAT_ID;
         console.log("Enviando mensagem para:", targetChat);
-        
+
         await client.sendMessage(targetChat, { message: message });
-        
+
         res.json({ success: true, message: "Enviado com sucesso!" });
     } catch (error) {
         console.error("❌ Erro ao enviar mensagem:", error.message);
@@ -236,9 +240,13 @@ app.post('/api/admin/deny', requireAdmin, (req, res) => {
     res.json({ success: true });
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, async () => {
-    console.log(`\n🚀 Servidor rodando na porta ${PORT}`);
-    console.log("⏳ Iniciando conexão com o Telegram...\n");
-    await startTelegramClient();
-});
+if (require.main === module) {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, async () => {
+        console.log(`\n🚀 Servidor rodando na porta ${PORT}`);
+        console.log("⏳ Iniciando conexão com o Telegram...\n");
+        await startTelegramClient();
+    });
+}
+
+module.exports = app;

@@ -9,11 +9,15 @@
 //    configurada como variável de ambiente no painel da Vercel.
 // 3. Os usuários (cadastro/aprovação) ficam salvos no Vercel KV em vez de
 //    um arquivo users.json, porque a Vercel não permite gravar arquivos.
+// 4. Também serve o frontend estático (index.html, script.js, styles.css),
+//    já que a Vercel está rodando este app Express para TODAS as rotas
+//    (não só /api/*), inclusive a raiz "/".
 require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
 const crypto = require('crypto');
+const path = require('path');
 const { TelegramClient } = require('telegram');
 const { StringSession } = require('telegram/sessions');
 const { kv } = require('@vercel/kv');
@@ -45,6 +49,10 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
+
+// --- Serve o frontend estático (index.html, script.js, styles.css, favicon.png) ---
+// __dirname aqui é a pasta "api", então subimos um nível para chegar na raiz do projeto.
+app.use(express.static(path.join(__dirname, '..')));
 
 // --- Armazenamento de usuários via Vercel KV (substitui o users.json local) ---
 const USERS_KV_KEY = 'gt_users';
