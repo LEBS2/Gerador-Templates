@@ -240,6 +240,26 @@ app.post('/api/admin/deny', requireAdmin, (req, res) => {
     res.json({ success: true });
 });
 
+// --- Admin: excluir solicitação (somente enquanto estiver 'pending') ---
+app.post('/api/admin/delete-request', requireAdmin, (req, res) => {
+    const { email } = req.body || {};
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    const users = loadUsers();
+    const user = users.find(u => u.email === normalizedEmail);
+
+    if (!user) {
+        return res.status(404).json({ success: false, error: "Usuário não encontrado." });
+    }
+    if (user.status !== 'pending') {
+        return res.status(400).json({ success: false, error: "Só é possível excluir solicitações pendentes." });
+    }
+
+    const updatedUsers = users.filter(u => u.email !== normalizedEmail);
+    saveUsers(updatedUsers);
+    console.log(`🗑️ Solicitação excluída: ${normalizedEmail}`);
+    res.json({ success: true });
+});
+
 if (require.main === module) {
     const PORT = process.env.PORT || 3000;
     app.listen(PORT, async () => {

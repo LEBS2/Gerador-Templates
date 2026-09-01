@@ -544,6 +544,7 @@ async function loadAdminUsers() {
                     <div style="display: flex; gap: 0.5rem; flex-shrink: 0;">
                         ${u.status !== 'approved' ? `<button class="admin-approve-btn" data-email="${u.email}" style="background: #10B981; color: white; border: none; padding: 0.45rem 0.85rem; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; font-size: 0.8rem;">Liberar</button>` : ''}
                         ${u.status !== 'denied' ? `<button class="admin-deny-btn" data-email="${u.email}" style="background: var(--color-error); color: white; border: none; padding: 0.45rem 0.85rem; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; font-size: 0.8rem;">Negar</button>` : ''}
+                        ${u.status === 'pending' ? `<button class="admin-delete-btn" data-email="${u.email}" title="Excluir solicitação" style="background: none; color: var(--color-text-light); border: 1px solid var(--color-border); padding: 0.45rem 0.7rem; border-radius: var(--radius-md); cursor: pointer; font-weight: 600; font-size: 0.8rem;">🗑</button>` : ''}
                     </div>
                 `;
                 list.appendChild(row);
@@ -554,6 +555,13 @@ async function loadAdminUsers() {
         });
         list.querySelectorAll('.admin-deny-btn').forEach((btn) => {
             btn.addEventListener('click', () => handleAdminAction('deny', btn.dataset.email));
+        });
+        list.querySelectorAll('.admin-delete-btn').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                if (confirm(`Tem certeza que deseja excluir a solicitação de "${btn.dataset.email}"? Essa ação não pode ser desfeita.`)) {
+                    handleAdminAction('delete-request', btn.dataset.email);
+                }
+            });
         });
     } catch (error) {
         list.innerHTML = `<p style="color: var(--color-error);">Não foi possível conectar ao servidor. Ele está rodando?</p>`;
