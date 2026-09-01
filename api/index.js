@@ -24,16 +24,33 @@ const { kv } = require('@vercel/kv');
 
 const app = express();
 
-// --- Credenciais do dono/admin (mesmas usadas no login do frontend) ---
-const ADMIN_USER = "7B735636DD532E7DBF979D9B2023735DA8168ADE";
-const ADMIN_PASS = "7F56D3F17078531A3613DD907020F7C0B18CE09F";
+// --- Credenciais do dono/admin ---
+// Vêm de variáveis de ambiente da Vercel, NUNCA do código-fonte.
+const ADMIN_USER = process.env.ADMIN_USER;
+const ADMIN_PASS = process.env.ADMIN_PASS;
 
 function requireAdmin(req, res, next) {
     const u = req.header('x-admin-user');
     const p = req.header('x-admin-pass');
+
     if (u === ADMIN_USER && p === ADMIN_PASS) {
         return next();
     }
+
+    // Permite que usuários aprovados marcados como isAdmin também
+    // acessem as rotas administrativas, usando seu próprio e-mail/senha.
+    if (u && p) {
+        loadUsers().then((users) => {
+            const normalizedEmail = String(u).trim().toLowerCase();
+            const user = users.find(x => x.email === normalizedEmail);
+            if (user && user.status === 'approved' && user.isAdmin === true && verifyPassword(p, user.salt, user.hash)) {
+                return next();
+            }
+            return res.status(401).json({ success: false, error: "Não autorizado." });
+        }).catch(() => res.status(401).json({ success: false, error: "Não autorizado." }));
+        return;
+    }
+
     return res.status(401).json({ success: false, error: "Não autorizado." });
 }
 
@@ -156,6 +173,12 @@ app.post('/api/login', async (req, res) => {
         return res.status(400).json({ success: false, error: "Preencha e-mail e senha." });
     }
 
+    // --- Login do dono do sistema ---
+    // Credenciais vêm de variáveis de ambiente da Vercel (nunca do código-fonte).
+    if (ADMIN_USER && ADMIN_PASS && email === ADMIN_USER && password === ADMIN_PASS) {
+        return res.json({ success: true, message: "Login realizado com sucesso.", isAdmin: true });
+    }
+
     const normalizedEmail = String(email).trim().toLowerCase();
     const users = await loadUsers();
     const user = users.find(u => u.email === normalizedEmail);
@@ -173,7 +196,7 @@ app.post('/api/login', async (req, res) => {
         return res.status(401).json({ success: false, error: "Senha incorreta." });
     }
 
-    res.json({ success: true, message: "Login realizado com sucesso." });
+    res.json({ success: true, message: "Login realizado com sucesso.", isAdmin: user.isAdmin === true });
 });
 
 // --- Admin: listar todas as solicitações/usuários ---

@@ -341,22 +341,27 @@ const API_BASE = (location.hostname === 'localhost' || location.hostname === '12
     ? 'http://localhost:3000'
     : '';
 
-// Credenciais do dono do sistema (acesso total + painel admin)
-const ADMIN_USER = "7B735636DD532E7DBF979D9B2023735DA8168ADE";
-const ADMIN_PASS = "7F56D3F17078531A3613DD907020F7C0B18CE09F";
+// As credenciais do dono NÃO existem mais aqui no código do navegador.
+// A verificação delas agora acontece só no servidor (via variáveis de
+// ambiente), então quem abrir o código-fonte da página não tem acesso a elas.
 
-let isOwner = false;
+// Guarda as credenciais a usar nas rotas /api/admin/*. É preenchida ao logar
+// como dono OU como um usuário comum aprovado que tenha isAdmin: true —
+// nos dois casos, isso só acontece depois de o servidor confirmar o login.
+// null = sem acesso ao painel admin.
+let adminAuthHeaders = null;
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // --- Sessão em cache (localStorage) ---
 // Guarda que o login já foi feito para não pedir de novo ao atualizar a página.
-// A escolha de oferta/notificação NÃO é salva aqui de propósito: a cada
-// atualização o usuário volta para a tela "Qual oferta?".
+// Por segurança, NÃO guardamos aqui a senha de ninguém — então, ao atualizar
+// a página, o acesso ao Painel Admin precisa ser feito de novo (login normal
+// continua funcionando sem precisar logar de novo).
 const SESSION_KEY = 'gt_session';
 
-function saveSession(ownerFlag) {
+function saveSession() {
     try {
-        localStorage.setItem(SESSION_KEY, JSON.stringify({ loggedIn: true, isOwner: ownerFlag }));
+        localStorage.setItem(SESSION_KEY, JSON.stringify({ loggedIn: true }));
     } catch (error) {
         console.warn('Não foi possível salvar a sessão:', error);
     }
@@ -385,23 +390,15 @@ document.getElementById('login-btn').addEventListener('click', async () => {
     const errorMsg = document.getElementById('login-error');
     errorMsg.style.display = 'none';
 
-    // Login do dono do sistema (acesso total + admin)
-    if (userVal === ADMIN_USER && passVal === ADMIN_PASS) {
-        isOwner = true;
-        saveSession(true);
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('open-admin-btn').style.display = 'block';
-        openOfferWizard();
-        return;
-    }
-
-    // Login de usuário comum (por e-mail/usuário, validado no servidor)
     if (!userVal || !passVal) {
         errorMsg.textContent = 'Usuário ou senha incorretos.';
         errorMsg.style.display = 'block';
         return;
     }
 
+    // Login unificado: dono do sistema e usuários comuns passam pela mesma
+    // rota. O servidor decide, com base em variáveis de ambiente (dono) ou
+    // no cadastro aprovado (usuário comum + isAdmin), quem tem acesso admin.
     try {
         const resp = await fetch(`${API_BASE}/api/login`, {
             method: 'POST',
@@ -411,10 +408,10 @@ document.getElementById('login-btn').addEventListener('click', async () => {
         const data = await resp.json();
 
         if (data.success) {
-            isOwner = false;
-            saveSession(false);
+            adminAuthHeaders = data.isAdmin ? { 'x-admin-user': userVal, 'x-admin-pass': passVal } : null;
+            saveSession();
             document.getElementById('login-overlay').style.display = 'none';
-            document.getElementById('open-admin-btn').style.display = 'none';
+            document.getElementById('open-admin-btn').style.display = data.isAdmin ? 'block' : 'none';
             openOfferWizard();
         } else {
             errorMsg.textContent = data.error || 'Usuário ou senha incorretos.';
@@ -509,7 +506,7 @@ async function loadAdminUsers() {
 
     try {
         const resp = await fetch(`${API_BASE}/api/admin/users`, {
-            headers: { 'x-admin-user': ADMIN_USER, 'x-admin-pass': ADMIN_PASS }
+            headers: adminAuthHeaders || {}
         });
         const data = await resp.json();
 
@@ -574,8 +571,7 @@ async function handleAdminAction(action, email) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'x-admin-user': ADMIN_USER,
-                'x-admin-pass': ADMIN_PASS
+                ...(adminAuthHeaders || {})
             },
             body: JSON.stringify({ email })
         });
@@ -657,9 +653,12 @@ document.getElementById('logout-link').addEventListener('click', (e) => {
 (function restoreSessionOnLoad() {
     const session = loadSession();
     if (session && session.loggedIn) {
-        isOwner = !!session.isOwner;
+        // Ninguém mais tem credenciais fixas guardadas no navegador (nem o
+        // dono). Após um refresh, o acesso ao Painel Admin exige logar de
+        // novo — o restante da sessão (login comum) continua sendo pulado.
+        adminAuthHeaders = null;
         document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('open-admin-btn').style.display = isOwner ? 'block' : 'none';
+        document.getElementById('open-admin-btn').style.display = 'none';
         openOfferWizard();
     }
 })();
