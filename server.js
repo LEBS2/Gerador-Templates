@@ -250,8 +250,8 @@ app.post('/api/admin/delete-request', requireAdmin, (req, res) => {
     if (!user) {
         return res.status(404).json({ success: false, error: "Usuário não encontrado." });
     }
-    if (user.status !== 'pending') {
-        return res.status(400).json({ success: false, error: "Só é possível excluir solicitações pendentes." });
+    if (user.status === 'approved') {
+        return res.status(400).json({ success: false, error: "Não é possível excluir um usuário aprovado. Negue o acesso primeiro." });
     }
 
     const updatedUsers = users.filter(u => u.email !== normalizedEmail);
