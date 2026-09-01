@@ -195,44 +195,45 @@ function buildTemplate(clientsData) {
     const primaryUrl = clientsData[0].urls[0];
     const isFirst = selectedPrimeiraNotificacao !== false; // default: primeira notificação
 
+    // Singular ou plural conforme o total de URLs somando todos os clientes.
+    const totalUrls = clientsData.reduce((sum, c) => sum + c.urls.length, 0);
+    const isSingular = totalUrls === 1;
+    const profileWord = isSingular ? 'profile' : 'profiles';
+    const isAre = isSingular ? 'is' : 'are';
+    const thisTheseProfile = isSingular ? 'this profile' : 'these profiles';
+    const itThem = isSingular ? 'it' : 'them';
+    const itsTheyre = isSingular ? "it's" : "they're";
+
     if (selectedOferta === 'fsp') {
-        if (isFirst) {
-            const bulletLines = clientsData
-                .flatMap(c => c.urls.map(u => `- ${u}`))
-                .join('\n');
-
-            return `Hello Telegram Team, \nThe following profile are impersonating ${clientNames}.\n\n${bulletLines}\n\nCould you help us by removing these profile?`;
-        }
-
         const bulletLines = clientsData
             .flatMap(c => c.urls.map(u => `- ${u}`))
             .join('\n');
 
-        return `Hello Telegram Team, \nThe following profile are impersonating ${clientNames}.\n\n${bulletLines}\n\nCould you help us by removing these profile? We've been reporting this profile for a while and it's still up`;
+        if (isFirst) {
+            return `Hello Telegram Team, \nThe following ${profileWord} ${isAre} impersonating ${clientNames}.\n\n${bulletLines}\n\nCould you help us by removing ${thisTheseProfile}?`;
+        }
+
+        return `Hello Telegram Team, \nThe following ${profileWord} ${isAre} impersonating ${clientNames}.\n\n${bulletLines}\n\nCould you help us by removing ${thisTheseProfile}? We've been reporting ${thisTheseProfile} for a while and ${itsTheyre} still up`;
     }
 
     if (selectedOferta === 'efsp') {
-        if (isFirst) {
-            const bulletLines = clientsData
-                .flatMap(c => c.urls.map(u => `- ${u}`))
-                .join('\n');
-
-            return `Dear Telegram,\n\nThe following profiles are using the executive ${clientNames} to commit scams. \n\n${bulletLines}\n\nCan you help us by removing it from Telegram?\n\nThank you!`;
-        }
-
         const bulletLines = clientsData
             .flatMap(c => c.urls.map(u => `- ${u}`))
             .join('\n');
 
-        return `The following profiles are using the executive ${clientNames} to commit scams. \n\n${bulletLines}\n\nCan you help us by removing it from Telegram? We've been reporting this profile for a while and it's still up\n\nThank you!`;
+        if (isFirst) {
+            return `Dear Telegram,\n\nThe following ${profileWord} ${isAre} using the executive ${clientNames} to commit scams. \n\n${bulletLines}\n\nCan you help us by removing ${itThem} from Telegram?\n\nThank you!`;
+        }
+
+        return `The following ${profileWord} ${isAre} using the executive ${clientNames} to commit scams. \n\n${bulletLines}\n\nCan you help us by removing ${itThem} from Telegram? We've been reporting ${thisTheseProfile} for a while and ${itsTheyre} still up\n\nThank you!`;
     }
 
     // Fallback (nenhuma oferta selecionada ainda) - mantém o texto padrão antigo
     if (clientsData.length === 1) {
-        return `Dear Telegram,\n\nThe following profile are using the brand ${clientsData[0].client} to commit scams:\n\n${clientsData[0].urls.join('\n')}\n\nCan you help us by removing it from Telegram?`;
+        return `Dear Telegram,\n\nThe following ${profileWord} ${isAre} using the brand ${clientsData[0].client} to commit scams:\n\n${clientsData[0].urls.join('\n')}\n\nCan you help us by removing ${itThem} from Telegram?`;
     }
     const listText = clientsData.map(item => `- ${item.client}:\n  ${item.urls.join('\n  ')}`).join('\n\n');
-    return `Dear Telegram,\n\nThe following profiles are using our clients' brands to commit scams:\n\n${listText}\n\nCan you help us by removing them from Telegram?`;
+    return `Dear Telegram,\n\nThe following ${profileWord} ${isAre} using our clients' brands to commit scams:\n\n${listText}\n\nCan you help us by removing ${itThem} from Telegram?`;
 }
 
 // Manual Template Edit Logic
@@ -609,7 +610,7 @@ function updateOfferLabel() {
         label.textContent = '';
         return;
     }
-    const notifTexto = selectedPrimeiraNotificacao ? 'primeira notificação' : 'já notificado antes';
+    const notifTexto = selectedPrimeiraNotificacao ? 'primeira notificação' : 'renotificação';
     label.textContent = `Oferta: ${OFERTA_LABELS[selectedOferta]} (${notifTexto})`;
 }
 
