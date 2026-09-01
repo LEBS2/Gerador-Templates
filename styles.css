@@ -77,6 +77,55 @@ body {
     font-size: 1rem;
 }
 
+.offer-navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    background-color: var(--color-primary);
+    color: white;
+    padding: 0.9rem 1.5rem;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.offer-navbar-brand {
+    font-weight: 600;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.offer-navbar-links {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    flex-shrink: 0;
+}
+
+.offer-navbar-links a {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+.offer-navbar-links a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+    .offer-navbar {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
 .card {
     background-color: var(--color-surface);
     border-radius: var(--radius-lg);
