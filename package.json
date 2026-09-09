@@ -1,0 +1,18 @@
+{
+  "name": "gerador-templates-denuncia",
+  "version": "1.0.0",
+  "description": "Plataforma de geração de templates de denúncia para redes sociais",
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "node api/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@vercel/kv": "^3.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1"
+  }
+}

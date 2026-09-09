@@ -1,0 +1,13 @@
+.env
+.env.local
+.env.*.local
+!.env.example
+node_modules/
+.vercel/
+users.json
+*.log
+.DS_Store
+Thumbs.db
+# Arquivos legados (podem ser deletados manualmente)
+server.js
+listar-chats.js

@@ -1,0 +1,1260 @@
+﻿<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReportGen - Canal de Denúncias</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="logo.png?v=4">
+    <style>
+/* ── Tokens ─────────────────────────────────────────────────────────────── */
+:root {
+    --bg:        #0d0d0d;
+    --bg2:       #171717;
+    --bg3:       #1f1f1f;
+    --bg4:       #2a2a2a;
+    --sidebar:   #111111;
+    --border:    rgba(255,255,255,.10);
+    --border2:   rgba(255,255,255,.06);
+    --text:      #F0F0F0;
+    --text2:     #9A9A9A;
+    --text3:     #555555;
+    --primary:   #2BA8E8;
+    --primary-d: #1d8bc2;
+    --primary-dim: rgba(43,168,232,.1);
+    --primary-b: rgba(43,168,232,.22);
+    --primary-glow: 0 0 28px rgba(43,168,232,.28);
+    --error:     #F87171;
+    --success:   #34D399;
+    --warning:   #FBBF24;
+    --r:         8px; --r2: 12px; --r3: 18px;
+    --sh:  0 4px 24px rgba(0,0,0,.55);
+    --sh2: 0 8px 40px rgba(0,0,0,.65);
+    /* legacy compat */
+    --color-bg:#0d0d0d; --color-surface:#171717; --color-surface-alt:#1f1f1f;
+    --color-surface-2:#2a2a2a; --color-text:#F0F0F0; --color-text-light:#9A9A9A;
+    --color-text-muted:#555555; --color-primary:#2BA8E8; --color-primary-hover:#1d8bc2;
+    --color-primary-dim:rgba(43,168,232,.1); --color-border:rgba(255,255,255,.10);
+    --color-error:#F87171; --color-error-dim:rgba(248,113,113,.1);
+    --color-success:#34D399; --color-warning:#FBBF24;
+    --radius-md:.5rem; --radius-lg:.75rem; --transition:all .2s ease;
+    --surface:rgba(23,23,23,.92); --surface-solid:#171717; --surface-2:#1f1f1f;
+    --surface-3:#2a2a2a; --shadow-sm:0 1px 4px rgba(0,0,0,.5);
+    --shadow-md:0 4px 16px rgba(0,0,0,.6); --shadow-lg:0 16px 40px rgba(0,0,0,.75);
+}
+[data-theme="light"] {
+    /* fundos: branco puro + cinzas neutros - sem tint azul */
+    --bg:#F2F2F2; --bg2:#FFFFFF; --bg3:#EBEBEB; --bg4:#E0E0E0;
+    --sidebar:#FFFFFF;
+    --border:rgba(0,0,0,.11); --border2:rgba(0,0,0,.06);
+    /* texto: preto quase puro com hierarquia clara */
+    --text:#111111; --text2:#555555; --text3:#999999;
+    /* primary: azul saturado para destaque sobre neutros */
+    --primary:#1A7FC1; --primary-d:#1568A0;
+    --primary-dim:rgba(26,127,193,.09); --primary-b:rgba(26,127,193,.22);
+    --primary-glow:0 0 20px rgba(26,127,193,.2);
+    /* semânticos */
+    --error:#C0392B; --success:#1E8449; --warning:#B7770D;
+    /* sombras mais definidas no branco */
+    --sh:0 2px 8px rgba(0,0,0,.10); --sh2:0 6px 24px rgba(0,0,0,.14);
+    /* compat */
+    --color-bg:#F2F2F2; --color-surface:#FFFFFF; --color-surface-alt:#EBEBEB;
+    --color-surface-2:#E0E0E0; --color-text:#111111; --color-text-light:#555555;
+    --color-text-muted:#999999; --color-primary:#1A7FC1; --color-primary-hover:#1568A0;
+    --color-primary-dim:rgba(26,127,193,.09); --color-border:rgba(0,0,0,.11);
+    --color-error:#C0392B; --color-error-dim:rgba(192,57,43,.08);
+    --color-success:#1E8449; --color-warning:#B7770D;
+    --surface:rgba(255,255,255,.97); --surface-solid:#FFFFFF; --surface-2:#EBEBEB;
+    --surface-3:#E0E0E0;
+    --shadow-sm:0 1px 4px rgba(0,0,0,.08); --shadow-md:0 4px 16px rgba(0,0,0,.11);
+    --shadow-lg:0 16px 40px rgba(0,0,0,.15);
+}
+/* ── Reset ──────────────────────────────────────────────────────────────── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:var(--primary);text-decoration:none}
+button,input,select,textarea{font-family:inherit}
+
+/* ── Animations ──────────────────────────────────────────────────────────── */
+@keyframes fadeInUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+@keyframes slideIn{from{opacity:0;transform:translateX(14px)}to{opacity:1;transform:translateX(0)}}
+@keyframes slideInLeft{from{opacity:0;transform:translateX(-10px)}to{opacity:1;transform:translateX(0)}}
+@keyframes skeleton-wave{0%{background-position:200% 0}100%{background-position:-200% 0}}
+@keyframes pulse-dot{0%,100%{opacity:.6;transform:scale(1)}50%{opacity:1;transform:scale(1.4)}}
+@keyframes checkPop{0%{transform:scale(0)}70%{transform:scale(1.2)}100%{transform:scale(1)}}
+
+.view-anim{animation:fadeInUp .35s ease both;}
+
+/* ── App shell ───────────────────────────────────────────────────────────── */
+#app-shell{display:none;flex-direction:column;height:100vh;}
+
+/* ════════════════════════════════════════
+   TOPBAR
+════════════════════════════════════════ */
+#topbar{
+    height:52px;background:var(--bg2);border-bottom:1px solid var(--border);
+    display:flex;align-items:center;padding:0 1rem 0 1.1rem;gap:.75rem;flex-shrink:0;
+    position:sticky;top:0;z-index:200;
+}
+.tb-logo{
+    display:flex;align-items:center;gap:.5rem;flex-shrink:0;
+}
+.tb-logo-img{
+    height:28px;width:auto;object-fit:contain;flex-shrink:0;
+    border-radius:6px;
+}
+.tb-logo-name{
+    font-family:'Outfit',sans-serif;font-weight:800;font-size:1.02rem;
+    letter-spacing:-.03em;color:var(--text);
+}
+.tb-logo-sep{
+    width:1px;height:16px;background:var(--border);flex-shrink:0;margin:0 .15rem;
+}
+.tb-logo-sub{
+    font-size:.72rem;font-weight:600;color:var(--text3);
+    letter-spacing:.07em;text-transform:uppercase;
+}
+.tb-spacer{flex:1}
+.tb-actions{display:flex;align-items:center;gap:.35rem;}
+
+.tb-nav-btn{
+    display:flex;align-items:center;gap:.4rem;background:none;border:none;
+    color:var(--text2);font-size:.82rem;font-weight:500;padding:.35rem .7rem;
+    border-radius:var(--r);cursor:pointer;transition:all .2s;
+}
+.tb-nav-btn:hover{background:var(--bg3);color:var(--text);}
+
+.tb-btn{
+    display:flex;align-items:center;gap:.4rem;
+    background:none;border:1px solid var(--border);color:var(--text2);
+    font-size:.8rem;font-weight:600;padding:.3rem .7rem;
+    border-radius:var(--r);cursor:pointer;transition:all .2s;
+}
+.tb-btn:hover{border-color:var(--primary-b);color:var(--text);background:var(--primary-dim);}
+.tb-btn.icon-only{padding:.32rem .45rem;}
+#open-admin-btn{background:rgba(43,168,232,.08);border-color:var(--primary-b);color:var(--primary);}
+#open-admin-btn:hover{background:var(--primary-dim);}
+#logout-topbar-btn{color:var(--error);border-color:rgba(248,113,113,.25);}
+#logout-topbar-btn:hover{background:rgba(248,113,113,.07);}
+
+#user-pill{
+    display:flex;align-items:center;gap:.45rem;
+    background:var(--bg3);border:1px solid var(--border);
+    border-radius:2rem;padding:.22rem .65rem .22rem .28rem;cursor:pointer;
+    transition:all .2s;
+}
+#user-pill:hover{border-color:var(--primary-b);}
+#user-pill-avatar{
+    width:22px;height:22px;border-radius:50%;
+    background:linear-gradient(135deg,var(--primary) 0%,var(--primary-d) 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-size:.67rem;font-weight:800;color:#fff;flex-shrink:0;
+}
+#user-pill-name{font-size:.78rem;font-weight:600;color:var(--text);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* ════════════════════════════════════════
+   LAYOUT
+════════════════════════════════════════ */
+#layout{display:flex;flex:1;min-height:0;overflow:hidden;}
+
+/* ════════════════════════════════════════
+   SIDEBAR
+════════════════════════════════════════ */
+#sidebar{
+    width:200px;flex-shrink:0;background:var(--sidebar);
+    border-right:1px solid var(--border);
+    display:flex;flex-direction:column;padding:.6rem .45rem;overflow-y:auto;
+}
+.nav-section-label{
+    font-size:.63rem;font-weight:700;letter-spacing:.1em;color:var(--text3);
+    text-transform:uppercase;padding:.7rem .7rem .3rem;
+}
+.nav-btn{
+    display:flex;align-items:center;gap:.55rem;width:100%;
+    padding:.5rem .7rem;border-radius:var(--r);border:none;background:none;
+    color:var(--text2);font-size:.845rem;font-weight:500;cursor:pointer;
+    transition:all .2s;text-align:left;margin-bottom:.08rem;position:relative;
+}
+.nav-btn:hover{background:var(--bg3);color:var(--text);}
+.nav-btn.active{
+    background:var(--primary-dim);color:var(--primary);
+    border:1px solid var(--primary-b);font-weight:600;
+}
+.nav-btn svg{flex-shrink:0;opacity:.7;}
+.nav-btn.active svg{opacity:1;}
+.nav-btn.active::before{
+    content:'';position:absolute;left:0;top:25%;bottom:25%;
+    width:2.5px;border-radius:0 2px 2px 0;background:var(--primary);
+    margin-left:-1px;
+}
+.nav-sep{height:1px;background:var(--border);margin:.45rem .5rem;}
+
+.nav-type-badge{
+    margin-left:auto;font-size:.6rem;font-weight:700;letter-spacing:.03em;
+    text-transform:uppercase;background:var(--bg3);border:1px solid var(--border);
+    border-radius:3px;padding:.1rem .3rem;color:var(--text3);
+}
+.nav-btn.active .nav-type-badge{background:var(--primary-dim);border-color:var(--primary-b);color:var(--primary);}
+
+.sidebar-footer{
+    margin-top:auto;padding:.5rem;
+}
+.sidebar-badge{
+    background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);
+    padding:.75rem .85rem;display:flex;align-items:flex-start;gap:.55rem;
+}
+.sidebar-badge-ico{
+    width:26px;height:26px;flex-shrink:0;background:var(--primary-dim);
+    border:1px solid var(--primary-b);border-radius:6px;
+    display:flex;align-items:center;justify-content:center;margin-top:.05rem;
+}
+.sidebar-badge-title{font-size:.78rem;font-weight:700;color:var(--text);margin-bottom:.2rem;}
+.sidebar-badge-text{font-size:.72rem;color:var(--text2);line-height:1.45;}
+
+/* ════════════════════════════════════════
+   MAIN CONTENT
+════════════════════════════════════════ */
+#main-content{flex:1;overflow-y:auto;padding:1.35rem 1.65rem;}
+#right-panel{display:none;}
+
+/* ════════════════════════════════════════
+   PROGRESS BAR
+════════════════════════════════════════ */
+#progress-bar{
+    display:flex;align-items:center;gap:0;margin-bottom:1.35rem;
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);
+    padding:.7rem 1.1rem;
+}
+.prog-step{
+    display:flex;align-items:center;gap:.45rem;font-size:.79rem;color:var(--text3);
+    font-weight:500;transition:all .3s;
+}
+.prog-step.active{color:var(--primary);}
+.prog-step.done{color:var(--success);}
+.prog-num{
+    width:20px;height:20px;border-radius:50%;border:1.5px solid currentColor;
+    display:flex;align-items:center;justify-content:center;font-size:.7rem;
+    font-weight:700;transition:all .3s;flex-shrink:0;
+}
+.prog-step.active .prog-num{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 0 10px rgba(43,168,232,.4);}
+.prog-step.done .prog-num{background:var(--success);border-color:var(--success);color:#fff;}
+.prog-line{flex:1;height:1px;background:var(--border);margin:0 .6rem;transition:background .4s;}
+.prog-line.done{background:var(--success);}
+
+/* ════════════════════════════════════════
+   HERO
+════════════════════════════════════════ */
+.hero{
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);
+    padding:0;margin-bottom:1.1rem;position:relative;overflow:hidden;
+    animation:fadeInUp .35s ease both;
+}
+.hero-inner{
+    display:flex;align-items:stretch;gap:0;
+}
+.hero-accent{
+    width:3px;flex-shrink:0;
+    background:linear-gradient(180deg,var(--primary) 0%,rgba(43,168,232,.2) 100%);
+    border-radius:var(--r3) 0 0 var(--r3);
+}
+.hero-body{flex:1;padding:1.5rem 1.65rem;}
+.hero-eyebrow{
+    display:inline-flex;align-items:center;gap:.4rem;
+    font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+    color:var(--primary);margin-bottom:.55rem;
+}
+.hero-eyebrow-live{
+    display:inline-flex;align-items:center;gap:.3rem;
+    background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);
+    border-radius:2rem;padding:.12rem .5rem;font-size:.64rem;font-weight:700;
+    color:var(--success);letter-spacing:.05em;text-transform:uppercase;margin-left:.5rem;
+}
+.hero-eyebrow-live::before{
+    content:'';width:5px;height:5px;border-radius:50%;background:var(--success);
+    animation:pulse-dot 1.8s ease infinite;
+}
+.hero-title{
+    font-family:'Outfit',sans-serif;font-size:1.7rem;font-weight:800;
+    letter-spacing:-.04em;line-height:1.18;color:var(--text);margin-bottom:.6rem;
+    text-wrap:balance;
+}
+.hero-desc{font-size:.855rem;color:var(--text2);line-height:1.65;max-width:520px;}
+.hero-chips{display:flex;gap:.45rem;flex-wrap:wrap;margin-top:.95rem;}
+.chip{
+    display:inline-flex;align-items:center;gap:.3rem;
+    background:var(--bg3);border:1px solid var(--border);color:var(--text2);
+    border-radius:2rem;padding:.22rem .7rem;font-size:.77rem;font-weight:500;
+    cursor:pointer;transition:all .2s;
+}
+.chip:hover{border-color:var(--primary-b);color:var(--primary);background:var(--primary-dim);}
+
+.hero-stats{
+    display:flex;gap:1.35rem;padding:1rem 1.65rem;
+    border-top:1px solid var(--border2);
+    background:rgba(0,0,0,.15);
+}
+[data-theme="light"] .hero-stats{background:rgba(0,0,0,.04);}
+.hero-stat{display:flex;align-items:center;gap:.5rem;}
+.hero-stat-val{font-family:'Outfit',sans-serif;font-size:1.05rem;font-weight:800;color:var(--text);letter-spacing:-.02em;}
+.hero-stat-label{font-size:.75rem;color:var(--text2);}
+.hero-stat-sep{width:1px;height:24px;background:var(--border);}
+
+/* ════════════════════════════════════════
+   STEP CARDS
+════════════════════════════════════════ */
+.step-card{
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);
+    padding:1.35rem 1.5rem;margin-bottom:1.1rem;
+    animation:fadeInUp .45s .05s ease both;
+}
+.step-header{display:flex;align-items:flex-start;gap:.85rem;margin-bottom:1.1rem;}
+.step-num{
+    width:28px;height:28px;border-radius:50%;flex-shrink:0;
+    background:var(--primary);color:#fff;
+    display:flex;align-items:center;justify-content:center;
+    font-weight:800;font-size:.82rem;font-family:'Outfit',sans-serif;
+    box-shadow:0 0 14px rgba(43,168,232,.35);margin-top:.1rem;
+}
+.step-title{font-family:'Outfit',sans-serif;font-size:1rem;font-weight:700;letter-spacing:-.01em;color:var(--text);}
+.step-subtitle{font-size:.8rem;color:var(--text2);margin-top:.1rem;}
+
+/* ════════════════════════════════════════
+   CATEGORY CARDS
+════════════════════════════════════════ */
+.cat-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:.75rem;margin-bottom:1.25rem;}
+.cat-card{
+    background:var(--bg3);border:1px solid var(--border);border-radius:var(--r2);
+    padding:1.15rem 1.2rem 1.15rem;cursor:pointer;position:relative;
+    display:flex;flex-direction:column;gap:.55rem;
+    transition:all .22s cubic-bezier(.34,1.4,.64,1);
+    overflow:hidden;
+}
+.cat-card::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:2.5px;
+    background:linear-gradient(90deg,var(--primary),rgba(43,168,232,.3));
+    opacity:0;transition:opacity .2s;
+}
+.cat-card:hover{border-color:var(--primary-b);transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.35);}
+.cat-card:hover::before{opacity:1;}
+.cat-card.selected{border-color:var(--primary);background:rgba(43,168,232,.06);transform:translateY(-1px);box-shadow:0 0 0 1px var(--primary),0 8px 28px rgba(0,0,0,.35);}
+.cat-card.selected::before{opacity:1;}
+
+.cat-arrow{position:absolute;top:.9rem;right:.9rem;color:var(--text3);transition:all .2s;}
+.cat-card:hover .cat-arrow,.cat-card.selected .cat-arrow{color:var(--primary);transform:translateX(3px);}
+.cat-icon{
+    width:36px;height:36px;border-radius:10px;
+    background:var(--bg4);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    transition:all .2s;
+}
+.cat-card:hover .cat-icon,.cat-card.selected .cat-icon{
+    background:rgba(43,168,232,.12);border-color:var(--primary-b);
+}
+.cat-tag{
+    font-size:.62rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+    color:var(--text3);
+}
+.cat-card.selected .cat-tag{color:var(--primary);}
+.cat-name{font-size:.9rem;font-weight:700;color:var(--text);padding-right:1.6rem;line-height:1.3;}
+.cat-desc{font-size:.76rem;color:var(--text2);line-height:1.45;}
+
+/* ════════════════════════════════════════
+   NOTIF CARDS (step 2)
+════════════════════════════════════════ */
+.notif-grid{display:grid;grid-template-columns:1fr 1fr;gap:.65rem;margin-bottom:1.25rem;}
+.notif-card{
+    background:var(--bg3);border:1.5px solid var(--border);border-radius:var(--r2);
+    padding:1rem 1.1rem;cursor:pointer;position:relative;
+    display:flex;flex-direction:column;gap:.5rem;
+    transition:all .22s cubic-bezier(.34,1.4,.64,1);
+}
+.notif-card:hover{border-color:var(--primary-b);transform:translateY(-2px);}
+.notif-card.selected{border-color:var(--primary);background:rgba(43,168,232,.06);transform:translateY(-1px);}
+.notif-radio{
+    position:absolute;top:.9rem;right:.9rem;
+    width:15px;height:15px;border-radius:50%;border:2px solid var(--border);
+    transition:all .2s;
+}
+.notif-card.selected .notif-radio{border-color:var(--primary);background:var(--primary);}
+.notif-name{font-size:.88rem;font-weight:700;color:var(--text);}
+.notif-desc{font-size:.76rem;color:var(--text2);line-height:1.4;}
+
+.step2-divider{height:1px;background:var(--border);margin:1.15rem 0;}
+
+/* ════════════════════════════════════════
+   HELP TIP
+════════════════════════════════════════ */
+.help-tip{
+    display:inline-flex;align-items:center;gap:.35rem;font-size:.77rem;
+    color:var(--text3);cursor:pointer;border-bottom:1px dashed var(--border);
+    transition:color .2s;
+}
+.help-tip:hover{color:var(--primary);}
+
+/* ════════════════════════════════════════
+   FORM / REPORT VIEW
+════════════════════════════════════════ */
+.form-section{
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);
+    padding:1.25rem 1.5rem;margin-bottom:1.1rem;
+}
+.form-row{display:grid;grid-template-columns:1fr 2fr;gap:.6rem;align-items:start;margin-bottom:.7rem;}
+.form-label{font-size:.82rem;font-weight:600;color:var(--text2);padding-top:.58rem;}
+.form-input{
+    background:var(--bg3);border:1px solid var(--border);color:var(--text);
+    padding:.52rem .8rem;border-radius:var(--r);font-size:.875rem;
+    outline:none;transition:border-color .2s,box-shadow .2s;width:100%;
+}
+.form-input:focus{border-color:var(--primary-b);box-shadow:0 0 0 3px rgba(43,168,232,.08);}
+.form-input::placeholder{color:var(--text3);}
+.add-url-link{
+    font-size:.77rem;color:var(--primary);cursor:pointer;display:inline-flex;
+    align-items:center;gap:.25rem;margin-top:.3rem;background:none;border:none;
+}
+.add-url-link:hover{text-decoration:underline;}
+.client-sep{height:1px;background:var(--border);margin:.85rem 0;}
+.client-header{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:.82rem;font-weight:700;color:var(--text);margin-bottom:.75rem;
+}
+.remove-client-btn{font-size:.74rem;color:var(--text3);background:none;border:none;cursor:pointer;}
+.remove-client-btn:hover{color:var(--error);}
+
+.preview-section{
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);
+    padding:1.25rem 1.5rem;margin-bottom:1.1rem;
+}
+.preview-section h3{
+    font-size:.88rem;font-weight:700;color:var(--text);margin-bottom:.85rem;
+    display:flex;justify-content:space-between;align-items:center;
+}
+#preview-text{
+    width:100%;min-height:180px;background:var(--bg3);border:1px solid var(--border);
+    color:var(--text);padding:.85rem 1rem;border-radius:var(--r);
+    font-family:'Inter',sans-serif;font-size:.83rem;line-height:1.7;resize:vertical;
+    outline:none;transition:border-color .2s;
+}
+#preview-text:focus{border-color:var(--primary-b);}
+
+/* ════════════════════════════════════════
+   BUTTONS
+════════════════════════════════════════ */
+.btn-outline{
+    display:flex;align-items:center;gap:.4rem;
+    background:none;border:1px solid var(--border);color:var(--text2);
+    padding:.52rem 1rem;border-radius:var(--r);font-size:.855rem;font-weight:600;
+    cursor:pointer;transition:all .2s;
+}
+.btn-outline:hover{border-color:var(--primary-b);color:var(--text);}
+.btn-outline:disabled{opacity:.38;cursor:not-allowed;}
+.btn-primary{
+    display:flex;align-items:center;gap:.4rem;
+    background:var(--primary);color:#fff;border:none;
+    padding:.52rem 1.35rem;border-radius:var(--r);font-size:.875rem;font-weight:700;
+    cursor:pointer;transition:all .2s;
+}
+.btn-primary:hover{background:var(--primary-d);box-shadow:var(--primary-glow);}
+.btn-primary:disabled{opacity:.38;cursor:not-allowed;}
+.btn-primary svg,.btn-outline svg{flex-shrink:0;}
+
+/* ════════════════════════════════════════
+   ACTION BAR
+════════════════════════════════════════ */
+.action-bar{
+    display:flex;justify-content:flex-end;align-items:center;gap:.6rem;
+    padding:.9rem 1.5rem;background:var(--bg2);border:1px solid var(--border);
+    border-radius:var(--r2);position:sticky;bottom:0;
+    backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+}
+
+/* ════════════════════════════════════════
+   OFFER INDICATOR
+════════════════════════════════════════ */
+.offer-indicator{
+    display:flex;align-items:center;gap:.7rem;
+    padding:.65rem 1rem;background:var(--bg2);border:1px solid var(--border);
+    border-radius:var(--r2);margin-bottom:1.1rem;
+}
+.offer-badge{
+    display:inline-flex;align-items:center;gap:.3rem;
+    background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-b);
+    border-radius:5px;padding:.18rem .55rem;font-size:.7rem;font-weight:700;
+    letter-spacing:.05em;text-transform:uppercase;
+}
+.offer-change-btn{
+    margin-left:auto;font-size:.77rem;color:var(--text3);background:none;border:none;
+    cursor:pointer;display:flex;align-items:center;gap:.3rem;
+}
+.offer-change-btn:hover{color:var(--primary);}
+
+/* ════════════════════════════════════════
+   HISTORY
+════════════════════════════════════════ */
+.hist-card{
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--r2);
+    padding:1rem 1.2rem;margin-bottom:.6rem;
+    display:flex;gap:.9rem;align-items:flex-start;
+    animation:slideInLeft .25s ease both;
+    transition:border-color .2s,box-shadow .2s;
+}
+.hist-card:hover{border-color:var(--primary-b);box-shadow:0 4px 16px rgba(0,0,0,.3);}
+.hist-badge{
+    flex-shrink:0;padding:.18rem .5rem;border-radius:4px;font-size:.68rem;
+    font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+    background:var(--primary-dim);color:var(--primary);border:1px solid var(--primary-b);
+}
+.hist-badge.renot{background:rgba(251,191,36,.07);color:var(--warning);border-color:rgba(251,191,36,.2);}
+.hist-meta{font-size:.74rem;color:var(--text3);margin-top:.2rem;}
+.hist-preview{font-size:.79rem;color:var(--text2);margin-top:.4rem;line-height:1.5;
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+
+/* ════════════════════════════════════════
+   EMPTY STATE / SKELETON
+════════════════════════════════════════ */
+.empty-state{
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:3rem 1rem;text-align:center;gap:.65rem;
+}
+.empty-icon{
+    width:52px;height:52px;border-radius:50%;
+    background:var(--bg3);border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;margin-bottom:.1rem;
+}
+.empty-title{font-weight:700;color:var(--text);font-size:.93rem;}
+.empty-desc{font-size:.8rem;color:var(--text2);max-width:260px;line-height:1.5;}
+.skeleton{
+    background:linear-gradient(90deg,var(--bg3) 25%,var(--bg4) 50%,var(--bg3) 75%);
+    background-size:200% 100%;animation:skeleton-wave 1.5s ease infinite;
+    border-radius:var(--r);
+}
+
+/* ════════════════════════════════════════
+   OVERLAYS / MODALS
+════════════════════════════════════════ */
+.overlay{
+    position:fixed;inset:0;z-index:9999;display:flex;
+    align-items:center;justify-content:center;
+    background:rgba(6,10,18,.95);
+    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+}
+.modal{
+    background:var(--bg2);border:1px solid var(--border);border-radius:var(--r3);
+    padding:2rem;width:100%;max-width:380px;animation:fadeUp .3s ease;position:relative;overflow:hidden;
+}
+.modal::before{
+    content:'';position:absolute;top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg,transparent,rgba(43,168,232,.55),transparent);
+}
+.modal-logo{display:flex;justify-content:center;margin-bottom:1.25rem;}
+.modal-logo-box{
+    width:52px;height:52px;background:var(--primary-dim);border:1.5px solid var(--primary-b);
+    border-radius:var(--r2);display:flex;align-items:center;justify-content:center;
+}
+.modal h2{font-family:'Outfit',sans-serif;font-size:1.35rem;font-weight:700;letter-spacing:-.02em;text-align:center;margin-bottom:.3rem;}
+.modal-sub{text-align:center;color:var(--text2);font-size:.82rem;margin-bottom:1.5rem;}
+.form-group{margin-bottom:1rem;}
+.form-group label{display:block;font-size:.79rem;font-weight:600;color:var(--text2);margin-bottom:.32rem;}
+.form-group input{
+    width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);
+    padding:.58rem .82rem;border-radius:var(--r);font-size:.875rem;
+    outline:none;transition:border-color .2s,box-shadow .2s;
+}
+.form-group input:focus{border-color:var(--primary-b);box-shadow:0 0 0 3px rgba(43,168,232,.08);}
+.form-group input::placeholder{color:var(--text3);}
+.submit-btn{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:.5rem;
+    background:var(--primary);color:#fff;border:none;
+    padding:.68rem;border-radius:var(--r);font-size:.88rem;font-weight:700;
+    cursor:pointer;transition:all .2s;margin-top:.2rem;
+}
+.submit-btn:hover{background:var(--primary-d);box-shadow:var(--primary-glow);}
+.secondary-btn{
+    width:100%;display:flex;align-items:center;justify-content:center;gap:.5rem;
+    background:none;color:var(--text2);border:1px solid var(--border);
+    padding:.62rem;border-radius:var(--r);font-size:.855rem;font-weight:600;
+    cursor:pointer;transition:all .2s;
+}
+.secondary-btn:hover{background:var(--bg3);border-color:var(--primary-b);color:var(--text);}
+.or-div{display:flex;align-items:center;gap:.6rem;color:var(--text3);font-size:.78rem;margin:.8rem 0;}
+.or-div::before,.or-div::after{content:'';flex:1;height:1px;background:var(--border);}
+.err-msg{color:var(--error);font-size:.81rem;text-align:center;display:none;margin-bottom:.7rem;}
+
+/* ════════════════════════════════════════
+   LOGIN
+════════════════════════════════════════ */
+#login-overlay{
+    position:fixed;inset:0;z-index:9999;display:flex;
+    background:var(--bg);
+}
+.login-split{display:flex;width:100%;height:100%;}
+
+.brand-panel{
+    width:38%;flex-shrink:0;
+    background:linear-gradient(150deg,#081B38 0%,#0C2E5E 45%,#0F3E80 100%);
+    display:flex;flex-direction:column;justify-content:center;align-items:center;
+    padding:3rem 2.5rem;position:relative;overflow:hidden;
+}
+.brand-panel::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(circle at 25% 25%,rgba(43,168,232,.18) 0%,transparent 55%),
+               radial-gradient(circle at 75% 75%,rgba(43,168,232,.07) 0%,transparent 50%);
+}
+#brand-canvas{position:absolute;inset:0;width:100%;height:100%;z-index:0;}
+.brand-content{position:relative;z-index:1;text-align:center;max-width:300px;}
+.brand-logo-box{
+    width:80px;height:80px;margin:0 auto 1.25rem;
+    background:rgba(255,255,255,.12);border:1.5px solid rgba(255,255,255,.22);
+    border-radius:20px;display:flex;align-items:center;justify-content:center;
+    box-shadow:0 12px 40px rgba(0,0,0,.35),0 0 0 10px rgba(255,255,255,.04);
+}
+.brand-logo-box img{width:48px;height:48px;object-fit:contain;}
+.brand-title{
+    font-family:'Outfit',sans-serif;font-size:2rem;font-weight:800;
+    color:#fff;letter-spacing:-.04em;margin-bottom:.4rem;line-height:1.1;
+}
+.brand-sub{color:rgba(255,255,255,.5);font-size:.82rem;font-weight:500;margin-bottom:0;}
+.brand-divider{
+    width:40px;height:2px;background:rgba(255,255,255,.2);
+    border-radius:2px;margin:1.5rem auto;
+}
+.brand-tagline{
+    color:rgba(255,255,255,.35);font-size:.72rem;font-weight:500;
+    letter-spacing:.12em;text-transform:uppercase;
+}
+
+.login-form-panel{flex:1;display:flex;align-items:center;justify-content:center;padding:2rem;overflow-y:auto;background:var(--bg);}
+.login-card{width:100%;max-width:348px;animation:fadeUp .4s ease;}
+.login-card h2{font-family:'Outfit',sans-serif;font-size:1.45rem;font-weight:700;letter-spacing:-.025em;margin-bottom:.25rem;}
+.login-card .sub{color:var(--text2);font-size:.83rem;margin-bottom:1.4rem;}
+
+/* ════════════════════════════════════════
+   REGISTER / ADMIN OVERLAYS
+════════════════════════════════════════ */
+#register-overlay{
+    position:fixed;inset:0;z-index:9999;display:none;
+    align-items:center;justify-content:center;
+    background:rgba(6,10,18,.95);
+    backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);
+}
+#admin-overlay{
+    position:fixed;inset:0;z-index:9999;display:none;
+    align-items:center;justify-content:center;
+    background:rgba(6,10,18,.92);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+#admin-overlay .modal{max-width:480px;max-height:90vh;overflow-y:auto;}
+
+/* ════════════════════════════════════════
+   TOAST
+════════════════════════════════════════ */
+#toast-container{position:fixed;bottom:1.25rem;right:1.25rem;z-index:10000;display:flex;flex-direction:column;gap:.4rem;}
+.toast-item{
+    min-width:230px;max-width:310px;padding:.65rem .9rem;border-radius:var(--r2);
+    font-size:.84rem;font-weight:500;display:flex;align-items:center;gap:.5rem;
+    box-shadow:var(--sh2);animation:slideIn .25s ease;border:1px solid transparent;
+}
+.toast-item.success{background:#0B2218;border-color:rgba(52,211,153,.2);color:var(--success);}
+.toast-item.error  {background:#280D0D;border-color:rgba(248,113,113,.2);color:var(--error);}
+.toast-item.info   {background:#0B1B2A;border-color:var(--primary-b);color:var(--primary);}
+
+/* ════════════════════════════════════════
+   SCROLLBAR
+════════════════════════════════════════ */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
+::-webkit-scrollbar-thumb:hover{background:var(--primary-b)}
+
+/* ════════════════════════════════════════
+   RESPONSIVE
+════════════════════════════════════════ */
+@media(max-width:768px){
+    #sidebar{display:none;}
+    #main-content{padding:.85rem 1rem;}
+    .brand-panel{display:none;}
+    .login-form-panel{min-height:100vh;}
+    .login-split{display:block;}
+    .hero-inner{flex-direction:column;}
+    .cat-grid{grid-template-columns:1fr 1fr;}
+    .notif-grid{grid-template-columns:1fr;}
+}
+    </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     LOGIN
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="login-overlay">
+    <div class="login-split">
+
+        <div class="brand-panel">
+            <canvas id="brand-canvas"></canvas>
+            <div class="brand-content">
+                <div class="brand-logo-box"><img src="logo.png?v=4" alt="Logo"></div>
+                <h1 class="brand-title">ReportGen</h1>
+                <p class="brand-sub">Canal de Denúncias Corporativo</p>
+                <div class="brand-divider"></div>
+                <p class="brand-tagline">Acesso seguro e confidencial</p>
+            </div>
+        </div>
+
+        <div class="login-form-panel">
+            <div class="login-card">
+                <div id="login-step-1">
+                    <h2>Bem-vindo de volta</h2>
+                    <p class="sub">Entre com suas credenciais para acessar.</p>
+                    <div class="form-group">
+                        <label>Usuário</label>
+                        <input type="text" id="login-username" placeholder="Digite o usuário…" autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <label>Senha</label>
+                        <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
+                    </div>
+                    <p id="login-error" class="err-msg"></p>
+                    <button type="button" id="login-btn" class="submit-btn">
+                        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                        Entrar
+                    </button>
+                    <div class="or-div">ou</div>
+                    <p style="text-align:center;font-size:.84rem;color:var(--text2);">Sem acesso? <a href="#" id="show-register-link" style="font-weight:700;">Solicitar cadastro</a></p>
+                </div>
+                <div id="login-step-2" style="display:none;">
+                    <div style="text-align:center;margin-bottom:1.5rem;">
+                        <div style="width:50px;height:50px;background:var(--primary-dim);border:1.5px solid var(--primary-b);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto .7rem;">
+                            <svg width="22" height="22" fill="none" stroke="var(--primary)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h2 style="font-family:'Outfit',sans-serif;font-size:1.3rem;">Verificação em 2 Etapas</h2>
+                        <p style="color:var(--text2);font-size:.81rem;margin-top:.3rem;">Digite o código de 6 dígitos do seu app autenticador.</p>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="login-2fa-code" placeholder="0 0 0 0 0 0" maxlength="6" autocomplete="one-time-code"
+                            style="text-align:center;font-size:1.75rem;letter-spacing:.6rem;font-family:monospace;padding:.7rem .5rem;">
+                    </div>
+                    <p id="login-2fa-error" class="err-msg"></p>
+                    <button type="button" id="login-2fa-btn" class="submit-btn">Verificar Código</button>
+                    <p style="text-align:center;margin-top:.8rem;"><a href="#" id="login-2fa-back" style="font-size:.79rem;color:var(--text2);text-decoration:underline;">← Voltar</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     REGISTER
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="register-overlay">
+    <div class="modal">
+        <div class="modal-logo">
+            <div class="modal-logo-box"><img src="logo.png?v=4" alt="Logo" style="width:30px;height:30px;object-fit:contain;"></div>
+        </div>
+        <h2>Solicitar Cadastro</h2>
+        <p class="modal-sub">Aguarde aprovação do administrador.</p>
+        <div class="form-group"><label>E-mail</label><input type="email" id="register-email" placeholder="seu@email.com"></div>
+        <div class="form-group"><label>Senha</label><input type="password" id="register-password" placeholder="Mín. 10 chars, maiúscula, número e símbolo"></div>
+        <div class="form-group"><label>Confirmar senha</label><input type="password" id="register-password-confirm" placeholder="Repita a senha"></div>
+        <p id="register-message" class="err-msg"></p>
+        <button type="button" id="register-btn" class="submit-btn">Solicitar Acesso</button>
+        <div class="or-div">ou</div>
+        <p style="text-align:center;font-size:.84rem;color:var(--text2);">Já tem acesso? <a href="#" id="show-login-link" style="font-weight:700;">Entrar</a></p>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     MINHA CONTA (2FA)
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="admin-overlay">
+    <div class="modal" style="max-width:480px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+            <div style="display:flex;align-items:center;gap:.6rem;">
+                <div style="width:26px;height:26px;background:var(--primary-dim);border:1px solid var(--primary-b);border-radius:var(--r);display:flex;align-items:center;justify-content:center;">
+                    <svg width="13" height="13" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <h2 style="font-size:1.05rem;font-family:'Outfit',sans-serif;margin:0;">Minha Conta</h2>
+            </div>
+            <button type="button" id="close-admin-btn" style="background:none;border:none;cursor:pointer;color:var(--text2);">
+                <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div id="admin-panel-security">
+            <div id="twofa-status-section">
+                <p style="font-size:.855rem;color:var(--text2);margin-bottom:1rem;">Gerencie a verificação em dois fatores (2FA).</p>
+                <div id="twofa-current-status" style="padding:.65rem 1rem;border-radius:var(--r);border:1px solid var(--border);margin-bottom:.8rem;font-size:.855rem;"></div>
+                <button id="twofa-toggle-btn" class="submit-btn" style="margin-bottom:.6rem;"></button>
+            </div>
+            <div id="twofa-setup-section" style="display:none;">
+                <p style="font-size:.84rem;color:var(--text2);margin-bottom:1rem;">1. Instale o Google Authenticator ou Authy.<br>2. Escaneie o QR code.<br>3. Confirme com o código.</p>
+                <div id="twofa-qr" style="display:flex;justify-content:center;margin:1rem 0;"></div>
+                <p style="font-size:.7rem;color:var(--text2);text-align:center;margin-bottom:.4rem;">Chave manual:</p>
+                <p id="twofa-secret-display" style="font-family:monospace;font-size:.82rem;text-align:center;background:var(--bg3);padding:.5rem;border-radius:var(--r);word-break:break-all;margin-bottom:1rem;"></p>
+                <div class="form-group"><label>Código de confirmação</label><input type="text" id="twofa-enable-code" placeholder="000000" maxlength="6" autocomplete="off" style="text-align:center;font-size:1.2rem;letter-spacing:.4rem;font-family:monospace;"></div>
+                <p id="twofa-enable-msg" class="err-msg"></p>
+                <button id="twofa-enable-btn" class="submit-btn" style="margin-bottom:.5rem;">Ativar 2FA</button>
+                <button id="twofa-setup-cancel" class="secondary-btn">Cancelar</button>
+            </div>
+            <div id="twofa-disable-section" style="display:none;">
+                <div class="form-group"><label>Código atual</label><input type="text" id="twofa-disable-code" placeholder="000000" maxlength="6" autocomplete="off" style="text-align:center;font-size:1.2rem;letter-spacing:.4rem;font-family:monospace;"></div>
+                <p id="twofa-disable-msg" class="err-msg"></p>
+                <button id="twofa-disable-btn" class="submit-btn" style="margin-bottom:.5rem;background:var(--error);">Desativar 2FA</button>
+                <button id="twofa-disable-cancel" class="secondary-btn">Cancelar</button>
+            </div>
+        </div>
+        <div style="border-top:1px solid var(--border);margin-top:1.2rem;padding-top:.95rem;">
+            <button onclick="if(typeof window._doLogout==='function')window._doLogout();" style="width:100%;background:none;border:1px solid rgba(248,113,113,.3);color:var(--error);padding:.52rem 1rem;border-radius:var(--r);cursor:pointer;font-weight:600;font-size:.84rem;display:flex;align-items:center;justify-content:center;gap:.5rem;">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sair da conta
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════════
+     APP SHELL
+══════════════════════════════════════════════════════════════════════════ -->
+<div id="app-shell">
+
+    <!-- ── Topbar ── -->
+    <div id="topbar">
+        <div class="tb-logo">
+            <img src="logo.png?v=4" alt="ReportGen" class="tb-logo-img">
+            <span class="tb-logo-name">ReportGen</span>
+            <span class="tb-logo-sep"></span>
+            <span class="tb-logo-sub">Canal de Denúncias</span>
+        </div>
+        <div class="tb-spacer"></div>
+        <div class="tb-actions">
+            <button class="tb-nav-btn" onclick="showHowItWorks()">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                Como funciona
+            </button>
+            <button id="open-admin-btn" class="tb-btn" style="display:none;" onclick="window.location.href='/admin.html'">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                Admin
+            </button>
+            <button id="theme-btn" class="tb-btn icon-only" title="Alternar tema">
+                <svg id="th-moon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                <svg id="th-sun"  width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </button>
+            <div id="user-pill" title="Minha Conta">
+                <div id="user-pill-avatar">U</div>
+                <span id="user-pill-name">Usuário</span>
+            </div>
+            <button id="logout-topbar-btn" class="tb-btn" title="Sair" onclick="if(typeof window._doLogout==='function')window._doLogout();">
+                <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                Sair
+            </button>
+        </div>
+    </div>
+
+    <div id="layout">
+
+        <!-- ── Sidebar ── -->
+        <nav id="sidebar">
+            <div class="nav-section-label">Menu</div>
+            <button class="nav-btn active" id="nav-home" onclick="setView('home')">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                Início
+            </button>
+            <button class="nav-btn" id="nav-report" onclick="setView('home'); setTimeout(function(){var el=document.getElementById('cat-grid');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},200)">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                Nova Denúncia
+            </button>
+            <button class="nav-btn" id="nav-history" onclick="setView('history')">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                Histórico
+            </button>
+
+            <div class="nav-sep"></div>
+            <div class="nav-section-label">Tipos</div>
+
+            <button class="nav-btn" onclick="setView('home'); setTimeout(function(){startReport('fsp');},50)">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                Fake Profile
+                <span class="nav-type-badge">FSP</span>
+            </button>
+            <button class="nav-btn" onclick="setView('home'); setTimeout(function(){startReport('efsp');},50)">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                Executivo Falso
+                <span class="nav-type-badge">EFSP</span>
+            </button>
+
+            <div class="nav-sep"></div>
+            <div class="sidebar-footer">
+                <div class="sidebar-badge">
+                    <div class="sidebar-badge-ico">
+                        <svg width="13" height="13" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <div>
+                        <div class="sidebar-badge-title">Canal Seguro</div>
+                        <div class="sidebar-badge-text">Todas as denúncias são criptografadas e confidenciais.</div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- ── Main ── -->
+        <div id="main-content">
+
+            <!-- HOME -->
+            <div id="view-home" class="view-anim">
+
+                <!-- Progress -->
+                <div id="progress-bar">
+                    <div class="prog-step active" id="prog-1">
+                        <div class="prog-num">1</div>
+                        <span>Categoria</span>
+                    </div>
+                    <div class="prog-line" id="prog-line-1"></div>
+                    <div class="prog-step" id="prog-2">
+                        <div class="prog-num">2</div>
+                        <span>Tipo</span>
+                    </div>
+                    <div class="prog-line" id="prog-line-2"></div>
+                    <div class="prog-step" id="prog-3">
+                        <div class="prog-num">3</div>
+                        <span>Denúncia</span>
+                    </div>
+                </div>
+
+                <!-- Hero -->
+                <div class="hero">
+                    <div class="hero-inner">
+                        <div class="hero-accent"></div>
+                        <div class="hero-body">
+                            <div class="hero-eyebrow">
+                                Canal de Denúncias Corporativo
+                                <span class="hero-eyebrow-live">Ativo</span>
+                            </div>
+                            <h1 class="hero-title">Reporte perfis falsos<br>de forma segura</h1>
+                            <p class="hero-desc">Identifique e reporte Fake Social Profiles e Executive Fake Profiles com agilidade, confidencialidade e rastreabilidade total.</p>
+                            <div class="hero-chips">
+                                <span class="chip" onclick="startReport('fsp')">
+                                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                                    Fake Profile (FSP)
+                                </span>
+                                <span class="chip" onclick="startReport('efsp')">
+                                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                                    Executivo Falso (EFSP)
+                                </span>
+                                <span class="chip" onclick="showHowItWorks()">
+                                    <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                    Como funciona
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="hero-stats">
+                        <div class="hero-stat">
+                            <div class="hero-stat-val">2</div>
+                            <div class="hero-stat-label">tipos de denúncia</div>
+                        </div>
+                        <div class="hero-stat-sep"></div>
+                        <div class="hero-stat">
+                            <div class="hero-stat-val">3</div>
+                            <div class="hero-stat-label">etapas simples</div>
+                        </div>
+                        <div class="hero-stat-sep"></div>
+                        <div class="hero-stat">
+                            <div class="hero-stat-val">100%</div>
+                            <div class="hero-stat-label">rastreável</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1 -->
+                <div class="step-card" id="cat-grid-card">
+                    <div class="step-header">
+                        <div class="step-num" id="step-num-1">1</div>
+                        <div>
+                            <div class="step-title">O que você deseja denunciar?</div>
+                            <div class="step-subtitle">Selecione o tipo de perfil falso identificado.</div>
+                        </div>
+                    </div>
+                    <div class="cat-grid" id="cat-grid">
+                        <div class="cat-card" id="cat-fsp" onclick="startReport('fsp')">
+                            <svg class="cat-arrow" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            <div class="cat-icon">
+                                <svg width="17" height="17" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                            </div>
+                            <div class="cat-tag">FSP</div>
+                            <div class="cat-name">Fake Social Profile</div>
+                            <div class="cat-desc">Perfil falso em redes sociais se passando pela marca.</div>
+                        </div>
+                        <div class="cat-card" id="cat-efsp" onclick="startReport('efsp')">
+                            <svg class="cat-arrow" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            <div class="cat-icon">
+                                <svg width="17" height="17" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                            </div>
+                            <div class="cat-tag">EFSP</div>
+                            <div class="cat-name">Executive Fake Profile</div>
+                            <div class="cat-desc">Perfil falso de executivo ou liderança corporativa.</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2 inline -->
+                    <div id="step2-area" style="display:none;">
+                        <div class="step2-divider"></div>
+                        <div class="step-header">
+                            <div class="step-num" style="background:var(--bg3);color:var(--primary);border:2px solid var(--primary);box-shadow:none;">2</div>
+                            <div>
+                                <div class="step-title">Como deseja fazer a denúncia?</div>
+                                <div class="step-subtitle">Escolha o tipo de notificação.</div>
+                            </div>
+                        </div>
+                        <div class="notif-grid" style="animation:fadeInUp .3s ease both;">
+                            <div class="notif-card" id="notif-first" onclick="selectNotif('sim')">
+                                <div class="notif-radio" id="radio-first"></div>
+                                <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.3rem;">
+                                    <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                                </div>
+                                <div class="notif-name">Primeira notificação</div>
+                                <div class="notif-desc">Denúncia inicial - perfil ainda não foi reportado anteriormente.</div>
+                            </div>
+                            <div class="notif-card" id="notif-renot" onclick="selectNotif('nao')">
+                                <div class="notif-radio" id="radio-renot"></div>
+                                <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.3rem;">
+                                    <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                                </div>
+                                <div class="notif-name">Renotificação</div>
+                                <div class="notif-desc">Seguimento de denúncia anterior que ainda está ativa.</div>
+                            </div>
+                        </div>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.4rem;">
+                            <span class="help-tip" onclick="showNotifDiff()">
+                                <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                                Qual a diferença?
+                            </span>
+                            <button class="btn-primary" id="step2-continue" onclick="goToReport()" disabled style="opacity:.38;transition:opacity .3s;">
+                                Preencher dados
+                                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /view-home -->
+
+            <!-- REPORT -->
+            <div id="view-report" style="display:none;" class="view-anim">
+                <div class="offer-indicator" id="offer-indicator">
+                    <div id="offer-ind-badge" class="offer-badge">FSP</div>
+                    <span id="offer-ind-text" style="font-size:.82rem;color:var(--text2);">Primeira notificação</span>
+                    <button class="offer-change-btn" onclick="setView('home')">
+                        <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
+                        Trocar
+                    </button>
+                </div>
+                <div class="form-section">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.95rem;">
+                        <h3 style="font-family:'Outfit',sans-serif;font-weight:700;font-size:.98rem;margin:0;">Dados da denúncia</h3>
+                        <button type="button" id="add-client-btn" class="btn-outline" onclick="addClient()" style="padding:.3rem .75rem;font-size:.78rem;">
+                            <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            Adicionar cliente
+                        </button>
+                    </div>
+                    <div id="clients-container"></div>
+                </div>
+                <div class="preview-section">
+                    <h3>
+                        Pré-visualização
+                        <button id="reset-template-btn" onclick="resetTemplate()" style="display:none;background:none;border:none;color:var(--primary);font-size:.77rem;cursor:pointer;text-decoration:underline;">Restaurar automático</button>
+                    </h3>
+                    <textarea id="preview-text" placeholder="Preencha os dados acima para gerar a pré-visualização…"></textarea>
+                </div>
+                <div class="action-bar">
+                    <button id="copy-btn" class="btn-outline" disabled>
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                        Copiar mensagem
+                    </button>
+                    <button id="submit-btn" class="btn-primary" disabled>
+                        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                        Enviar Denúncia
+                    </button>
+                </div>
+            </div>
+
+            <!-- HISTORY -->
+            <div id="view-history" style="display:none;" class="view-anim">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
+                    <div>
+                        <h2 style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1.05rem;margin:0;">Histórico de Denúncias</h2>
+                        <p style="font-size:.76rem;color:var(--text3);margin-top:.12rem;">Suas denúncias enviadas</p>
+                    </div>
+                    <button class="btn-outline" onclick="if(typeof window._loadHistory==='function')window._loadHistory();" style="padding:.3rem .75rem;font-size:.78rem;">
+                        <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-5.46-1.5"/></svg>
+                        Atualizar
+                    </button>
+                </div>
+                <div id="history-list">
+                    <div style="display:flex;flex-direction:column;gap:.6rem;">
+                        <div class="skeleton" style="height:70px;"></div>
+                        <div class="skeleton" style="height:70px;opacity:.65;"></div>
+                        <div class="skeleton" style="height:70px;opacity:.35;"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- /main-content -->
+    </div><!-- /layout -->
+</div><!-- /app-shell -->
+
+<div id="toast-container"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="script.js?v=10"></script>
+<script src="app.js?v=4"></script>
+
+<script>
+/* ── Animação de partículas flutuantes no brand-panel ───────────────────── */
+(function() {
+    var canvas = document.getElementById('brand-canvas');
+    if (!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var particles = [];
+    var W, H;
+
+    function resize() {
+        W = canvas.width  = canvas.offsetWidth;
+        H = canvas.height = canvas.offsetHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function rand(a, b) { return a + Math.random() * (b - a); }
+
+    for (var i = 0; i < 55; i++) {
+        particles.push({
+            x: rand(0, W || 400),
+            y: rand(0, H || 700),
+            r: rand(1, 2.8),
+            dx: rand(-0.18, 0.18),
+            dy: rand(-0.22, -0.06),
+            o: rand(0.08, 0.38),
+            pulse: rand(0, Math.PI * 2)
+        });
+    }
+
+    function draw() {
+        ctx.clearRect(0, 0, W, H);
+        var now = Date.now() / 1000;
+
+        /* linhas de conexão suaves */
+        for (var i = 0; i < particles.length; i++) {
+            for (var j = i + 1; j < particles.length; j++) {
+                var dx = particles[i].x - particles[j].x;
+                var dy = particles[i].y - particles[j].y;
+                var dist = Math.sqrt(dx*dx + dy*dy);
+                if (dist < 90) {
+                    ctx.beginPath();
+                    ctx.strokeStyle = 'rgba(255,255,255,' + (0.045 * (1 - dist/90)) + ')';
+                    ctx.lineWidth = .5;
+                    ctx.moveTo(particles[i].x, particles[i].y);
+                    ctx.lineTo(particles[j].x, particles[j].y);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        /* pontos */
+        particles.forEach(function(p) {
+            var pulse = 0.5 + 0.5 * Math.sin(now * 1.2 + p.pulse);
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(255,255,255,' + (p.o * (0.6 + 0.4 * pulse)) + ')';
+            ctx.fill();
+
+            p.x += p.dx;
+            p.y += p.dy;
+            if (p.y < -5)  { p.y = H + 5; p.x = rand(0, W); }
+            if (p.x < -5)  p.x = W + 5;
+            if (p.x > W+5) p.x = -5;
+        });
+
+        requestAnimationFrame(draw);
+    }
+    draw();
+})();
+</script>
+
+<!-- Modal: Como funciona -->
+<div id="how-it-works-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.52);align-items:center;justify-content:center;">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:560px;width:92%;padding:2rem;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.35);max-height:90vh;overflow-y:auto;">
+    <button onclick="document.getElementById('how-it-works-modal').style.display='none'" style="position:absolute;top:.9rem;right:1rem;background:none;border:none;cursor:pointer;color:var(--text2);font-size:1.25rem;line-height:1;">✕</button>
+    <h3 style="margin:0 0 1.4rem;font-size:1.05rem;font-weight:700;color:var(--text1);">Como funciona</h3>
+    <div style="display:flex;flex-direction:column;gap:.9rem;">
+      <div style="display:flex;gap:1rem;align-items:flex-start;">
+        <div style="min-width:2rem;height:2rem;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+        <div>
+          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Selecione o tipo de perfil falso</div>
+          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;">Escolha entre <strong>FSP</strong> (Fake Social Profile - perfil falso em redes sociais) ou <strong>EFSP</strong> (Executive Fake Profile - executivo ou liderança sendo falsificada).</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start;">
+        <div style="min-width:2rem;height:2rem;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+        <div>
+          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Informe se é primeira notificação ou renotificação</div>
+          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;"><strong>Primeira notificação:</strong> perfil ainda não denunciado. <strong>Renotificação:</strong> seguimento de denúncia anterior ainda ativa.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start;">
+        <div style="min-width:2rem;height:2rem;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+        <div>
+          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Preencha os dados da denúncia</div>
+          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;">Informe o nome do cliente, as URLs do perfil falso e a data. O sistema gera automaticamente o template formatado pronto para envio.</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:1rem;align-items:flex-start;">
+        <div style="min-width:2rem;height:2rem;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
+        <div>
+          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Copie e envie a denúncia</div>
+          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;">Copie o texto gerado e encaminhe pelo canal indicado (WhatsApp, e-mail ou plataforma da rede social). O histórico fica registrado para acompanhamento.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: diferença Primeira Notificação vs Renotificação -->
+<div id="notif-diff-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.52);align-items:center;justify-content:center;">
+  <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:520px;width:92%;padding:2rem;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.35);">
+    <button onclick="document.getElementById('notif-diff-modal').style.display='none'" style="position:absolute;top:.9rem;right:1rem;background:none;border:none;cursor:pointer;color:var(--text2);font-size:1.25rem;line-height:1;">✕</button>
+    <h3 style="margin:0 0 1.2rem;font-size:1.05rem;font-weight:700;color:var(--text1);">Qual a diferença?</h3>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+      <!-- Primeira Notificação -->
+      <div style="background:var(--bg3);border:1.5px solid var(--primary);border-radius:10px;padding:1rem;">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem;">
+          <svg width="16" height="16" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <strong style="font-size:.88rem;color:var(--primary);">Primeira notificação</strong>
+        </div>
+        <ul style="margin:0;padding:0 0 0 1.1rem;font-size:.82rem;color:var(--text2);line-height:1.7;">
+          <li>Perfil ainda não foi denunciado antes</li>
+          <li>Abertura de novo caso na plataforma</li>
+          <li>Inclui identificação completa do perfil</li>
+          <li>Template com linguagem de primeira ocorrência</li>
+        </ul>
+      </div>
+      <!-- Renotificação -->
+      <div style="background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;padding:1rem;">
+        <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem;">
+          <svg width="16" height="16" fill="none" stroke="var(--text1)" stroke-width="2" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+          <strong style="font-size:.88rem;color:var(--text1);">Renotificação</strong>
+        </div>
+        <ul style="margin:0;padding:0 0 0 1.1rem;font-size:.82rem;color:var(--text2);line-height:1.7;">
+          <li>Perfil já foi denunciado e continua ativo</li>
+          <li>Seguimento de caso já existente</li>
+          <li>Referencia a denúncia anterior</li>
+          <li>Template com linguagem de reincidência</li>
+        </ul>
+      </div>
+    </div>
+    <p style="margin:1rem 0 0;font-size:.79rem;color:var(--text3);text-align:center;">Em caso de dúvida, escolha <strong>Primeira notificação</strong> se for o primeiro reporte deste perfil.</p>
+  </div>
+</div>
+</body>
+</html>
