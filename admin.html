@@ -1056,7 +1056,7 @@ async function doLogout() {
 $('sidebar-logout').addEventListener('click', doLogout);
 
 /* ── Load data ──────────────────────────────────────────────────────────────── */
-async function loadAll() { await Promise.all([loadUsers(), loadLogs(), loadAdminStats()]); }
+async function loadAll() { await Promise.all([loadUsers(), loadLogs(), loadAdminStats(), loadTemplatesFromServer()]); }
 
 /* ── Users ──────────────────────────────────────────────────────────────────── */
 let allUsers = [];
@@ -1404,16 +1404,44 @@ const TPL_TITLES = {
   efsp_renot: 'Template EFSP - Renotificação',
 };
 
-// Load templates from localStorage or use defaults
-function loadTemplates() {
+// Cache local: so para pintar a tela antes da resposta do servidor.
+// A fonte de verdade e o KV, via /api/templates.
+function loadLocalTemplates() {
   try { return JSON.parse(localStorage.getItem('rg_templates') || '{}'); } catch(_) { return {}; }
 }
-function saveTemplates(t) {
+function cacheTemplates(t) {
   try { localStorage.setItem('rg_templates', JSON.stringify(t)); } catch(_) {}
 }
 
+// Busca os templates compartilhados no servidor e atualiza a tela.
+async function loadTemplatesFromServer() {
+  try {
+    const r = await api('/api/templates');
+    if (!r.ok) return;
+    const d = await r.json();
+    if (!d.success || !d.templates) return;
+    Object.assign(templates, d.templates);
+    cacheTemplates(templates);
+    setCurrentTemplate(currentTpl);
+  } catch(_) {}
+}
+
+// Grava no servidor. Retorna true se persistiu de verdade.
+async function saveTemplatesToServer(t) {
+  const r = await api('/api/admin/templates', {
+    method: 'POST',
+    body: JSON.stringify({ templates: t }),
+  });
+  if (!r.ok) {
+    let msg = 'Nao foi possivel salvar no servidor.';
+    try { const d = await r.json(); if (d && d.error) msg = d.error; } catch(_) {}
+    throw new Error(msg);
+  }
+  return true;
+}
+
 let currentTpl = 'fsp_first';
-const templates = { ...DEFAULT_TEMPLATES, ...loadTemplates() };
+const templates = { ...DEFAULT_TEMPLATES, ...loadLocalTemplates() };
 
 function getTemplate(key) { return templates[key] || DEFAULT_TEMPLATES[key] || ''; }
 
@@ -1444,25 +1472,34 @@ document.querySelectorAll('.tpl-tab').forEach(btn => {
   });
 });
 
-$('tpl-save-one-btn').addEventListener('click', () => {
+$('tpl-save-one-btn').addEventListener('click', async () => {
+  const btn = $('tpl-save-one-btn');
   templates[currentTpl] = $('tpl-editor').value;
-  saveTemplates(templates);
-  toast('Template salvo!', 'success');
+  btn.disabled = true;
+  try {
+    await saveTemplatesToServer({ [currentTpl]: templates[currentTpl] });
+    cacheTemplates(templates);
+    toast('Template salvo para toda a equipe!', 'success');
+  } catch (e) {
+    toast(e.message || 'Falha ao salvar no servidor.', 'error');
+  } finally {
+    btn.disabled = false;
+  }
 });
 
-$('save-templates-btn').addEventListener('click', () => {
+$('save-templates-btn').addEventListener('click', async () => {
+  const btn = $('save-templates-btn');
   templates[currentTpl] = $('tpl-editor').value;
-  saveTemplates(templates);
-  // Also try to push to server
-  api('/api/admin/templates', {
-    method: 'POST',
-    body: JSON.stringify(templates),
-  }).then(r => {
-    if (r.ok) toast('Todos os templates salvos no servidor!', 'success');
-    else toast('Salvo localmente (servidor não suporta /api/admin/templates ainda)', 'info');
-  }).catch(() => {
-    toast('Salvo localmente', 'info');
-  });
+  btn.disabled = true;
+  try {
+    await saveTemplatesToServer(templates);
+    cacheTemplates(templates);
+    toast('Todos os templates salvos para toda a equipe!', 'success');
+  } catch (e) {
+    toast(e.message || 'Falha ao salvar no servidor.', 'error');
+  } finally {
+    btn.disabled = false;
+  }
 });
 
 $('tpl-reset-btn').addEventListener('click', () => {
@@ -1476,7 +1513,7 @@ $('tpl-reset-btn').addEventListener('click', () => {
 $('tpl-preview-btn').addEventListener('click', () => {
   const txt = $('tpl-editor').value
     .replace(/\{cliente\}/g, 'Empresa Exemplo S.A.')
-    .replace(/\{urls\}/g, 'https://facebook.com/perfil-falso-exemplo\nhttps://instagram.com/outro-perfil-falso')
+    .replace(/\{urls\}/g, '- https://facebook.com/perfil-falso-exemplo\n- https://instagram.com/outro-perfil-falso')
     .replace(/\{data\}/g, new Date().toLocaleDateString('pt-BR'));
   $('tpl-preview-output').textContent = txt;
   $('tpl-preview-card').style.display = 'block';

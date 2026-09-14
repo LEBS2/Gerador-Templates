@@ -33,8 +33,11 @@ const USERS_KEY      = 'gt_users';
 const LOGS_KEY       = 'gt_logs';
 const ADMIN_LOGS_KEY = 'gt_admin_logs';
 const REPORTS_KEY    = 'gt_reports';
+const TEMPLATES_KEY  = 'gt_templates';
 const MAX_LOGS       = 500;
 const MAX_REPORTS    = 1000;
+const TPL_KEYS       = ['fsp_first', 'fsp_renot', 'efsp_first', 'efsp_renot'];
+const MAX_TPL_LEN    = 5000;
 const SESSION_TTL    = 60 * 60 * 8;   // 8 h
 const TEMP_2FA_TTL   = 60 * 5;        // 5 min
 
@@ -546,6 +549,53 @@ app.get('/api/reports', requireSession, async (req, res) => {
     const all    = await kv.get(REPORTS_KEY) || [];
     const mine   = req.session.isAdmin ? all : all.filter(r => r.email === req.session.email);
     res.json({ success: true, total: mine.length, reports: mine.slice(offset, offset + limit) });
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Templates de denuncia (compartilhados por toda a equipe, persistidos no KV)
+// ─────────────────────────────────────────────────────────────────────────────
+async function loadTemplates() {
+    const t = await kv.get(TEMPLATES_KEY);
+    return (t && typeof t === 'object' && !Array.isArray(t)) ? t : {};
+}
+
+// Qualquer usuario logado le os templates para gerar a denuncia.
+app.get('/api/templates', requireSession, async (req, res) => {
+    const templates = await loadTemplates();
+    res.json({ success: true, templates });
+});
+
+// Apenas admin grava. Aceita { templates: {...} } ou o objeto cru (compat).
+app.post('/api/admin/templates', requireAdmin, async (req, res) => {
+    const body     = req.body || {};
+    const incoming = (body.templates && typeof body.templates === 'object') ? body.templates : body;
+
+    if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) {
+        return res.status(400).json({ success: false, error: 'Formato invalido.' });
+    }
+
+    const clean = {};
+    for (const key of TPL_KEYS) {
+        if (!Object.prototype.hasOwnProperty.call(incoming, key)) continue;
+        const val = incoming[key];
+        if (typeof val !== 'string') {
+            return res.status(400).json({ success: false, error: `Template "${key}" deve ser texto.` });
+        }
+        if (val.length > MAX_TPL_LEN) {
+            return res.status(400).json({ success: false, error: `Template "${key}" excede ${MAX_TPL_LEN} caracteres.` });
+        }
+        clean[key] = val;
+    }
+
+    if (Object.keys(clean).length === 0) {
+        return res.status(400).json({ success: false, error: 'Nenhum template valido enviado.' });
+    }
+
+    const merged = { ...(await loadTemplates()), ...clean };
+    await kv.set(TEMPLATES_KEY, merged);
+    await writeAdminLog({ action: 'templates_update', email: req.session.email, keys: Object.keys(clean) });
+
+    res.json({ success: true, templates: merged });
 });
 
 // helpers: resolve user object para qualquer tipo (kv ou admin-env)
