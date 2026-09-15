@@ -70,6 +70,27 @@ function isStrongPassword(password) {
         && /[^A-Za-z0-9]/.test(password);
 }
 
+// Gera uma senha temporaria forte e aleatoria (sempre passa em isStrongPassword)
+// - usada pelo admin ao resetar a senha de um usuario.
+function generateTempPassword() {
+    const UPPER   = 'ABCDEFGHJKLMNPQRSTUVWXYZ'; // sem I/O (evita confusao visual)
+    const LOWER   = 'abcdefghijkmnpqrstuvwxyz';
+    const DIGITS  = '23456789';
+    const SYMBOLS = '!@#$%&*-_+=?';
+    const ALL     = UPPER + LOWER + DIGITS + SYMBOLS;
+    const pick = (set) => set[crypto.randomInt(set.length)];
+
+    const chars = [pick(UPPER), pick(LOWER), pick(DIGITS), pick(SYMBOLS)];
+    while (chars.length < 14) chars.push(pick(ALL));
+
+    // embaralha (Fisher-Yates) usando RNG criptografico
+    for (let i = chars.length - 1; i > 0; i--) {
+        const j = crypto.randomInt(i + 1);
+        [chars[i], chars[j]] = [chars[j], chars[i]];
+    }
+    return chars.join('');
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Helpers: TOTP (RFC 6238) - zero dependencias externas
 // ─────────────────────────────────────────────────────────────────────────────
@@ -147,16 +168,32 @@ function verifyToken(token) {
         return JSON.parse(data);
     } catch { return null; }
 }
-async function createSession(email, isAdmin) {
+// `epoch` amarra a sessao a versao atual da senha do usuario (user.sessionEpoch).
+// Quando o admin reseta a senha (ou o usuario a troca), o epoch e incrementado e
+// todas as sessoes antigas (criadas com o epoch anterior) passam a ser invalidas.
+async function createSession(email, isAdmin, epoch = 0) {
     const token = signToken({ email, isAdmin, iat: Date.now() });
-    await kv.set(`gt_sess:${token}`, { email, isAdmin }, { ex: SESSION_TTL });
+    await kv.set(`gt_sess:${token}`, { email, isAdmin, epoch }, { ex: SESSION_TTL });
     return token;
 }
 async function getSession(token) {
     if (!token) return null;
     const payload = verifyToken(token);
     if (!payload) return null;
-    return await kv.get(`gt_sess:${token}`);
+    const sess = await kv.get(`gt_sess:${token}`);
+    if (!sess) return null;
+
+    // Admin via env nao tem registro em gt_users - nao se aplica o controle de epoch.
+    if (!(ADMIN_USER && sess.email === ADMIN_USER)) {
+        const users       = await loadUsers();
+        const user        = users.find(u => u.email === sess.email);
+        const currentEpoch = user?.sessionEpoch || 0;
+        if ((sess.epoch || 0) !== currentEpoch) {
+            await kv.del(`gt_sess:${token}`); // sessao obsoleta (senha foi resetada/trocada)
+            return null;
+        }
+    }
+    return sess;
 }
 async function deleteSession(token) {
     if (token) await kv.del(`gt_sess:${token}`);
@@ -450,8 +487,14 @@ app.post('/api/login', async (req, res) => {
         return res.json({ success: true, requires2fa: true, tempToken });
     }
 
-    const token = await createSession(normalizedEmail, user.isAdmin === true);
-    res.json({ success: true, token, isAdmin: user.isAdmin === true, requires2fa: false });
+    const token = await createSession(normalizedEmail, user.isAdmin === true, user.sessionEpoch || 0);
+    res.json({
+        success: true,
+        token,
+        isAdmin: user.isAdmin === true,
+        requires2fa: false,
+        mustChangePassword: !!user.mustChangePassword
+    });
 });
 
 // Login fator 2 - verificar TOTP
@@ -481,8 +524,13 @@ app.post('/api/2fa/verify-login', async (req, res) => {
         return res.status(401).json({ success: false, error: 'Codigo incorreto. Verifique seu aplicativo autenticador.' });
     }
 
-    const token = await createSession(data.email, data.isAdmin);
-    res.json({ success: true, token, isAdmin: data.isAdmin });
+    const token = await createSession(data.email, data.isAdmin, user.sessionEpoch || 0);
+    res.json({
+        success: true,
+        token,
+        isAdmin: data.isAdmin,
+        mustChangePassword: !!user.mustChangePassword
+    });
 });
 
 // Cadastro
@@ -552,6 +600,54 @@ app.post('/api/send-report', requireSession, async (req, res) => {
         console.error('Erro ao salvar denúncia:', error.message);
         res.status(500).json({ success: false, error: 'Falha ao registrar. Tente novamente.' });
     }
+});
+
+// Usuario troca a propria senha (fluxo pos-reset do admin, ou troca voluntaria).
+// Exige a senha atual mesmo com sessao valida, para evitar que uma sessao
+// sequestrada troque a senha silenciosamente. Gera uma nova sessao (novo epoch),
+// entao a sessao antiga (inclusive a usada nesta propria chamada) deixa de valer.
+app.post('/api/change-password', requireSession, async (req, res) => {
+    const ip = getIp(req);
+    if (await checkRateLimit(`chpw:${ip}:${req.session.email}`, 10, 3600)) {
+        return res.status(429).json({ success: false, error: 'Muitas tentativas. Aguarde 1 hora.' });
+    }
+
+    const { currentPassword, newPassword } = req.body || {};
+    if (!currentPassword || !newPassword) {
+        return res.status(400).json({ success: false, error: 'Preencha a senha atual e a nova senha.' });
+    }
+    if (!isStrongPassword(newPassword)) {
+        return res.status(400).json({ success: false, error: 'A nova senha deve ter pelo menos 10 caracteres, incluindo maiúscula, minúscula, número e símbolo.' });
+    }
+
+    const email = req.session.email;
+    if (ADMIN_USER && email === ADMIN_USER) {
+        return res.status(400).json({ success: false, error: 'A senha do administrador principal e definida por variavel de ambiente.' });
+    }
+
+    const users = await loadUsers();
+    const user  = users.find(u => u.email === email);
+    if (!user) return res.status(404).json({ success: false, error: 'Usuario nao encontrado.' });
+
+    if (!verifyPassword(currentPassword, user.salt, user.hash)) {
+        return res.status(401).json({ success: false, error: 'Senha atual incorreta.' });
+    }
+    if (verifyPassword(newPassword, user.salt, user.hash)) {
+        return res.status(400).json({ success: false, error: 'A nova senha deve ser diferente da atual.' });
+    }
+
+    const { salt, hash } = hashPassword(newPassword);
+    user.salt               = salt;
+    user.hash                = hash;
+    user.mustChangePassword  = false;
+    user.sessionEpoch        = (user.sessionEpoch || 0) + 1;
+    await saveUsers(users);
+    await writeAdminLog({ actor: email, action: 'change-password', target: email });
+
+    // Nova sessao (com o epoch atualizado) para o cliente continuar logado sem
+    // precisar refazer login - as demais sessoes antigas ficam invalidas.
+    const token = await createSession(email, user.isAdmin === true, user.sessionEpoch);
+    res.json({ success: true, token });
 });
 
 // Histórico de denúncias do usuário
@@ -683,8 +779,8 @@ app.get('/api/2fa/status', requireSession, async (req, res) => {
 // =============================================================================
 
 app.get('/api/admin/users', requireAdmin, async (req, res) => {
-    const users = (await loadUsers()).map(({ id, email, status, isAdmin, createdAt, ip, twofa, failedAttempts, lockedUntil }) =>
-        ({ id, email, status, isAdmin: !!isAdmin, createdAt, ip, has2fa: !!(twofa?.enabled), failedAttempts: failedAttempts || 0, lockedUntil: lockedUntil || null })
+    const users = (await loadUsers()).map(({ id, email, status, isAdmin, createdAt, ip, twofa, failedAttempts, lockedUntil, mustChangePassword }) =>
+        ({ id, email, status, isAdmin: !!isAdmin, createdAt, ip, has2fa: !!(twofa?.enabled), failedAttempts: failedAttempts || 0, lockedUntil: lockedUntil || null, mustChangePassword: !!mustChangePassword })
     );
     res.json({ success: true, users });
 });
@@ -763,6 +859,37 @@ app.post('/api/admin/reset-2fa', requireAdmin, async (req, res) => {
     await saveUsers(users);
     await writeAdminLog({ actor: req.session.email, action: 'reset-2fa', target: email });
     res.json({ success: true });
+});
+
+// Admin: gera uma senha temporaria para um usuario.
+// - O admin nunca define a senha final: a conta fica marcada como
+//   "precisa trocar a senha" e, no proximo login, o usuario e obrigado
+//   a definir uma senha nova (que so ele conhece) antes de acessar o app.
+// - Todas as sessoes ativas do usuario sao invalidadas na hora (sessionEpoch++).
+app.post('/api/admin/reset-password', requireAdmin, async (req, res) => {
+    const email = String(req.body?.email || '').trim().toLowerCase();
+    if (ADMIN_USER && email === ADMIN_USER) {
+        return res.status(400).json({ success: false, error: 'A senha do administrador principal nao pode ser resetada por aqui.' });
+    }
+
+    const users = await loadUsers();
+    const user  = users.find(u => u.email === email);
+    if (!user) return res.status(404).json({ success: false, error: 'Usuario nao encontrado.' });
+
+    const tempPassword    = generateTempPassword();
+    const { salt, hash }  = hashPassword(tempPassword);
+    user.salt               = salt;
+    user.hash                = hash;
+    user.mustChangePassword  = true;
+    user.sessionEpoch        = (user.sessionEpoch || 0) + 1;
+    user.failedAttempts      = 0;
+    user.lockedUntil         = null;
+    await saveUsers(users);
+    await writeAdminLog({ actor: req.session.email, action: 'reset-password', target: email });
+
+    // A senha temporaria so aparece aqui, uma unica vez - nao fica salva em texto puro
+    // em lugar nenhum (nem nos logs) e o admin precisa repassa-la ao usuario por fora do sistema.
+    res.json({ success: true, tempPassword });
 });
 
 // Logs de acesso

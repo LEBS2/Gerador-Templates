@@ -295,16 +295,26 @@ function onLoginSuccess(token, isAdmin, userEmail) {
     }
 }
 
-// ─── Login passo 1 / 2 ────────────────────────────────────────────────────────
+// ─── Login passo 1 / 2 / 3 (troca obrigatoria de senha apos reset do admin) ───
 let _pending2faToken = null;
+let _pendingCurrentPassword = null; // senha usada pra logar - reaproveitada no passo 3
+let _pendingIsAdmin = false;
+let _pendingUserEmail = '';
 
 function showLoginStep(step) {
     document.getElementById('login-step-1').style.display = step === 1 ? 'block' : 'none';
     document.getElementById('login-step-2').style.display = step === 2 ? 'block' : 'none';
+    document.getElementById('login-step-3').style.display = step === 3 ? 'block' : 'none';
     if (step === 2) {
         document.getElementById('login-2fa-code').value = '';
         document.getElementById('login-2fa-error').style.display = 'none';
         setTimeout(() => document.getElementById('login-2fa-code').focus(), 100);
+    }
+    if (step === 3) {
+        document.getElementById('login-newpw').value = '';
+        document.getElementById('login-newpw-confirm').value = '';
+        document.getElementById('login-changepw-error').style.display = 'none';
+        setTimeout(() => document.getElementById('login-newpw').focus(), 100);
     }
 }
 
@@ -328,12 +338,21 @@ document.getElementById('login-btn').addEventListener('click', async () => {
         });
         const data = await resp.json();
 
+        _pendingCurrentPassword = passVal;
+        _pendingUserEmail = userVal;
+
         if (data.success && data.requires2fa) {
             _pending2faToken = data.tempToken;
             showLoginStep(2);
+        } else if (data.success && data.mustChangePassword) {
+            saveToken(data.token);
+            _pendingIsAdmin = data.isAdmin;
+            showLoginStep(3);
         } else if (data.success) {
+            _pendingCurrentPassword = null;
             onLoginSuccess(data.token, data.isAdmin, userVal);
         } else {
+            _pendingCurrentPassword = null;
             errorMsg.textContent = data.error || 'E-mail ou senha incorretos.';
             errorMsg.style.display = 'block';
         }
@@ -360,9 +379,15 @@ document.getElementById('login-2fa-btn').addEventListener('click', async () => {
             body: JSON.stringify({ tempToken: _pending2faToken, code })
         });
         const data = await resp.json();
-        if (data.success) {
+        if (data.success && data.mustChangePassword) {
             _pending2faToken = null;
-            onLoginSuccess(data.token, data.isAdmin, '');
+            saveToken(data.token);
+            _pendingIsAdmin = data.isAdmin;
+            showLoginStep(3);
+        } else if (data.success) {
+            _pending2faToken = null;
+            _pendingCurrentPassword = null;
+            onLoginSuccess(data.token, data.isAdmin, _pendingUserEmail);
         } else {
             errEl.textContent = data.error || 'Código incorreto.';
             errEl.style.display = 'block';
@@ -385,6 +410,54 @@ document.getElementById('login-2fa-back').addEventListener('click', (e) => {
 
 document.getElementById('login-password').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') document.getElementById('login-btn').click();
+});
+
+// ─── Login passo 3: troca obrigatoria de senha (apos reset feito pelo admin) ──
+document.getElementById('login-changepw-btn').addEventListener('click', async () => {
+    const p1    = document.getElementById('login-newpw').value;
+    const p2    = document.getElementById('login-newpw-confirm').value;
+    const errEl = document.getElementById('login-changepw-error');
+    errEl.style.display = 'none';
+
+    if (p1 !== p2) {
+        errEl.textContent = 'As senhas não coincidem.';
+        errEl.style.display = 'block';
+        return;
+    }
+    const strong = p1.length >= 10 && /[A-Z]/.test(p1) && /[a-z]/.test(p1) && /[0-9]/.test(p1) && /[^A-Za-z0-9]/.test(p1);
+    if (!strong) {
+        errEl.textContent = 'A senha deve ter pelo menos 10 caracteres, com maiúscula, minúscula, número e símbolo.';
+        errEl.style.display = 'block';
+        return;
+    }
+
+    try {
+        const resp = await fetch(`${API_BASE}/api/change-password`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
+            body: JSON.stringify({ currentPassword: _pendingCurrentPassword, newPassword: p1 })
+        });
+        const data = await resp.json();
+        if (data.success) {
+            saveToken(data.token);
+            const isAdmin = _pendingIsAdmin;
+            const email   = _pendingUserEmail;
+            _pendingCurrentPassword = null;
+            _pendingIsAdmin = false;
+            _pendingUserEmail = '';
+            onLoginSuccess(data.token, isAdmin, email);
+        } else {
+            errEl.textContent = data.error || 'Erro ao definir a nova senha.';
+            errEl.style.display = 'block';
+        }
+    } catch {
+        errEl.textContent = 'Erro de conexão. Tente novamente.';
+        errEl.style.display = 'block';
+    }
+});
+
+document.getElementById('login-newpw-confirm').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') document.getElementById('login-changepw-btn').click();
 });
 
 // ─── Alternar login / cadastro ────────────────────────────────────────────────

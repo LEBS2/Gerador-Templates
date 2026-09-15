@@ -944,6 +944,35 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
   </div>
 </div>
 
+<div id="resetpw-modal" style="display:none;" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="resetpw-modal-title">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="resetpw-modal-title">Senha temporária gerada</div>
+      <button class="modal-close" id="resetpw-modal-close" aria-label="Fechar">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <div class="form-label">Usuário</div>
+        <div class="form-value" id="resetpw-modal-email">-</div>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <div class="form-label">Senha temporária</div>
+        <div style="display:flex;gap:.5rem;">
+          <input type="text" id="resetpw-modal-value" readonly class="mono" style="flex:1;padding:.55rem .7rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;">
+          <button class="btn-secondary" id="resetpw-modal-copy" type="button" style="white-space:nowrap;">Copiar</button>
+        </div>
+        <div style="margin-top:.65rem;padding:.6rem .75rem;background:var(--amber-bg);border:1px solid rgba(245,158,11,.25);border-radius:var(--r);font-size:.75rem;color:var(--text2);">
+          <svg width="12" height="12" fill="none" stroke="var(--amber)" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:.3rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          Essa senha só aparece agora - repasse ao usuário por um canal seguro (fora do sistema). No próximo login, ele será obrigado a definir uma senha nova, que só ele vai conhecer.
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" id="resetpw-modal-done">Concluído</button>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 const $ = id => document.getElementById(id);
@@ -1154,7 +1183,7 @@ function renderUsers() {
   }
   tbody.innerHTML = filtered.map(u => `
     <tr>
-      <td><span class="mono">${esc(u.email)}</span></td>
+      <td><span class="mono">${esc(u.email)}</span>${u.mustChangePassword ? ' <span class="badge badge-amber" title="Senha temporaria - aguardando troca pelo usuario">Troca pendente</span>' : ''}</td>
       <td>${userBadge(u.status)}</td>
       <td>${u.isAdmin ? '<span class="badge badge-purple">Admin</span>' : '<span class="badge badge-gray">Usuário</span>'}</td>
       <td>${u.has2fa ? '<span class="badge badge-blue">Ativo</span>' : '<span class="badge badge-gray">Off</span>'}</td>
@@ -1170,6 +1199,7 @@ function renderUsers() {
           ${u.status !== 'denied'   ? `<button class="action-btn danger"  title="Negar"  onclick="userAction('${esc(u.email)}','deny')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
           ${parseInt(u.failedAttempts)>0 ? `<button class="action-btn" title="Desbloquear conta" onclick="userAction('${esc(u.email)}','unlock')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>` : ''}
           ${u.has2fa ? `<button class="action-btn" title="Resetar 2FA" onclick="userAction('${esc(u.email)}','reset2fa')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button>` : ''}
+          ${u.status === 'approved' ? `<button class="action-btn" title="Resetar senha" onclick="resetUserPassword('${esc(u.email)}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></button>` : ''}
           <button class="action-btn danger" title="Remover" onclick="userAction('${esc(u.email)}','delete')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
         </div>
       </td>
@@ -1196,6 +1226,33 @@ async function userAction(email, action) {
     if (r.ok) loadUsers();
   } catch { toast('Erro de rede','error'); }
 }
+
+/* ── Resetar senha (gera temporaria + mostra num modal) ──────────────────── */
+async function resetUserPassword(email) {
+  if (!confirm(`Gerar uma senha temporária para "${email}"?\n\nTodas as sessões ativas desse usuário serão encerradas e ele precisará trocar a senha no próximo login.`)) return;
+  try {
+    const r = await api('/api/admin/reset-password', { method: 'POST', body: JSON.stringify({ email }) });
+    const d = await r.json();
+    if (!r.ok || !d.success) { toast(d.error || 'Erro ao resetar senha', 'error'); return; }
+    $('resetpw-modal-email').textContent = email;
+    $('resetpw-modal-value').value = d.tempPassword;
+    $('resetpw-modal').style.display = 'flex';
+    loadUsers();
+  } catch { toast('Erro de rede','error'); }
+}
+
+$('resetpw-modal-copy').addEventListener('click', () => {
+  navigator.clipboard.writeText($('resetpw-modal-value').value).then(() => {
+    toast('Senha copiada','success');
+  }).catch(() => toast('Não foi possível copiar','error'));
+});
+function closeResetPwModal() {
+  $('resetpw-modal').style.display = 'none';
+  $('resetpw-modal-value').value = '';
+}
+$('resetpw-modal-close').addEventListener('click', closeResetPwModal);
+$('resetpw-modal-done').addEventListener('click', closeResetPwModal);
+$('resetpw-modal').addEventListener('click', e => { if (e.target === $('resetpw-modal')) closeResetPwModal(); });
 
 /* ── Modal editar usuário ───────────────────────────────────────────────────── */
 let editTargetEmail = null;
