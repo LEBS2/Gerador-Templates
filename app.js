@@ -81,8 +81,23 @@ function startReport(tipo) {
     /* rola imediatamente (sem smooth) para o passo 2 ficar visível */
     setTimeout(function(){
         area.scrollIntoView({ behavior: 'instant', block: 'nearest' });
-        toast('Agora escolha o tipo de notificação abaixo ↓', 'info');
+        showStep2Hint();
     }, 80);
+}
+
+/* Mostra o aviso "Escolha o tipo de notificação" no campo superior direito
+   do passo 2 (em vez de um toast flutuante que podia empilhar/duplicar
+   quando o usuário trocava de oferta rapidamente). */
+var _step2HintTimeout = null;
+function showStep2Hint() {
+    var hint = document.getElementById('step2-hint');
+    if (!hint) return;
+    if (_step2HintTimeout) { clearTimeout(_step2HintTimeout); _step2HintTimeout = null; }
+    hint.classList.add('show');
+    _step2HintTimeout = setTimeout(function(){
+        hint.classList.remove('show');
+        _step2HintTimeout = null;
+    }, 4000);
 }
 
 function selectNotif(val) {
@@ -93,6 +108,9 @@ function selectNotif(val) {
     if (nr) nr.classList.toggle('selected', val === 'nao');
     var btn = document.getElementById('step2-continue');
     if (btn) { btn.disabled = false; btn.style.opacity = '1'; }
+    if (_step2HintTimeout) { clearTimeout(_step2HintTimeout); _step2HintTimeout = null; }
+    var hint = document.getElementById('step2-hint');
+    if (hint) hint.classList.remove('show');
 }
 
 function goToReport() {

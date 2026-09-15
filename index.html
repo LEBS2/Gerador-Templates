@@ -386,6 +386,16 @@ button,input,select,textarea{font-family:inherit}
 
 .step2-divider{height:1px;background:var(--border);margin:1.15rem 0;}
 
+.step2-hint{
+    font-size:.76rem;font-weight:600;color:var(--primary);text-align:right;
+    white-space:nowrap;opacity:0;transform:translateY(-4px);
+    transition:opacity .3s ease,transform .3s ease;flex-shrink:0;
+}
+.step2-hint.show{opacity:1;transform:translateY(0);}
+@media (max-width:520px){
+    .step2-hint{white-space:normal;text-align:left;margin-top:.3rem;}
+}
+
 /* ════════════════════════════════════════
    HELP TIP
 ════════════════════════════════════════ */
@@ -1000,12 +1010,15 @@ button,input,select,textarea{font-family:inherit}
                     <!-- Step 2 inline -->
                     <div id="step2-area" style="display:none;">
                         <div class="step2-divider"></div>
-                        <div class="step-header">
-                            <div class="step-num" style="background:var(--bg3);color:var(--primary);border:2px solid var(--primary);box-shadow:none;">2</div>
-                            <div>
-                                <div class="step-title">Como deseja fazer a denúncia?</div>
-                                <div class="step-subtitle">Escolha o tipo de notificação.</div>
+                        <div class="step-header" style="justify-content:space-between;">
+                            <div style="display:flex;align-items:flex-start;gap:.85rem;">
+                                <div class="step-num" style="background:var(--bg3);color:var(--primary);border:2px solid var(--primary);box-shadow:none;">2</div>
+                                <div>
+                                    <div class="step-title">Como deseja fazer a denúncia?</div>
+                                    <div class="step-subtitle">Escolha o tipo de notificação.</div>
+                                </div>
                             </div>
+                            <div id="step2-hint" class="step2-hint">Escolha o tipo de notificação abaixo ↓</div>
                         </div>
                         <div class="notif-grid" style="animation:fadeInUp .3s ease both;">
                             <div class="notif-card" id="notif-first" onclick="selectNotif('sim')">
