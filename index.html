@@ -772,6 +772,25 @@ button,input,select,textarea{font-family:inherit}
                     <p id="login-changepw-error" class="err-msg"></p>
                     <button type="button" id="login-changepw-btn" class="submit-btn">Definir nova senha e entrar</button>
                 </div>
+                <div id="login-step-4" style="display:none;">
+                    <div style="text-align:center;margin-bottom:1.2rem;">
+                        <div style="width:50px;height:50px;background:var(--primary-dim);border:1.5px solid var(--primary-b);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto .7rem;">
+                            <svg width="22" height="22" fill="none" stroke="var(--primary)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        </div>
+                        <h2 style="font-family:'Outfit',sans-serif;font-size:1.3rem;">Ative a verificação em 2 etapas</h2>
+                        <p style="color:var(--text2);font-size:.81rem;margin-top:.3rem;">Por segurança, todas as contas precisam ter 2FA ativo. Configure agora para continuar.</p>
+                    </div>
+                    <p style="font-size:.84rem;color:var(--text2);margin-bottom:1rem;">1. Instale o Google Authenticator ou Authy.<br>2. Escaneie o QR code.<br>3. Confirme com o código.</p>
+                    <div id="login-mfa-qr" style="display:flex;justify-content:center;margin:1rem 0;"></div>
+                    <p style="font-size:.7rem;color:var(--text2);text-align:center;margin-bottom:.4rem;">Chave manual:</p>
+                    <p id="login-mfa-secret" style="font-family:monospace;font-size:.82rem;text-align:center;background:var(--bg3);padding:.5rem;border-radius:var(--r);word-break:break-all;margin-bottom:1rem;"></p>
+                    <div class="form-group">
+                        <label>Código de confirmação</label>
+                        <input type="text" id="login-mfa-code" placeholder="000000" maxlength="6" autocomplete="off" style="text-align:center;font-size:1.2rem;letter-spacing:.4rem;font-family:monospace;">
+                    </div>
+                    <p id="login-mfa-error" class="err-msg"></p>
+                    <button type="button" id="login-mfa-btn" class="submit-btn">Ativar 2FA e entrar</button>
+                </div>
             </div>
         </div>
     </div>

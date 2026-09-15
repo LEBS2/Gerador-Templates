@@ -451,7 +451,13 @@ app.post('/api/login', async (req, res) => {
             return res.json({ success: true, requires2fa: true, tempToken });
         }
         const token = await createSession(email, true);
-        return res.json({ success: true, token, isAdmin: true, requires2fa: false });
+        return res.json({
+            success: true,
+            token,
+            isAdmin: true,
+            requires2fa: false,
+            mfaSetupRequired: !adminUser?.twofa?.enabled
+        });
     }
 
     const normalizedEmail = String(email).trim().toLowerCase();
@@ -493,7 +499,10 @@ app.post('/api/login', async (req, res) => {
         token,
         isAdmin: user.isAdmin === true,
         requires2fa: false,
-        mustChangePassword: !!user.mustChangePassword
+        mustChangePassword: !!user.mustChangePassword,
+        // 2FA obrigatorio: se o usuario chegou ate aqui (sem requires2fa) e nao tem
+        // 2FA ativo, precisa configurar antes de acessar o app.
+        mfaSetupRequired: !user.twofa?.enabled
     });
 });
 
@@ -647,7 +656,11 @@ app.post('/api/change-password', requireSession, async (req, res) => {
     // Nova sessao (com o epoch atualizado) para o cliente continuar logado sem
     // precisar refazer login - as demais sessoes antigas ficam invalidas.
     const token = await createSession(email, user.isAdmin === true, user.sessionEpoch);
-    res.json({ success: true, token });
+    res.json({
+        success: true,
+        token,
+        mfaSetupRequired: !user.twofa?.enabled
+    });
 });
 
 // Histórico de denúncias do usuário

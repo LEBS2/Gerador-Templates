@@ -305,6 +305,7 @@ function showLoginStep(step) {
     document.getElementById('login-step-1').style.display = step === 1 ? 'block' : 'none';
     document.getElementById('login-step-2').style.display = step === 2 ? 'block' : 'none';
     document.getElementById('login-step-3').style.display = step === 3 ? 'block' : 'none';
+    document.getElementById('login-step-4').style.display = step === 4 ? 'block' : 'none';
     if (step === 2) {
         document.getElementById('login-2fa-code').value = '';
         document.getElementById('login-2fa-error').style.display = 'none';
@@ -315,6 +316,37 @@ function showLoginStep(step) {
         document.getElementById('login-newpw-confirm').value = '';
         document.getElementById('login-changepw-error').style.display = 'none';
         setTimeout(() => document.getElementById('login-newpw').focus(), 100);
+    }
+    if (step === 4) {
+        document.getElementById('login-mfa-code').value = '';
+        document.getElementById('login-mfa-error').style.display = 'none';
+        setTimeout(() => document.getElementById('login-mfa-code').focus(), 100);
+    }
+}
+
+// Busca um segredo novo de 2FA e mostra o passo 4 (setup obrigatorio de MFA).
+async function startMandatoryMfaSetup() {
+    try {
+        const resp = await fetch(`${API_BASE}/api/2fa/setup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders() }
+        });
+        const data = await resp.json();
+        if (!data.success) {
+            alert(data.error || 'Erro ao iniciar configuração de 2FA.');
+            return;
+        }
+        document.getElementById('login-mfa-secret').textContent = data.secret;
+        const qrDiv = document.getElementById('login-mfa-qr');
+        qrDiv.innerHTML = '';
+        if (typeof QRCode !== 'undefined') {
+            new QRCode(qrDiv, { text: data.uri, width: 180, height: 180, colorDark: '#E6EDF3', colorLight: '#161B22' });
+        } else {
+            qrDiv.textContent = 'QR Code indisponível. Use a chave manual.';
+        }
+        showLoginStep(4);
+    } catch {
+        alert('Não foi possível conectar ao servidor para configurar o 2FA.');
     }
 }
 
@@ -348,6 +380,11 @@ document.getElementById('login-btn').addEventListener('click', async () => {
             saveToken(data.token);
             _pendingIsAdmin = data.isAdmin;
             showLoginStep(3);
+        } else if (data.success && data.mfaSetupRequired) {
+            saveToken(data.token);
+            _pendingCurrentPassword = null;
+            _pendingIsAdmin = data.isAdmin;
+            startMandatoryMfaSetup();
         } else if (data.success) {
             _pendingCurrentPassword = null;
             onLoginSuccess(data.token, data.isAdmin, userVal);
@@ -384,6 +421,12 @@ document.getElementById('login-2fa-btn').addEventListener('click', async () => {
             saveToken(data.token);
             _pendingIsAdmin = data.isAdmin;
             showLoginStep(3);
+        } else if (data.success && data.mfaSetupRequired) {
+            _pending2faToken = null;
+            saveToken(data.token);
+            _pendingCurrentPassword = null;
+            _pendingIsAdmin = data.isAdmin;
+            startMandatoryMfaSetup();
         } else if (data.success) {
             _pending2faToken = null;
             _pendingCurrentPassword = null;
@@ -438,7 +481,10 @@ document.getElementById('login-changepw-btn').addEventListener('click', async ()
             body: JSON.stringify({ currentPassword: _pendingCurrentPassword, newPassword: p1 })
         });
         const data = await resp.json();
-        if (data.success) {
+        if (data.success && data.mfaSetupRequired) {
+            saveToken(data.token);
+            startMandatoryMfaSetup();
+        } else if (data.success) {
             saveToken(data.token);
             const isAdmin = _pendingIsAdmin;
             const email   = _pendingUserEmail;
@@ -458,6 +504,46 @@ document.getElementById('login-changepw-btn').addEventListener('click', async ()
 
 document.getElementById('login-newpw-confirm').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') document.getElementById('login-changepw-btn').click();
+});
+
+// ─── Login passo 4: cadastro obrigatorio de MFA (2FA) para quem ainda nao tem ──
+document.getElementById('login-mfa-btn').addEventListener('click', async () => {
+    const code  = document.getElementById('login-mfa-code').value.trim();
+    const errEl = document.getElementById('login-mfa-error');
+    errEl.style.display = 'none';
+
+    if (!/^\d{6}$/.test(code)) {
+        errEl.textContent = 'O código deve ter 6 dígitos numéricos.';
+        errEl.style.display = 'block';
+        return;
+    }
+    try {
+        const resp = await fetch(`${API_BASE}/api/2fa/enable`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
+            body: JSON.stringify({ code })
+        });
+        const data = await resp.json();
+        if (data.success) {
+            const token   = getToken();
+            const isAdmin = _pendingIsAdmin;
+            const email   = _pendingUserEmail;
+            _pendingCurrentPassword = null;
+            _pendingIsAdmin = false;
+            _pendingUserEmail = '';
+            onLoginSuccess(token, isAdmin, email);
+        } else {
+            errEl.textContent = data.error || 'Código incorreto.';
+            errEl.style.display = 'block';
+        }
+    } catch {
+        errEl.textContent = 'Erro de conexão. Tente novamente.';
+        errEl.style.display = 'block';
+    }
+});
+
+document.getElementById('login-mfa-code').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') document.getElementById('login-mfa-btn').click();
 });
 
 // ─── Alternar login / cadastro ────────────────────────────────────────────────
