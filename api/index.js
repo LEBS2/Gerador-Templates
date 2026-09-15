@@ -241,6 +241,18 @@ function getIp(req) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Middleware: redireciona domínio .vercel.app antigo para o domínio custom
+// ─────────────────────────────────────────────────────────────────────────────
+const OLD_HOST = 'gerador-templates-4foj.vercel.app';
+const NEW_ORIGIN = 'https://geradortemplates.com.br';
+app.use((req, res, next) => {
+    if (req.headers.host === OLD_HOST) {
+        return res.redirect(308, NEW_ORIGIN + req.originalUrl);
+    }
+    next();
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Middleware: CORS
 // ─────────────────────────────────────────────────────────────────────────────
 app.use((req, res, next) => {

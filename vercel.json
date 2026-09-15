@@ -19,15 +19,5 @@
         { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" }
       ]
     }
-  ],
-  "redirects": [
-    {
-      "source": "/:path*",
-      "has": [
-        { "type": "host", "value": "gerador-templates-4foj.vercel.app" }
-      ],
-      "destination": "https://geradortemplates.com.br/:path*",
-      "permanent": true
-    }
   ]
 }
