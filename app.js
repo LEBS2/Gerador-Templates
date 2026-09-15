@@ -156,11 +156,24 @@ function removeClient(n) {
 function addUrlField(n) {
     var extra = document.getElementById('extra-urls-' + n);
     if (!extra) return;
+    var row = document.createElement('div');
+    row.className = 'input-row dynamic-url-row';
     var inp = document.createElement('input');
     inp.type = 'url'; inp.placeholder = 'https://…';
     inp.className = 'client' + n + '-url form-input';
-    inp.style.marginTop = '.4rem';
-    extra.appendChild(inp);
+    var rm = document.createElement('button');
+    rm.type = 'button';
+    rm.className = 'remove-url-btn';
+    rm.title = 'Remover esta URL';
+    rm.setAttribute('aria-label', 'Remover esta URL');
+    rm.innerHTML = '✕';
+    rm.onclick = function() {
+        row.remove();
+        if (typeof updatePreview === 'function') updatePreview();
+    };
+    row.appendChild(inp);
+    row.appendChild(rm);
+    extra.appendChild(row);
     if (typeof updatePreview === 'function') updatePreview();
 }
 
