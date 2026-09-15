@@ -546,6 +546,18 @@ document.getElementById('login-mfa-code').addEventListener('keypress', (e) => {
     if (e.key === 'Enter') document.getElementById('login-mfa-btn').click();
 });
 
+// Pular o cadastro de MFA por enquanto - entra normalmente (o app volta a pedir no proximo login).
+document.getElementById('login-mfa-skip').addEventListener('click', (e) => {
+    e.preventDefault();
+    const token   = getToken();
+    const isAdmin = _pendingIsAdmin;
+    const email   = _pendingUserEmail;
+    _pendingCurrentPassword = null;
+    _pendingIsAdmin = false;
+    _pendingUserEmail = '';
+    onLoginSuccess(token, isAdmin, email);
+});
+
 // ─── Alternar login / cadastro ────────────────────────────────────────────────
 document.getElementById('show-register-link').addEventListener('click', (e) => {
     e.preventDefault();
