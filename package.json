@@ -4,7 +4,8 @@
   "description": "Plataforma de geração de templates de denúncia para redes sociais",
   "scripts": {
     "start": "node api/index.js",
-    "dev": "node api/index.js"
+    "dev": "node api/index.js",
+    "telegram:login": "node scripts/telegram-login.js"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +14,10 @@
   "dependencies": {
     "@vercel/kv": "^3.0.0",
     "dotenv": "^17.4.2",
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "telegram": "^2.26.16"
+  },
+  "devDependencies": {
+    "input": "^1.0.1"
   }
 }

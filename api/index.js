@@ -3,6 +3,7 @@
 const express = require('express');
 const crypto  = require('crypto');
 const path    = require('path');
+const { sendTelegramNotification } = require('../lib/telegram');
 // KV com fallback in-memory para desenvolvimento local sem Vercel KV
 let kv;
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
@@ -603,6 +604,17 @@ app.post('/api/send-report', requireSession, async (req, res) => {
             sentAt: new Date().toISOString()
         });
         await kv.set(REPORTS_KEY, reports.slice(0, MAX_REPORTS));
+
+        // Encaminha uma notificacao para o Telegram (nao bloqueia a resposta
+        // nem falha o registro da denuncia se o Telegram estiver fora do ar).
+        const ofertaLabel = { fsp: 'FSP', efsp: 'EFSP' }[String(oferta || '').toLowerCase()] || String(oferta || '').toUpperCase();
+        sendTelegramNotification(
+            `📢 Nova denúncia enviada\n` +
+            `Usuário: ${req.session.email}\n` +
+            `Oferta: ${ofertaLabel}\n` +
+            `Tipo: ${isPrimeira ? 'Primeira notificação' : 'Renotificação'}\n\n` +
+            String(message).slice(0, 3500)
+        ).catch(() => {});
 
         res.json({ success: true, message: 'Denúncia registrada com sucesso!' });
     } catch (error) {
