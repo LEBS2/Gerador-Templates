@@ -113,8 +113,16 @@ function getAdminTemplateText(key) {
     } catch { return null; }
 }
 
+// Junta nomes com "and" no ultimo item (ex: "A, B and C") em vez de virgula em todos
+// - os templates sao em ingles (endereçados ao Telegram/plataforma).
+function joinNamesNaturally(names) {
+    if (names.length <= 1) return names.join('');
+    if (names.length === 2) return names.join(' and ');
+    return names.slice(0, -1).join(', ') + ', and ' + names[names.length - 1];
+}
+
 function buildTemplate(clientsData) {
-    const clientNames = clientsData.map(c => c.client).join(', ');
+    const clientNames = joinNamesNaturally(clientsData.map(c => c.client));
     const isFirst = selectedPrimeiraNotificacao !== false;
 
     const totalUrls = clientsData.reduce((sum, c) => sum + c.urls.length, 0);
