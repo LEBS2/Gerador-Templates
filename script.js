@@ -82,7 +82,29 @@ function generateTemplate() {
 }
 
 // ─── Construção do texto da denúncia ─────────────────────────────────────────
+// Fonte de verdade: /api/templates (KV, compartilhado pela equipe).
+// O localStorage vira apenas cache, para a primeira pintura e para o caso de
+// a chamada falhar — nao e mais onde os templates "moram".
+let serverTemplates = null;
+
+async function fetchTemplates() {
+    try {
+        const r = await fetch(`${API_BASE}/api/templates`, { headers: authHeaders() });
+        if (!r.ok) return;
+        const d = await r.json();
+        if (!d.success || !d.templates) return;
+        serverTemplates = d.templates;
+        try { localStorage.setItem('rg_templates', JSON.stringify(d.templates)); } catch {}
+        // A tela pode ja ter renderizado com o texto padrao antes desta resposta
+        // chegar. Regenera agora, a menos que o usuario tenha editado a mao.
+        if (!isTemplateEdited && selectedOferta) generateTemplate();
+    } catch {}
+}
+
 function getAdminTemplateText(key) {
+    if (serverTemplates && typeof serverTemplates[key] === 'string' && serverTemplates[key].trim()) {
+        return serverTemplates[key];
+    }
     try {
         const raw = localStorage.getItem('rg_templates');
         if (!raw) return null;
@@ -108,6 +130,11 @@ function buildTemplate(clientsData) {
     const adminTpl = getAdminTemplateText(adminKey);
     if (adminTpl) {
         return adminTpl
+            // Variaveis documentadas no painel admin.
+            .replace(/\{cliente\}/g, clientNames)
+            .replace(/\{urls\}/g, bulletLines)
+            .replace(/\{data\}/g, new Date().toLocaleDateString('pt-BR'))
+            // Nomes legados, mantidos para nao quebrar templates antigos.
             .replace(/\{clientNames\}/g, clientNames)
             .replace(/\{bulletLines\}/g, bulletLines)
             .replace(/\{profileWord\}/g, profileWord)
@@ -249,6 +276,7 @@ function authHeaders() {
 // ─── Mostrar app após login ───────────────────────────────────────────────────
 function onLoginSuccess(token, isAdmin, userEmail) {
     saveToken(token);
+    fetchTemplates();
     document.getElementById('login-overlay').style.display = 'none';
     document.getElementById('app-shell').style.display = 'flex';
     document.getElementById('open-admin-btn').style.display = isAdmin ? 'flex' : 'none';
@@ -432,6 +460,9 @@ window._doLogout = async function() {
         const data = await resp.json();
 
         if (data.success) {
+            // Sessao restaurada nao passa por onLoginSuccess, entao os templates
+            // compartilhados precisam ser buscados aqui tambem.
+            fetchTemplates();
             document.getElementById('login-overlay').style.display = 'none';
             document.getElementById('app-shell').style.display = 'flex';
             document.getElementById('open-admin-btn').style.display = data.isAdmin ? 'flex' : 'none';
