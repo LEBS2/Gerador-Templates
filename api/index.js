@@ -605,16 +605,11 @@ app.post('/api/send-report', requireSession, async (req, res) => {
         });
         await kv.set(REPORTS_KEY, reports.slice(0, MAX_REPORTS));
 
-        // Encaminha uma notificacao para o Telegram (nao bloqueia a resposta
-        // nem falha o registro da denuncia se o Telegram estiver fora do ar).
-        const ofertaLabel = { fsp: 'FSP', efsp: 'EFSP' }[String(oferta || '').toLowerCase()] || String(oferta || '').toUpperCase();
-        sendTelegramNotification(
-            `📢 Nova denúncia enviada\n` +
-            `Usuário: ${req.session.email}\n` +
-            `Oferta: ${ofertaLabel}\n` +
-            `Tipo: ${isPrimeira ? 'Primeira notificação' : 'Renotificação'}\n\n` +
-            String(message).slice(0, 3500)
-        ).catch(() => {});
+        // Encaminha a denuncia para o Telegram exatamente como foi gerada
+        // (sem cabecalho): o texto ja e o template pronto para a plataforma.
+        // Usuario, oferta e tipo continuam registrados no historico (gt_reports).
+        // Nao bloqueia a resposta nem falha o registro se o Telegram estiver fora.
+        sendTelegramNotification(String(message).slice(0, 4096)).catch(() => {});
 
         res.json({ success: true, message: 'Denúncia registrada com sucesso!' });
     } catch (error) {
