@@ -476,6 +476,11 @@ button,input,select,textarea{font-family:inherit}
 /* ════════════════════════════════════════
    ACTION BAR
 ════════════════════════════════════════ */
+.dup-warning{margin:.2rem 0 .8rem;padding:.7rem .85rem;border:1px solid var(--color-error);border-radius:10px;background:var(--color-error-dim);color:var(--error);font-size:.8rem;line-height:1.45;}
+.dup-warning strong{display:block;margin-bottom:.25rem;}
+.dup-warning ul{margin:.3rem 0 0 1rem;padding:0;}
+.dup-warning li{word-break:break-all;}
+.dup-warning .dup-meta{color:var(--color-text-muted, inherit);opacity:.85;}
 .action-bar{
     display:flex;justify-content:flex-end;align-items:center;gap:.6rem;
     padding:.9rem 1.5rem;background:var(--bg2);border:1px solid var(--border);
@@ -1121,6 +1126,7 @@ button,input,select,textarea{font-family:inherit}
                     </h3>
                     <textarea id="preview-text" placeholder="Preencha os dados acima para gerar a pré-visualização…"></textarea>
                 </div>
+                <div id="dup-warning" class="dup-warning" role="alert" style="display:none;"></div>
                 <div class="action-bar">
                     <button id="copy-btn" class="btn-outline" disabled>
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
@@ -1161,7 +1167,7 @@ button,input,select,textarea{font-family:inherit}
 <div id="toast-container"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="script.js?v=10"></script>
+<script src="script.js?v=11"></script>
 <script src="app.js?v=4"></script>
 
 <script>

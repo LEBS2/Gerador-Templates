@@ -439,6 +439,10 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           Auditoria
         </button>
+        <button class="nav-item" data-section="locks">
+          <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          Travas de envio
+        </button>
         <button class="nav-item" data-section="config">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
           Templates
@@ -788,6 +792,52 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
 
       </div>
 
+      <!-- ── Travas de envio (anti-duplicidade) ─────────────────────────────── -->
+      <div class="section" id="section-locks">
+        <div class="page-header">
+          <div>
+            <h1>Travas de envio</h1>
+            <div class="page-subtitle">Cada URL + cliente + template só pode ser enviada uma vez. Libere uma trava para permitir um novo envio.</div>
+          </div>
+          <div style="display:flex;gap:.5rem;">
+            <button class="btn-outline" id="reload-locks-btn">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-5.46-1.5"/></svg>
+              Atualizar
+            </button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">
+              <div class="card-title-icon">
+                <svg width="13" height="13" fill="none" stroke="var(--blue)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              Denúncias enviadas <span class="badge badge-gray" id="locks-count" style="margin-left:.4rem;">0</span>
+            </div>
+            <div class="filter-bar">
+              <input id="lock-search" type="text" placeholder="Filtrar URL, cliente ou e-mail…">
+              <select id="lock-template-filter">
+                <option value="">Todos os templates</option>
+                <option value="fsp_first">FSP · Primeira notificação</option>
+                <option value="fsp_renot">FSP · Renotificação</option>
+                <option value="efsp_first">EFSP · Primeira notificação</option>
+                <option value="efsp_renot">EFSP · Renotificação</option>
+              </select>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr><th>Enviada em</th><th>Cliente</th><th>URL</th><th>Template</th><th>Usuário</th><th>Ações</th></tr>
+              </thead>
+              <tbody id="locks-tbody">
+                <tr><td colspan="6"><div class="empty-state"><p>Carregando…</p></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
       <!-- ── Config / Templates ────────────────────────────────────────── -->
       <div class="section" id="section-config">
         <div class="page-header">
@@ -1085,7 +1135,7 @@ async function doLogout() {
 $('sidebar-logout').addEventListener('click', doLogout);
 
 /* ── Load data ──────────────────────────────────────────────────────────────── */
-async function loadAll() { await Promise.all([loadUsers(), loadLogs(), loadAdminStats(), loadTemplatesFromServer()]); }
+async function loadAll() { await Promise.all([loadUsers(), loadLogs(), loadAdminStats(), loadTemplatesFromServer(), loadLocks()]); }
 
 /* ── Users ──────────────────────────────────────────────────────────────────── */
 let allUsers = [];
@@ -1373,6 +1423,73 @@ $('export-logs-btn').addEventListener('click', () => {
   document.body.removeChild(a); URL.revokeObjectURL(url);
   toast('CSV exportado','success');
 });
+
+/* ── Travas de envio ───────────────────────────────────────────────────────── */
+const LOCK_TPL_LABEL = {
+  fsp_first: 'FSP · 1ª notif.', fsp_renot: 'FSP · Renotif.',
+  efsp_first: 'EFSP · 1ª notif.', efsp_renot: 'EFSP · Renotif.'
+};
+let allLocks = [];
+async function loadLocks() {
+  try {
+    const r = await api('/api/admin/sent-locks');
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    allLocks = d.locks || [];
+    renderLocks();
+  } catch { toast('Erro ao carregar travas de envio','error'); }
+}
+
+function renderLocks() {
+  const search = $('lock-search').value.toLowerCase();
+  const tplF   = $('lock-template-filter').value;
+  const list = allLocks.filter(l => {
+    const hay = `${l.url||''} ${l.client||''} ${l.email||''}`.toLowerCase();
+    return (!search || hay.includes(search)) && (!tplF || l.template === tplF);
+  });
+  $('locks-count').textContent = allLocks.length;
+  const tbody = $('locks-tbody');
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>Nenhuma trava encontrada.</p></div></td></tr>';
+    return;
+  }
+  tbody.innerHTML = list.slice(0, 500).map(l => {
+    const when = l.sentAt ? new Date(l.sentAt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}) : '-';
+    const renot = String(l.template||'').endsWith('_renot');
+    return `<tr>
+      <td class="mono" style="color:var(--text2);font-size:.75rem;white-space:nowrap">${esc(when)}</td>
+      <td>${esc(l.client||'-')}</td>
+      <td class="mono" style="word-break:break-all;font-size:.75rem">${esc(l.url||'-')}</td>
+      <td><span class="badge ${renot?'badge-amber':'badge-blue'}">${esc(LOCK_TPL_LABEL[l.template]||l.template||'-')}</span></td>
+      <td class="mono" style="color:var(--text3)">${esc(l.email||'-')}</td>
+      <td>
+        <div class="action-group">
+          <button class="action-btn danger" title="Liberar reenvio" onclick="releaseLock('${esc(l.id)}')">
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function releaseLock(id) {
+  const l = allLocks.find(x => x.id === id);
+  if (!l) return;
+  if (!confirm(`Liberar novo envio?\n\nCliente: ${l.client}\nURL: ${l.url}\nTemplate: ${LOCK_TPL_LABEL[l.template]||l.template}\n\nA mesma denúncia poderá ser enviada de novo.`)) return;
+  try {
+    const r = await api('/api/admin/sent-locks/release', { method:'POST', body: JSON.stringify({ id }) });
+    const d = await r.json();
+    if (!r.ok || !d.success) throw new Error(d.error || 'Erro');
+    toast('Trava liberada','success');
+    loadLocks();
+  } catch (e) { toast(e.message || 'Erro ao liberar trava','error'); }
+}
+window.releaseLock = releaseLock;
+
+$('lock-search').addEventListener('input', renderLocks);
+$('lock-template-filter').addEventListener('change', renderLocks);
+$('reload-locks-btn').addEventListener('click', loadLocks);
 
 $('clear-logs-btn').addEventListener('click', async () => {
   if (!confirm('Apagar todos os logs?')) return;

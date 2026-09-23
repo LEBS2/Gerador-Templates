@@ -3,7 +3,7 @@
 const express = require('express');
 const crypto  = require('crypto');
 const path    = require('path');
-const { sendTelegramNotification } = require('../lib/telegram');
+const { sendTelegramNotification, TELEGRAM_ENABLED } = require('../lib/telegram');
 // KV com fallback in-memory para desenvolvimento local sem Vercel KV
 let kv;
 const KV_AVAILABLE = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
@@ -17,6 +17,11 @@ if (KV_AVAILABLE) {
         get: async (k) => { const r = _store.get(k); if (!r) return null; if (r.exp && Date.now() > r.exp) { _store.delete(k); return null; } return r.v; },
         set: async (k, v, opts) => { _store.set(k, { v, exp: opts?.ex ? Date.now() + opts.ex * 1000 : null }); },
         del: async (k) => { _store.delete(k); },
+        // Hash (usado pela trava de denuncias duplicadas)
+        hsetnx: async (k, f, v) => { const r = _store.get(k) || { v: {}, exp: null }; if (Object.prototype.hasOwnProperty.call(r.v, f)) return 0; r.v[f] = v; _store.set(k, r); return 1; },
+        hget:   async (k, f) => { const r = _store.get(k); return r && Object.prototype.hasOwnProperty.call(r.v, f) ? r.v[f] : null; },
+        hdel:   async (k, ...fs) => { const r = _store.get(k); if (!r) return 0; let n = 0; for (const f of fs) { if (f in r.v) { delete r.v[f]; n++; } } return n; },
+        hgetall: async (k) => { const r = _store.get(k); return r && Object.keys(r.v).length ? { ...r.v } : null; },
     };
 }
 
@@ -35,6 +40,7 @@ const LOGS_KEY       = 'gt_logs';
 const ADMIN_LOGS_KEY = 'gt_admin_logs';
 const REPORTS_KEY    = 'gt_reports';
 const TEMPLATES_KEY  = 'gt_templates';
+const SENT_KEY       = 'gt_sent';       // hash: trava de denuncias ja enviadas (URL + cliente + template)
 const MAX_LOGS       = 500;
 const MAX_REPORTS    = 1000;
 const TPL_KEYS       = ['fsp_first', 'fsp_renot', 'efsp_first', 'efsp_renot'];
@@ -575,6 +581,60 @@ app.post('/api/register', async (req, res) => {
 // ROTAS AUTENTICADAS
 // =============================================================================
 
+// ─────────────────────────────────────────────────────────────────────────────
+// Trava de denuncias duplicadas
+// Cada combinacao URL + cliente + template (oferta x primeira/renotificacao)
+// so pode ser enviada UMA vez. O registro fica no hash gt_sent do KV e a
+// reserva e atomica (HSETNX), entao dois cliques/abas simultaneos tambem nao
+// passam. So o admin libera um reenvio (painel admin > Travas de envio).
+// ─────────────────────────────────────────────────────────────────────────────
+const OFERTAS_VALIDAS = ['fsp', 'efsp'];
+// Hosts em que o caminho (usuario/perfil) nao diferencia maiusculas.
+const CASE_INSENSITIVE_HOSTS = [
+    't.me', 'telegram.me', 'telegram.dog', 'instagram.com', 'facebook.com', 'fb.com',
+    'x.com', 'twitter.com', 'tiktok.com', 'threads.net', 'linkedin.com', 'wa.me'
+];
+
+function normalizeReportUrl(raw) {
+    let s = String(raw || '').trim();
+    if (!s) return '';
+    let u;
+    try { u = new URL(/^[a-z][a-z0-9+.-]*:\/\//i.test(s) ? s : 'https://' + s); }
+    catch { return s.toLowerCase().replace(/\/+$/, ''); }
+    const host = u.hostname.toLowerCase().replace(/^(www\.|m\.|mobile\.)/, '');
+    let rest = (u.pathname.replace(/\/+$/, '') || '') + (u.search || '');
+    if (CASE_INSENSITIVE_HOSTS.includes(host)) rest = rest.toLowerCase();
+    // Esquema e fragmento (#) sao ignorados: http/https e #ancora = mesma URL.
+    return host + rest;
+}
+
+function normalizeClientName(raw) {
+    return String(raw || '')
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+function templateKeyOf(oferta, isPrimeira) {
+    return `${oferta}_${isPrimeira ? 'first' : 'renot'}`;
+}
+
+function sentFingerprint(templateKey, client, url) {
+    return crypto.createHash('sha256')
+        .update(`${templateKey}|${normalizeClientName(client)}|${normalizeReportUrl(url)}`)
+        .digest('hex').slice(0, 40);
+}
+
+function parseSentRecord(v) {
+    if (!v) return null;
+    if (typeof v === 'object') return v;
+    try { return JSON.parse(v); } catch { return null; }
+}
+
+const TEMPLATE_LABEL = {
+    fsp_first: 'FSP · Primeira notificação', fsp_renot: 'FSP · Renotificação',
+    efsp_first: 'EFSP · Primeira notificação', efsp_renot: 'EFSP · Renotificação'
+};
+
 // Enviar denuncia
 app.post('/api/send-report', requireSession, async (req, res) => {
     const ip = getIp(req);
@@ -582,40 +642,187 @@ app.post('/api/send-report', requireSession, async (req, res) => {
         return res.status(429).json({ success: false, error: 'Limite de envios atingido. Aguarde 1 hora.' });
     }
 
-    const { message } = req.body || {};
+    const { message, oferta, isPrimeira, clients } = req.body || {};
     if (!message || String(message).trim().length === 0) {
         return res.status(400).json({ success: false, error: 'Mensagem vazia.' });
     }
     if (String(message).length > 4096) {
         return res.status(400).json({ success: false, error: 'Mensagem muito longa (max. 4096 caracteres).' });
     }
+    if (!OFERTAS_VALIDAS.includes(oferta)) {
+        return res.status(400).json({ success: false, error: 'Selecione a oferta (FSP ou EFSP) antes de enviar.' });
+    }
+    // Sem a lista estruturada nao ha como aplicar a trava: provavelmente e o
+    // script.js antigo em cache no navegador.
+    if (!Array.isArray(clients) || clients.length === 0) {
+        return res.status(400).json({ success: false, error: 'Versão desatualizada da página. Atualize com Ctrl+Shift+R e tente novamente.' });
+    }
 
-    const { oferta, isPrimeira } = req.body || {};
+    const first       = isPrimeira !== false;
+    const templateKey = templateKeyOf(oferta, first);
 
+    // Monta as entradas (URL + cliente) sem repetir dentro da propria denuncia.
+    const entries = [];
+    const seen = new Set();
+    for (const c of clients.slice(0, 50)) {
+        const client = String(c?.client || '').trim().slice(0, 200);
+        const urls   = Array.isArray(c?.urls) ? c.urls : [];
+        if (!client) continue;
+        for (const rawUrl of urls.slice(0, 100)) {
+            const url = String(rawUrl || '').trim().slice(0, 2048);
+            if (!url) continue;
+            const id = sentFingerprint(templateKey, client, url);
+            if (seen.has(id)) continue;
+            seen.add(id);
+            entries.push({ id, client, url });
+        }
+    }
+    if (!entries.length) {
+        return res.status(400).json({ success: false, error: 'Informe o cliente e pelo menos uma URL.' });
+    }
+
+    const reportId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    const sentAt   = new Date().toISOString();
+
+    // 1) Reserva atomica de cada URL + cliente + template.
+    const claimed    = [];
+    const duplicates = [];
     try {
-        // Salvar no histórico
+        for (const e of entries) {
+            const record = JSON.stringify({
+                id: e.id, url: e.url, client: e.client, template: templateKey,
+                oferta, isPrimeira: first, email: req.session.email, sentAt, reportId
+            });
+            const ok = await kv.hsetnx(SENT_KEY, e.id, record);
+            if (ok === 1 || ok === true) claimed.push(e.id);
+            else duplicates.push(e);
+        }
+    } catch (error) {
+        if (claimed.length) await kv.hdel(SENT_KEY, ...claimed).catch(() => {});
+        console.error('Erro na trava de duplicidade:', error.message);
+        return res.status(500).json({ success: false, error: 'Falha ao verificar duplicidade. Tente novamente.' });
+    }
+
+    if (duplicates.length) {
+        // Desfaz as reservas desta tentativa: nada e enviado se houver duplicata.
+        if (claimed.length) await kv.hdel(SENT_KEY, ...claimed).catch(() => {});
+        const details = await Promise.all(duplicates.map(async (d) => {
+            const prev = parseSentRecord(await kv.hget(SENT_KEY, d.id).catch(() => null));
+            return {
+                url: d.url, client: d.client,
+                sentAt: prev?.sentAt || null,
+                email: prev?.email || null
+            };
+        }));
+        return res.status(409).json({
+            success: false,
+            duplicate: true,
+            template: templateKey,
+            templateLabel: TEMPLATE_LABEL[templateKey] || templateKey,
+            duplicates: details,
+            error: `Denúncia duplicada: ${details.length === 1 ? 'esta URL já foi enviada' : 'estas URLs já foram enviadas'} para este cliente com o template ${TEMPLATE_LABEL[templateKey] || templateKey}.`
+        });
+    }
+
+    // 2) Envia ao Telegram e AGUARDA o resultado: a resposta so volta depois
+    // do envio, e se o Telegram falhar a reserva e desfeita para permitir
+    // uma nova tentativa (sem gerar duplicata).
+    const text = String(message).slice(0, 4096);
+    if (TELEGRAM_ENABLED) {
+        const sent = await sendTelegramNotification(text);
+        if (!sent) {
+            await kv.hdel(SENT_KEY, ...claimed).catch(() => {});
+            return res.status(502).json({ success: false, error: 'Falha ao enviar para o Telegram. Nada foi registrado — tente novamente.' });
+        }
+    }
+
+    // 3) Historico
+    try {
         const reports = await kv.get(REPORTS_KEY) || [];
         reports.unshift({
-            id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+            id: reportId,
             email: req.session.email,
-            oferta: String(oferta || '').slice(0, 20),
-            isPrimeira: !!isPrimeira,
-            preview: String(message).slice(0, 200),
-            sentAt: new Date().toISOString()
+            oferta,
+            isPrimeira: first,
+            template: templateKey,
+            clients: [...new Set(entries.map(e => e.client))],
+            urls: entries.map(e => e.url),
+            preview: text.slice(0, 200),
+            sentAt
         });
         await kv.set(REPORTS_KEY, reports.slice(0, MAX_REPORTS));
-
-        // Encaminha a denuncia para o Telegram exatamente como foi gerada
-        // (sem cabecalho): o texto ja e o template pronto para a plataforma.
-        // Usuario, oferta e tipo continuam registrados no historico (gt_reports).
-        // Nao bloqueia a resposta nem falha o registro se o Telegram estiver fora.
-        sendTelegramNotification(String(message).slice(0, 4096)).catch(() => {});
-
-        res.json({ success: true, message: 'Denúncia registrada com sucesso!' });
     } catch (error) {
-        console.error('Erro ao salvar denúncia:', error.message);
-        res.status(500).json({ success: false, error: 'Falha ao registrar. Tente novamente.' });
+        // A denuncia ja foi enviada e travada; so o historico falhou.
+        console.error('Erro ao salvar historico da denuncia:', error.message);
     }
+
+    res.json({ success: true, message: 'Denúncia enviada com sucesso!', count: entries.length });
+});
+
+// Verificacao previa (somente leitura) para o gerador avisar antes do envio.
+app.post('/api/check-duplicates', requireSession, async (req, res) => {
+    const { oferta, isPrimeira, clients } = req.body || {};
+    if (!OFERTAS_VALIDAS.includes(oferta) || !Array.isArray(clients)) {
+        return res.json({ success: true, duplicates: [] });
+    }
+    const templateKey = templateKeyOf(oferta, isPrimeira !== false);
+    const checks = [];
+    const seen = new Set();
+    for (const c of clients.slice(0, 50)) {
+        const client = String(c?.client || '').trim();
+        if (!client || !Array.isArray(c?.urls)) continue;
+        for (const rawUrl of c.urls.slice(0, 100)) {
+            const url = String(rawUrl || '').trim();
+            if (!url) continue;
+            const id = sentFingerprint(templateKey, client, url);
+            if (seen.has(id)) continue;
+            seen.add(id);
+            checks.push({ id, client, url });
+        }
+    }
+    try {
+        const found = await Promise.all(checks.map(async (e) => {
+            const prev = parseSentRecord(await kv.hget(SENT_KEY, e.id));
+            return prev ? { url: e.url, client: e.client, sentAt: prev.sentAt || null, email: prev.email || null } : null;
+        }));
+        res.json({
+            success: true,
+            template: templateKey,
+            templateLabel: TEMPLATE_LABEL[templateKey] || templateKey,
+            duplicates: found.filter(Boolean)
+        });
+    } catch {
+        res.json({ success: true, duplicates: [] });
+    }
+});
+
+// Admin: lista as travas (denuncias ja enviadas por URL + cliente + template)
+app.get('/api/admin/sent-locks', requireAdmin, async (req, res) => {
+    try {
+        const all = await kv.hgetall(SENT_KEY) || {};
+        const locks = Object.values(all).map(parseSentRecord).filter(Boolean)
+            .sort((a, b) => String(b.sentAt).localeCompare(String(a.sentAt)));
+        res.json({ success: true, total: locks.length, locks });
+    } catch (error) {
+        console.error('Erro ao listar travas:', error.message);
+        res.status(500).json({ success: false, error: 'Falha ao carregar as travas.' });
+    }
+});
+
+// Admin: libera uma trava para permitir um novo envio da mesma URL/cliente/template
+app.post('/api/admin/sent-locks/release', requireAdmin, async (req, res) => {
+    const { id } = req.body || {};
+    if (!id || !/^[a-f0-9]{40}$/.test(String(id))) {
+        return res.status(400).json({ success: false, error: 'ID inválido.' });
+    }
+    const prev = parseSentRecord(await kv.hget(SENT_KEY, id));
+    if (!prev) return res.status(404).json({ success: false, error: 'Trava não encontrada.' });
+    await kv.hdel(SENT_KEY, id);
+    await writeAdminLog({
+        actor: req.session.email, action: 'release-sent-lock',
+        target: `${prev.client} | ${prev.url} | ${prev.template}`
+    });
+    res.json({ success: true });
 });
 
 // Usuario troca a propria senha (fluxo pos-reset do admin, ou troca voluntaria).

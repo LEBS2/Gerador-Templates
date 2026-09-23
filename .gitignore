@@ -11,3 +11,5 @@ Thumbs.db
 # Arquivos legados (podem ser deletados manualmente)
 server.js
 listar-chats.js
+.vercel
+.env*

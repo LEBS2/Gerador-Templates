@@ -51,8 +51,8 @@ function getClientData(index) {
     return { client: clientName, urls: urls };
 }
 
-// ─── Gera o template com base nos inputs ──────────────────────────────────────
-function generateTemplate() {
+// ─── Todos os clientes preenchidos (nome + URLs) ──────────────────────────────
+function collectClientsData() {
     const groups = document.querySelectorAll('[id^="client-group-"]');
     const clientsData = [];
     groups.forEach(group => {
@@ -60,6 +60,85 @@ function generateTemplate() {
         const data = getClientData(idx);
         if (data) clientsData.push(data);
     });
+    return clientsData;
+}
+
+// ─── Trava de duplicidade (URL + cliente + template) ──────────────────────────
+// O servidor e quem garante a trava; aqui so avisamos antes e bloqueamos o
+// botao para o usuario nao tentar reenviar o que ja foi enviado.
+let dupDuplicates = [];
+let dupSeq = 0;
+let dupTimer = null;
+
+function escHtml(v) {
+    return String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+function renderDupWarning(duplicates, templateLabel) {
+    const box = document.getElementById('dup-warning');
+    if (!box) return;
+    if (!duplicates || !duplicates.length) {
+        box.style.display = 'none';
+        box.innerHTML = '';
+        return;
+    }
+    const items = duplicates.map(d => {
+        const when = d.sentAt ? new Date(d.sentAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+        const meta = [when && `enviada em ${when}`, d.email && `por ${d.email}`].filter(Boolean).join(' ');
+        return `<li>${escHtml(d.url)} <span class="dup-meta">— ${escHtml(d.client)}${meta ? ' · ' + escHtml(meta) : ''}</span></li>`;
+    }).join('');
+    const one = duplicates.length === 1;
+    box.innerHTML = `<strong>Denúncia duplicada — envio bloqueado</strong>`
+        + `${one ? 'Esta URL já foi enviada' : 'Estas URLs já foram enviadas'} com o template <b>${escHtml(templateLabel || '')}</b>. `
+        + `Remova ${one ? 'a URL' : 'as URLs'} para enviar o restante, ou peça a um admin para liberar o reenvio.`
+        + `<ul>${items}</ul>`;
+    box.style.display = 'block';
+}
+
+function applyDupState() {
+    if (dupDuplicates.length) {
+        elements.submitBtn.disabled = true;
+        elements.submitBtn.title = 'Envio bloqueado: denúncia duplicada';
+    } else {
+        elements.submitBtn.title = '';
+    }
+}
+
+async function runDupCheck() {
+    const seq = ++dupSeq;
+    const clients = collectClientsData();
+    if (!selectedOferta || !clients.length) {
+        dupDuplicates = [];
+        renderDupWarning([]);
+        return;
+    }
+    try {
+        const r = await fetch(`${API_BASE}/api/check-duplicates`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...authHeaders() },
+            body: JSON.stringify({ oferta: selectedOferta, isPrimeira: selectedPrimeiraNotificacao !== false, clients })
+        });
+        const d = await r.json();
+        if (seq !== dupSeq) return; // resposta antiga, o usuario ja mudou os dados
+        dupDuplicates = (d && d.success && Array.isArray(d.duplicates)) ? d.duplicates : [];
+        renderDupWarning(dupDuplicates, d && d.templateLabel);
+        if (dupDuplicates.length) applyDupState();
+        else if (elements.submitBtn.title) {
+            elements.submitBtn.title = '';
+            elements.submitBtn.disabled = !collectClientsData().length;
+        }
+    } catch { /* sem rede: o servidor continua bloqueando no envio */ }
+}
+
+function scheduleDupCheck(delay = 450) {
+    clearTimeout(dupTimer);
+    dupTimer = setTimeout(runDupCheck, delay);
+}
+
+// ─── Gera o template com base nos inputs ──────────────────────────────────────
+function generateTemplate() {
+    const clientsData = collectClientsData();
+    scheduleDupCheck();
 
     if (!clientsData.length) {
         if (!isTemplateEdited) {
@@ -73,12 +152,14 @@ function generateTemplate() {
     if (isTemplateEdited) {
         elements.submitBtn.disabled = false;
         elements.copyBtn.disabled = false;
+        applyDupState();
         return;
     }
 
     elements.previewText.value = buildTemplate(clientsData);
     elements.submitBtn.disabled = false;
     elements.copyBtn.disabled = false;
+    applyDupState();
 }
 
 // ─── Construção do texto da denúncia ─────────────────────────────────────────
@@ -187,6 +268,7 @@ elements.previewText.addEventListener('input', () => {
     });
     elements.submitBtn.disabled = !hasData;
     elements.copyBtn.disabled = !hasData;
+    applyDupState();
 });
 
 elements.resetBtn.addEventListener('click', () => {
@@ -216,7 +298,13 @@ elements.submitBtn.addEventListener('click', async (e) => {
         return;
     }
 
+    if (dupDuplicates.length) {
+        renderDupWarning(dupDuplicates);
+        return;
+    }
+
     const message = elements.previewText.value;
+    const clients = collectClientsData();
     const originalText = elements.submitBtn.innerHTML;
     elements.submitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-5.46-1.5"/></svg> Enviando…`;
     elements.submitBtn.disabled = true;
@@ -225,17 +313,28 @@ elements.submitBtn.addEventListener('click', async (e) => {
         const response = await fetch(`${API_BASE}/api/send-report`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', ...authHeaders() },
-            body: JSON.stringify({ message, oferta: selectedOferta, isPrimeira: selectedPrimeiraNotificacao !== false })
+            body: JSON.stringify({ message, oferta: selectedOferta, isPrimeira: selectedPrimeiraNotificacao !== false, clients })
         });
         const data = await response.json();
+
+        if (data.duplicate) {
+            // Bloqueado pelo servidor: mostra quais URLs ja foram enviadas.
+            dupDuplicates = data.duplicates || [];
+            renderDupWarning(dupDuplicates, data.templateLabel);
+            elements.submitBtn.innerHTML = originalText;
+            applyDupState();
+            return;
+        }
 
         if (data.success) {
             elements.submitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Enviado!`;
             elements.submitBtn.style.background = '#10B981';
-            setTimeout(() => {
+            setTimeout(async () => {
                 elements.submitBtn.innerHTML = originalText;
                 elements.submitBtn.style.background = '';
-                elements.submitBtn.disabled = false;
+                // Os mesmos dados agora sao duplicata: revalida antes de liberar o botao.
+                await runDupCheck();
+                if (!dupDuplicates.length) elements.submitBtn.disabled = !collectClientsData().length;
             }, 3000);
         } else {
             throw new Error(data.error || 'Erro desconhecido');
