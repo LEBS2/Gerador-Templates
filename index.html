@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Templates - Canal de Denúncias</title>
+    <title>Template Generator - Reporting Channel</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
@@ -713,89 +713,89 @@ button,input,select,textarea{font-family:inherit}
             <canvas id="brand-canvas"></canvas>
             <div class="brand-content">
                 <div class="brand-logo-box"><img src="logo.png?v=4" alt="Logo"></div>
-                <h1 class="brand-title">Gerador de Templates</h1>
-                <p class="brand-sub">Canal de Denúncias Corporativo</p>
+                <h1 class="brand-title">Template Generator</h1>
+                <p class="brand-sub">Corporate Reporting Channel</p>
                 <div class="brand-divider"></div>
-                <p class="brand-tagline">Acesso seguro e confidencial</p>
+                <p class="brand-tagline">Secure and confidential access</p>
             </div>
         </div>
 
         <div class="login-form-panel">
             <div class="login-card">
                 <div id="login-step-1">
-                    <h2>Bem-vindo de volta</h2>
-                    <p class="sub">Entre com suas credenciais para acessar.</p>
+                    <h2>Welcome back</h2>
+                    <p class="sub">Sign in with your credentials to continue.</p>
                     <div class="form-group">
-                        <label>Usuário</label>
-                        <input type="text" id="login-username" placeholder="Digite o usuário…" autocomplete="username">
+                        <label>Username</label>
+                        <input type="text" id="login-username" placeholder="Enter your username…" autocomplete="username">
                     </div>
                     <div class="form-group">
-                        <label>Senha</label>
+                        <label>Password</label>
                         <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password">
                     </div>
                     <p id="login-error" class="err-msg"></p>
                     <button type="button" id="login-btn" class="submit-btn">
                         <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-                        Entrar
+                        Sign in
                     </button>
-                    <div class="or-div">ou</div>
-                    <p style="text-align:center;font-size:.84rem;color:var(--text2);">Sem acesso? <a href="#" id="show-register-link" style="font-weight:700;">Solicitar cadastro</a></p>
+                    <div class="or-div">or</div>
+                    <p style="text-align:center;font-size:.84rem;color:var(--text2);">No access? <a href="#" id="show-register-link" style="font-weight:700;">Request access</a></p>
                 </div>
                 <div id="login-step-2" style="display:none;">
                     <div style="text-align:center;margin-bottom:1.5rem;">
                         <div style="width:50px;height:50px;background:var(--primary-dim);border:1.5px solid var(--primary-b);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto .7rem;">
                             <svg width="22" height="22" fill="none" stroke="var(--primary)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                         </div>
-                        <h2 style="font-family:'Outfit',sans-serif;font-size:1.3rem;">Verificação em 2 Etapas</h2>
-                        <p style="color:var(--text2);font-size:.81rem;margin-top:.3rem;">Digite o código de 6 dígitos do seu app autenticador.</p>
+                        <h2 style="font-family:'Outfit',sans-serif;font-size:1.3rem;">Two-Step Verification</h2>
+                        <p style="color:var(--text2);font-size:.81rem;margin-top:.3rem;">Enter the 6-digit code from your authenticator app.</p>
                     </div>
                     <div class="form-group">
                         <input type="text" id="login-2fa-code" placeholder="0 0 0 0 0 0" maxlength="6" autocomplete="one-time-code"
                             style="text-align:center;font-size:1.75rem;letter-spacing:.6rem;font-family:monospace;padding:.7rem .5rem;">
                     </div>
                     <p id="login-2fa-error" class="err-msg"></p>
-                    <button type="button" id="login-2fa-btn" class="submit-btn">Verificar Código</button>
-                    <p style="text-align:center;margin-top:.8rem;"><a href="#" id="login-2fa-back" style="font-size:.79rem;color:var(--text2);text-decoration:underline;">← Voltar</a></p>
+                    <button type="button" id="login-2fa-btn" class="submit-btn">Verify Code</button>
+                    <p style="text-align:center;margin-top:.8rem;"><a href="#" id="login-2fa-back" style="font-size:.79rem;color:var(--text2);text-decoration:underline;">← Back</a></p>
                 </div>
                 <div id="login-step-3" style="display:none;">
                     <div style="text-align:center;margin-bottom:1.5rem;">
                         <div style="width:50px;height:50px;background:var(--primary-dim);border:1.5px solid var(--primary-b);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto .7rem;">
                             <svg width="22" height="22" fill="none" stroke="var(--primary)" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                         </div>
-                        <h2 style="font-family:'Outfit',sans-serif;font-size:1.3rem;">Defina sua nova senha</h2>
-                        <p style="color:var(--text2);font-size:.81rem;margin-top:.3rem;">Sua senha foi resetada pelo administrador. Escolha uma nova senha só sua para continuar.</p>
+                        <h2 style="font-family:'Outfit',sans-serif;font-size:1.3rem;">Set your new password</h2>
+                        <p style="color:var(--text2);font-size:.81rem;margin-top:.3rem;">Your password was reset by the administrator. Choose a new password of your own to continue.</p>
                     </div>
                     <div class="form-group">
-                        <label>Nova senha</label>
+                        <label>New password</label>
                         <input type="password" id="login-newpw" placeholder="••••••••" autocomplete="new-password">
                     </div>
                     <div class="form-group">
-                        <label>Confirmar nova senha</label>
+                        <label>Confirm new password</label>
                         <input type="password" id="login-newpw-confirm" placeholder="••••••••" autocomplete="new-password">
                     </div>
-                    <p style="font-size:.74rem;color:var(--text2);margin:-.3rem 0 .8rem;">Mínimo 10 caracteres, com maiúscula, minúscula, número e símbolo.</p>
+                    <p style="font-size:.74rem;color:var(--text2);margin:-.3rem 0 .8rem;">At least 10 characters, with an uppercase letter, a lowercase letter, a number and a symbol.</p>
                     <p id="login-changepw-error" class="err-msg"></p>
-                    <button type="button" id="login-changepw-btn" class="submit-btn">Definir nova senha e entrar</button>
+                    <button type="button" id="login-changepw-btn" class="submit-btn">Set new password and sign in</button>
                 </div>
                 <div id="login-step-4" style="display:none;">
                     <div style="text-align:center;margin-bottom:1.2rem;">
                         <div style="width:50px;height:50px;background:var(--primary-dim);border:1.5px solid var(--primary-b);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto .7rem;">
                             <svg width="22" height="22" fill="none" stroke="var(--primary)" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                         </div>
-                        <h2 style="font-family:'Outfit',sans-serif;font-size:1.3rem;">Ative a verificação em 2 etapas</h2>
-                        <p style="color:var(--text2);font-size:.81rem;margin-top:.3rem;">Por segurança, todas as contas precisam ter 2FA ativo. Configure agora para continuar.</p>
+                        <h2 style="font-family:'Outfit',sans-serif;font-size:1.3rem;">Enable two-step verification</h2>
+                        <p style="color:var(--text2);font-size:.81rem;margin-top:.3rem;">For security, every account must have 2FA enabled. Set it up now to continue.</p>
                     </div>
-                    <p style="font-size:.84rem;color:var(--text2);margin-bottom:1rem;">1. Instale o Google Authenticator ou o app de sua escolha.<br>2. Escaneie o QR code.<br>3. Confirme com o código.</p>
+                    <p style="font-size:.84rem;color:var(--text2);margin-bottom:1rem;">1. Install Google Authenticator or the app of your choice.<br>2. Scan the QR code.<br>3. Confirm with the code.</p>
                     <div id="login-mfa-qr" style="display:flex;justify-content:center;margin:1rem 0;"></div>
-                    <p style="font-size:.7rem;color:var(--text2);text-align:center;margin-bottom:.4rem;">Chave manual:</p>
+                    <p style="font-size:.7rem;color:var(--text2);text-align:center;margin-bottom:.4rem;">Manual key:</p>
                     <p id="login-mfa-secret" style="font-family:monospace;font-size:.82rem;text-align:center;background:var(--bg3);padding:.5rem;border-radius:var(--r);word-break:break-all;margin-bottom:1rem;"></p>
                     <div class="form-group">
-                        <label>Código de confirmação</label>
+                        <label>Confirmation code</label>
                         <input type="text" id="login-mfa-code" placeholder="000000" maxlength="6" autocomplete="off" style="text-align:center;font-size:1.2rem;letter-spacing:.4rem;font-family:monospace;">
                     </div>
                     <p id="login-mfa-error" class="err-msg"></p>
-                    <button type="button" id="login-mfa-btn" class="submit-btn">Ativar 2FA e entrar</button>
-                    <p style="text-align:center;margin-top:.8rem;"><a href="#" id="login-mfa-skip" style="font-size:.79rem;color:var(--text2);text-decoration:underline;">Pular por enquanto</a></p>
+                    <button type="button" id="login-mfa-btn" class="submit-btn">Enable 2FA and sign in</button>
+                    <p style="text-align:center;margin-top:.8rem;"><a href="#" id="login-mfa-skip" style="font-size:.79rem;color:var(--text2);text-decoration:underline;">Skip for now</a></p>
                 </div>
             </div>
         </div>
@@ -810,15 +810,15 @@ button,input,select,textarea{font-family:inherit}
         <div class="modal-logo">
             <div class="modal-logo-box"><img src="logo.png?v=4" alt="Logo" style="width:30px;height:30px;object-fit:contain;"></div>
         </div>
-        <h2>Solicitar Cadastro</h2>
-        <p class="modal-sub">Aguarde aprovação do administrador.</p>
-        <div class="form-group"><label>E-mail</label><input type="email" id="register-email" placeholder="seu@email.com"></div>
-        <div class="form-group"><label>Senha</label><input type="password" id="register-password" placeholder="Mín. 10 chars, maiúscula, número e símbolo"></div>
-        <div class="form-group"><label>Confirmar senha</label><input type="password" id="register-password-confirm" placeholder="Repita a senha"></div>
+        <h2>Request Access</h2>
+        <p class="modal-sub">Requires administrator approval.</p>
+        <div class="form-group"><label>Email</label><input type="email" id="register-email" placeholder="you@email.com"></div>
+        <div class="form-group"><label>Password</label><input type="password" id="register-password" placeholder="Min. 10 chars, uppercase, number and symbol"></div>
+        <div class="form-group"><label>Confirm password</label><input type="password" id="register-password-confirm" placeholder="Repeat the password"></div>
         <p id="register-message" class="err-msg"></p>
-        <button type="button" id="register-btn" class="submit-btn">Solicitar Acesso</button>
-        <div class="or-div">ou</div>
-        <p style="text-align:center;font-size:.84rem;color:var(--text2);">Já tem acesso? <a href="#" id="show-login-link" style="font-weight:700;">Entrar</a></p>
+        <button type="button" id="register-btn" class="submit-btn">Request Access</button>
+        <div class="or-div">or</div>
+        <p style="text-align:center;font-size:.84rem;color:var(--text2);">Already have access? <a href="#" id="show-login-link" style="font-weight:700;">Sign in</a></p>
     </div>
 </div>
 
@@ -832,7 +832,7 @@ button,input,select,textarea{font-family:inherit}
                 <div style="width:26px;height:26px;background:var(--primary-dim);border:1px solid var(--primary-b);border-radius:var(--r);display:flex;align-items:center;justify-content:center;">
                     <svg width="13" height="13" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
                 </div>
-                <h2 style="font-size:1.05rem;font-family:'Outfit',sans-serif;margin:0;">Minha Conta</h2>
+                <h2 style="font-size:1.05rem;font-family:'Outfit',sans-serif;margin:0;">My Account</h2>
             </div>
             <button type="button" id="close-admin-btn" style="background:none;border:none;cursor:pointer;color:var(--text2);">
                 <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -840,31 +840,31 @@ button,input,select,textarea{font-family:inherit}
         </div>
         <div id="admin-panel-security">
             <div id="twofa-status-section">
-                <p style="font-size:.855rem;color:var(--text2);margin-bottom:1rem;">Gerencie a verificação em dois fatores (2FA).</p>
+                <p style="font-size:.855rem;color:var(--text2);margin-bottom:1rem;">Manage two-factor authentication (2FA).</p>
                 <div id="twofa-current-status" style="padding:.65rem 1rem;border-radius:var(--r);border:1px solid var(--border);margin-bottom:.8rem;font-size:.855rem;"></div>
                 <button id="twofa-toggle-btn" class="submit-btn" style="margin-bottom:.6rem;"></button>
             </div>
             <div id="twofa-setup-section" style="display:none;">
-                <p style="font-size:.84rem;color:var(--text2);margin-bottom:1rem;">1. Instale o Google Authenticator ou o app de sua escolha.<br>2. Escaneie o QR code.<br>3. Confirme com o código.</p>
+                <p style="font-size:.84rem;color:var(--text2);margin-bottom:1rem;">1. Install Google Authenticator or the app of your choice.<br>2. Scan the QR code.<br>3. Confirm with the code.</p>
                 <div id="twofa-qr" style="display:flex;justify-content:center;margin:1rem 0;"></div>
-                <p style="font-size:.7rem;color:var(--text2);text-align:center;margin-bottom:.4rem;">Chave manual:</p>
+                <p style="font-size:.7rem;color:var(--text2);text-align:center;margin-bottom:.4rem;">Manual key:</p>
                 <p id="twofa-secret-display" style="font-family:monospace;font-size:.82rem;text-align:center;background:var(--bg3);padding:.5rem;border-radius:var(--r);word-break:break-all;margin-bottom:1rem;"></p>
-                <div class="form-group"><label>Código de confirmação</label><input type="text" id="twofa-enable-code" placeholder="000000" maxlength="6" autocomplete="off" style="text-align:center;font-size:1.2rem;letter-spacing:.4rem;font-family:monospace;"></div>
+                <div class="form-group"><label>Confirmation code</label><input type="text" id="twofa-enable-code" placeholder="000000" maxlength="6" autocomplete="off" style="text-align:center;font-size:1.2rem;letter-spacing:.4rem;font-family:monospace;"></div>
                 <p id="twofa-enable-msg" class="err-msg"></p>
-                <button id="twofa-enable-btn" class="submit-btn" style="margin-bottom:.5rem;">Ativar 2FA</button>
-                <button id="twofa-setup-cancel" class="secondary-btn">Cancelar</button>
+                <button id="twofa-enable-btn" class="submit-btn" style="margin-bottom:.5rem;">Enable 2FA</button>
+                <button id="twofa-setup-cancel" class="secondary-btn">Cancel</button>
             </div>
             <div id="twofa-disable-section" style="display:none;">
-                <div class="form-group"><label>Código atual</label><input type="text" id="twofa-disable-code" placeholder="000000" maxlength="6" autocomplete="off" style="text-align:center;font-size:1.2rem;letter-spacing:.4rem;font-family:monospace;"></div>
+                <div class="form-group"><label>Current code</label><input type="text" id="twofa-disable-code" placeholder="000000" maxlength="6" autocomplete="off" style="text-align:center;font-size:1.2rem;letter-spacing:.4rem;font-family:monospace;"></div>
                 <p id="twofa-disable-msg" class="err-msg"></p>
-                <button id="twofa-disable-btn" class="submit-btn" style="margin-bottom:.5rem;background:var(--error);">Desativar 2FA</button>
-                <button id="twofa-disable-cancel" class="secondary-btn">Cancelar</button>
+                <button id="twofa-disable-btn" class="submit-btn" style="margin-bottom:.5rem;background:var(--error);">Disable 2FA</button>
+                <button id="twofa-disable-cancel" class="secondary-btn">Cancel</button>
             </div>
         </div>
         <div style="border-top:1px solid var(--border);margin-top:1.2rem;padding-top:.95rem;">
             <button onclick="if(typeof window._doLogout==='function')window._doLogout();" style="width:100%;background:none;border:1px solid rgba(248,113,113,.3);color:var(--error);padding:.52rem 1rem;border-radius:var(--r);cursor:pointer;font-weight:600;font-size:.84rem;display:flex;align-items:center;justify-content:center;gap:.5rem;">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                Sair da conta
+                Sign out
             </button>
         </div>
     </div>
@@ -878,32 +878,32 @@ button,input,select,textarea{font-family:inherit}
     <!-- ── Topbar ── -->
     <div id="topbar">
         <div class="tb-logo">
-            <img src="logo.png?v=4" alt="Gerador de Templates" class="tb-logo-img">
-            <span class="tb-logo-name">Gerador de Templates</span>
+            <img src="logo.png?v=4" alt="Template Generator" class="tb-logo-img">
+            <span class="tb-logo-name">Template Generator</span>
             <span class="tb-logo-sep"></span>
-            <span class="tb-logo-sub">Canal de Denúncias</span>
+            <span class="tb-logo-sub">Reporting Channel</span>
         </div>
         <div class="tb-spacer"></div>
         <div class="tb-actions">
             <button class="tb-nav-btn" onclick="showHowItWorks()">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                Como funciona
+                How it works
             </button>
             <button id="open-admin-btn" class="tb-btn" style="display:none;" onclick="window.location.href='/admin.html'">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
                 Admin
             </button>
-            <button id="theme-btn" class="tb-btn icon-only" title="Alternar tema">
+            <button id="theme-btn" class="tb-btn icon-only" title="Toggle theme">
                 <svg id="th-moon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                 <svg id="th-sun"  width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
             </button>
-            <div id="user-pill" title="Minha Conta">
+            <div id="user-pill" title="My Account">
                 <div id="user-pill-avatar">U</div>
-                <span id="user-pill-name">Usuário</span>
+                <span id="user-pill-name">User</span>
             </div>
-            <button id="logout-topbar-btn" class="tb-btn" title="Sair" onclick="if(typeof window._doLogout==='function')window._doLogout();">
+            <button id="logout-topbar-btn" class="tb-btn" title="Sign out" onclick="if(typeof window._doLogout==='function')window._doLogout();">
                 <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-                Sair
+                Sign out
             </button>
         </div>
     </div>
@@ -915,19 +915,19 @@ button,input,select,textarea{font-family:inherit}
             <div class="nav-section-label">Menu</div>
             <button class="nav-btn active" id="nav-home" onclick="setView('home')">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-                Início
+                Home
             </button>
             <button class="nav-btn" id="nav-report" onclick="setView('home'); setTimeout(function(){var el=document.getElementById('cat-grid');if(el)el.scrollIntoView({behavior:'smooth',block:'center'});},200)">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                Nova Denúncia
+                New Report
             </button>
             <button class="nav-btn" id="nav-history" onclick="setView('history')">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                Histórico
+                History
             </button>
 
             <div class="nav-sep"></div>
-            <div class="nav-section-label">Tipos</div>
+            <div class="nav-section-label">Types</div>
 
             <button class="nav-btn" onclick="setView('home'); setTimeout(function(){startReport('fsp');},50)">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
@@ -936,7 +936,7 @@ button,input,select,textarea{font-family:inherit}
             </button>
             <button class="nav-btn" onclick="setView('home'); setTimeout(function(){startReport('efsp');},50)">
                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                Executivo Falso
+                Fake Executive
                 <span class="nav-type-badge">EFSP</span>
             </button>
 
@@ -947,8 +947,8 @@ button,input,select,textarea{font-family:inherit}
                         <svg width="13" height="13" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
                     </div>
                     <div>
-                        <div class="sidebar-badge-title">Canal Seguro</div>
-                        <div class="sidebar-badge-text">Todas as denúncias são criptografadas e confidenciais.</div>
+                        <div class="sidebar-badge-title">Secure Channel</div>
+                        <div class="sidebar-badge-text">All reports are encrypted and confidential.</div>
                     </div>
                 </div>
             </div>
@@ -964,17 +964,17 @@ button,input,select,textarea{font-family:inherit}
                 <div id="progress-bar">
                     <div class="prog-step active" id="prog-1">
                         <div class="prog-num">1</div>
-                        <span>Categoria</span>
+                        <span>Category</span>
                     </div>
                     <div class="prog-line" id="prog-line-1"></div>
                     <div class="prog-step" id="prog-2">
                         <div class="prog-num">2</div>
-                        <span>Tipo</span>
+                        <span>Type</span>
                     </div>
                     <div class="prog-line" id="prog-line-2"></div>
                     <div class="prog-step" id="prog-3">
                         <div class="prog-num">3</div>
-                        <span>Denúncia</span>
+                        <span>Report</span>
                     </div>
                 </div>
 
@@ -984,11 +984,11 @@ button,input,select,textarea{font-family:inherit}
                         <div class="hero-accent"></div>
                         <div class="hero-body">
                             <div class="hero-eyebrow">
-                                Canal de Denúncias Corporativo
-                                <span class="hero-eyebrow-live">Ativo</span>
+                                Corporate Reporting Channel
+                                <span class="hero-eyebrow-live">Active</span>
                             </div>
-                            <h1 class="hero-title">Reporte perfis falsos<br>de forma segura</h1>
-                            <p class="hero-desc">Identifique e reporte Fake Social Profiles e Executive Fake Profiles com agilidade, confidencialidade e rastreabilidade total.</p>
+                            <h1 class="hero-title">Report fake profiles<br>securely</h1>
+                            <p class="hero-desc">Identify and report Fake Social Profiles and Executive Fake Profiles quickly, confidentially and with full traceability.</p>
                             <div class="hero-chips">
                                 <span class="chip" onclick="startReport('fsp')">
                                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
@@ -996,11 +996,11 @@ button,input,select,textarea{font-family:inherit}
                                 </span>
                                 <span class="chip" onclick="startReport('efsp')">
                                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
-                                    Executivo Falso (EFSP)
+                                    Fake Executive (EFSP)
                                 </span>
                                 <span class="chip" onclick="showHowItWorks()">
                                     <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                                    Como funciona
+                                    How it works
                                 </span>
                             </div>
                         </div>
@@ -1008,17 +1008,17 @@ button,input,select,textarea{font-family:inherit}
                     <div class="hero-stats">
                         <div class="hero-stat">
                             <div class="hero-stat-val">2</div>
-                            <div class="hero-stat-label">tipos de denúncia</div>
+                            <div class="hero-stat-label">report types</div>
                         </div>
                         <div class="hero-stat-sep"></div>
                         <div class="hero-stat">
                             <div class="hero-stat-val">3</div>
-                            <div class="hero-stat-label">etapas simples</div>
+                            <div class="hero-stat-label">simple steps</div>
                         </div>
                         <div class="hero-stat-sep"></div>
                         <div class="hero-stat">
                             <div class="hero-stat-val">100%</div>
-                            <div class="hero-stat-label">rastreável</div>
+                            <div class="hero-stat-label">traceable</div>
                         </div>
                     </div>
                 </div>
@@ -1028,8 +1028,8 @@ button,input,select,textarea{font-family:inherit}
                     <div class="step-header">
                         <div class="step-num" id="step-num-1">1</div>
                         <div>
-                            <div class="step-title">Qual oferta você deseja notificar?</div>
-                            <div class="step-subtitle">Selecione o tipo de perfil falso identificado.</div>
+                            <div class="step-title">Which offering do you want to report?</div>
+                            <div class="step-subtitle">Select the type of fake profile you found.</div>
                         </div>
                     </div>
                     <div class="cat-grid" id="cat-grid">
@@ -1040,7 +1040,7 @@ button,input,select,textarea{font-family:inherit}
                             </div>
                             <div class="cat-tag">FSP</div>
                             <div class="cat-name">Fake Social Profile</div>
-                            <div class="cat-desc">Perfil falso em redes sociais se passando pela marca.</div>
+                            <div class="cat-desc">Fake social media profile impersonating the brand.</div>
                         </div>
                         <div class="cat-card" id="cat-efsp" onclick="startReport('efsp')">
                             <svg class="cat-arrow" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
@@ -1049,7 +1049,7 @@ button,input,select,textarea{font-family:inherit}
                             </div>
                             <div class="cat-tag">EFSP</div>
                             <div class="cat-name">Executive Fake Profile</div>
-                            <div class="cat-desc">Perfil falso de executivo ou liderança corporativa.</div>
+                            <div class="cat-desc">Fake profile of an executive or corporate leader.</div>
                         </div>
                     </div>
 
@@ -1060,11 +1060,11 @@ button,input,select,textarea{font-family:inherit}
                             <div style="display:flex;align-items:flex-start;gap:.85rem;">
                                 <div class="step-num" style="background:var(--bg3);color:var(--primary);border:2px solid var(--primary);box-shadow:none;">2</div>
                                 <div>
-                                    <div class="step-title">Como deseja fazer a denúncia?</div>
-                                    <div class="step-subtitle">Escolha o tipo de notificação.</div>
+                                    <div class="step-title">How do you want to report it?</div>
+                                    <div class="step-subtitle">Choose the notice type.</div>
                                 </div>
                             </div>
-                            <div id="step2-hint" class="step2-hint">Escolha o tipo de notificação abaixo ↓</div>
+                            <div id="step2-hint" class="step2-hint">Choose the notice type below ↓</div>
                         </div>
                         <div class="notif-grid" style="animation:fadeInUp .3s ease both;">
                             <div class="notif-card" id="notif-first" onclick="selectNotif('sim')">
@@ -1072,25 +1072,25 @@ button,input,select,textarea{font-family:inherit}
                                 <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.3rem;">
                                     <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
                                 </div>
-                                <div class="notif-name">Primeira notificação</div>
-                                <div class="notif-desc">Denúncia inicial - perfil ainda não foi reportado anteriormente.</div>
+                                <div class="notif-name">First notice</div>
+                                <div class="notif-desc">Initial report - the profile has not been reported before.</div>
                             </div>
                             <div class="notif-card" id="notif-renot" onclick="selectNotif('nao')">
                                 <div class="notif-radio" id="radio-renot"></div>
                                 <div style="display:flex;align-items:center;gap:.45rem;margin-bottom:.3rem;">
                                     <svg width="18" height="18" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
                                 </div>
-                                <div class="notif-name">Renotificação</div>
-                                <div class="notif-desc">Seguimento de denúncia anterior que ainda está ativa.</div>
+                                <div class="notif-name">Follow-up notice</div>
+                                <div class="notif-desc">Follow-up on a previous report that is still active.</div>
                             </div>
                         </div>
                         <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.4rem;">
                             <span class="help-tip" onclick="showNotifDiff()">
                                 <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                                Qual a diferença?
+                                What's the difference?
                             </span>
                             <button class="btn-primary" id="step2-continue" onclick="goToReport()" disabled style="opacity:.38;transition:opacity .3s;">
-                                Preencher dados
+                                Fill in details
                                 <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
                             </button>
                         </div>
@@ -1103,38 +1103,38 @@ button,input,select,textarea{font-family:inherit}
             <div id="view-report" style="display:none;" class="view-anim">
                 <div class="offer-indicator" id="offer-indicator">
                     <div id="offer-ind-badge" class="offer-badge">FSP</div>
-                    <span id="offer-ind-text" style="font-size:.82rem;color:var(--text2);">Primeira notificação</span>
+                    <span id="offer-ind-text" style="font-size:.82rem;color:var(--text2);">First notice</span>
                     <button class="offer-change-btn" onclick="setView('home')">
                         <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
-                        Trocar
+                        Change
                     </button>
                 </div>
                 <div class="form-section">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.95rem;">
-                        <h3 style="font-family:'Outfit',sans-serif;font-weight:700;font-size:.98rem;margin:0;">Dados da denúncia</h3>
+                        <h3 style="font-family:'Outfit',sans-serif;font-weight:700;font-size:.98rem;margin:0;">Report details</h3>
                         <button type="button" id="add-client-btn" class="btn-outline" onclick="addClient()" style="padding:.3rem .75rem;font-size:.78rem;">
                             <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                            Adicionar cliente
+                            Add client
                         </button>
                     </div>
                     <div id="clients-container"></div>
                 </div>
                 <div class="preview-section">
                     <h3>
-                        Pré-visualização
-                        <button id="reset-template-btn" onclick="resetTemplate()" style="display:none;background:none;border:none;color:var(--primary);font-size:.77rem;cursor:pointer;text-decoration:underline;">Restaurar automático</button>
+                        Preview
+                        <button id="reset-template-btn" onclick="resetTemplate()" style="display:none;background:none;border:none;color:var(--primary);font-size:.77rem;cursor:pointer;text-decoration:underline;">Restore automatic</button>
                     </h3>
-                    <textarea id="preview-text" placeholder="Preencha os dados acima para gerar a pré-visualização…"></textarea>
+                    <textarea id="preview-text" placeholder="Fill in the details above to generate the preview…"></textarea>
                 </div>
                 <div id="dup-warning" class="dup-warning" role="alert" style="display:none;"></div>
                 <div class="action-bar">
                     <button id="copy-btn" class="btn-outline" disabled>
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
-                        Copiar mensagem
+                        Copy message
                     </button>
                     <button id="submit-btn" class="btn-primary" disabled>
                         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-                        Enviar Denúncia
+                        Send Report
                     </button>
                 </div>
             </div>
@@ -1143,12 +1143,12 @@ button,input,select,textarea{font-family:inherit}
             <div id="view-history" style="display:none;" class="view-anim">
                 <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.2rem;">
                     <div>
-                        <h2 style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1.05rem;margin:0;">Histórico de Denúncias</h2>
-                        <p style="font-size:.76rem;color:var(--text3);margin-top:.12rem;">Suas denúncias enviadas</p>
+                        <h2 style="font-family:'Outfit',sans-serif;font-weight:700;font-size:1.05rem;margin:0;">Report History</h2>
+                        <p style="font-size:.76rem;color:var(--text3);margin-top:.12rem;">Your sent reports</p>
                     </div>
                     <button class="btn-outline" onclick="if(typeof window._loadHistory==='function')window._loadHistory();" style="padding:.3rem .75rem;font-size:.78rem;">
                         <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-5.46-1.5"/></svg>
-                        Atualizar
+                        Refresh
                     </button>
                 </div>
                 <div id="history-list">
@@ -1167,8 +1167,8 @@ button,input,select,textarea{font-family:inherit}
 <div id="toast-container"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="script.js?v=11"></script>
-<script src="app.js?v=4"></script>
+<script src="script.js?v=12"></script>
+<script src="app.js?v=5"></script>
 
 <script>
 /* ── Animação de partículas flutuantes no brand-panel ───────────────────── */
@@ -1246,34 +1246,34 @@ button,input,select,textarea{font-family:inherit}
 <div id="how-it-works-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.52);align-items:center;justify-content:center;">
   <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:560px;width:92%;padding:2rem;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.35);max-height:90vh;overflow-y:auto;">
     <button onclick="document.getElementById('how-it-works-modal').style.display='none'" style="position:absolute;top:.9rem;right:1rem;background:none;border:none;cursor:pointer;color:var(--text2);font-size:1.25rem;line-height:1;">✕</button>
-    <h3 style="margin:0 0 1.4rem;font-size:1.05rem;font-weight:700;color:var(--text1);">Como funciona</h3>
+    <h3 style="margin:0 0 1.4rem;font-size:1.05rem;font-weight:700;color:var(--text1);">How it works</h3>
     <div style="display:flex;flex-direction:column;gap:.9rem;">
       <div style="display:flex;gap:1rem;align-items:flex-start;">
         <div style="min-width:2rem;height:2rem;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
         <div>
-          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Selecione o tipo de perfil falso</div>
-          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;">Escolha entre <strong>FSP</strong> (Fake Social Profile - perfil falso em redes sociais) ou <strong>EFSP</strong> (Executive Fake Profile - executivo ou liderança sendo falsificada).</div>
+          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Select the fake profile type</div>
+          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;">Choose between <strong>FSP</strong> (Fake Social Profile - fake social media profile) or <strong>EFSP</strong> (Executive Fake Profile - an executive or leader being impersonated).</div>
         </div>
       </div>
       <div style="display:flex;gap:1rem;align-items:flex-start;">
         <div style="min-width:2rem;height:2rem;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
         <div>
-          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Informe se é primeira notificação ou renotificação</div>
-          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;"><strong>Primeira notificação:</strong> perfil ainda não denunciado. <strong>Renotificação:</strong> seguimento de denúncia anterior ainda ativa.</div>
+          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Say whether it is a first notice or a follow-up notice</div>
+          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;"><strong>First notice:</strong> profile not reported yet. <strong>Follow-up notice:</strong> follow-up on a previous report that is still active.</div>
         </div>
       </div>
       <div style="display:flex;gap:1rem;align-items:flex-start;">
         <div style="min-width:2rem;height:2rem;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
         <div>
-          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Preencha os dados da denúncia</div>
-          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;">Informe o nome do cliente, as URLs do perfil falso e a data. O sistema gera automaticamente o template formatado pronto para envio.</div>
+          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Fill in the report details</div>
+          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;">Enter the client name, the fake profile URLs and the date. The system automatically generates the formatted template, ready to send.</div>
         </div>
       </div>
       <div style="display:flex;gap:1rem;align-items:flex-start;">
         <div style="min-width:2rem;height:2rem;border-radius:50%;background:var(--primary);color:#fff;font-weight:700;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;">4</div>
         <div>
-          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Copie e envie a denúncia</div>
-          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;">Copie o texto gerado e encaminhe pelo canal indicado (WhatsApp, e-mail ou plataforma da rede social). O histórico fica registrado para acompanhamento.</div>
+          <div style="font-weight:600;font-size:.88rem;color:var(--text1);margin-bottom:.2rem;">Copy and send the report</div>
+          <div style="font-size:.82rem;color:var(--text2);line-height:1.6;">Copy the generated text and forward it through the indicated channel (WhatsApp, email or the social network's platform). The history is kept for follow-up.</div>
         </div>
       </div>
     </div>
@@ -1284,36 +1284,36 @@ button,input,select,textarea{font-family:inherit}
 <div id="notif-diff-modal" style="display:none;position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.52);align-items:center;justify-content:center;">
   <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;max-width:520px;width:92%;padding:2rem;position:relative;box-shadow:0 8px 40px rgba(0,0,0,.35);">
     <button onclick="document.getElementById('notif-diff-modal').style.display='none'" style="position:absolute;top:.9rem;right:1rem;background:none;border:none;cursor:pointer;color:var(--text2);font-size:1.25rem;line-height:1;">✕</button>
-    <h3 style="margin:0 0 1.2rem;font-size:1.05rem;font-weight:700;color:var(--text1);">Qual a diferença?</h3>
+    <h3 style="margin:0 0 1.2rem;font-size:1.05rem;font-weight:700;color:var(--text1);">What's the difference?</h3>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
       <!-- Primeira Notificação -->
       <div style="background:var(--bg3);border:1.5px solid var(--primary);border-radius:10px;padding:1rem;">
         <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem;">
           <svg width="16" height="16" fill="none" stroke="var(--primary)" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-          <strong style="font-size:.88rem;color:var(--primary);">Primeira notificação</strong>
+          <strong style="font-size:.88rem;color:var(--primary);">First notice</strong>
         </div>
         <ul style="margin:0;padding:0 0 0 1.1rem;font-size:.82rem;color:var(--text2);line-height:1.7;">
-          <li>Perfil ainda não foi denunciado antes</li>
-          <li>Abertura de novo caso na plataforma</li>
-          <li>Inclui identificação completa do perfil</li>
-          <li>Template com linguagem de primeira ocorrência</li>
+          <li>Profile has not been reported before</li>
+          <li>Opens a new case on the platform</li>
+          <li>Includes full identification of the profile</li>
+          <li>Template worded as a first occurrence</li>
         </ul>
       </div>
       <!-- Renotificação -->
       <div style="background:var(--bg3);border:1.5px solid var(--border);border-radius:10px;padding:1rem;">
         <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.6rem;">
           <svg width="16" height="16" fill="none" stroke="var(--text1)" stroke-width="2" viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
-          <strong style="font-size:.88rem;color:var(--text1);">Renotificação</strong>
+          <strong style="font-size:.88rem;color:var(--text1);">Follow-up notice</strong>
         </div>
         <ul style="margin:0;padding:0 0 0 1.1rem;font-size:.82rem;color:var(--text2);line-height:1.7;">
-          <li>Perfil já foi denunciado e continua ativo</li>
-          <li>Seguimento de caso já existente</li>
-          <li>Referencia a denúncia anterior</li>
-          <li>Template com linguagem de reincidência</li>
+          <li>Profile was already reported and is still active</li>
+          <li>Follow-up on an existing case</li>
+          <li>References the previous report</li>
+          <li>Template worded as a repeat occurrence</li>
         </ul>
       </div>
     </div>
-    <p style="margin:1rem 0 0;font-size:.79rem;color:var(--text3);text-align:center;">Em caso de dúvida, escolha <strong>Primeira notificação</strong> se for o primeiro reporte deste perfil.</p>
+    <p style="margin:1rem 0 0;font-size:.79rem;color:var(--text3);text-align:center;">If in doubt, choose <strong>First notice</strong> if this is the first report for this profile.</p>
   </div>
 </div>
 </body>

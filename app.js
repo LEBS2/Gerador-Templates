@@ -119,7 +119,7 @@ function goToReport() {
     var badge = document.getElementById('offer-ind-badge');
     var txt   = document.getElementById('offer-ind-text');
     if (badge) { badge.textContent = labels[_appOferta] || _appOferta.toUpperCase(); badge.className = 'offer-badge'; }
-    if (txt)   { txt.textContent = _appPrimeira === 'sim' ? 'Primeira notificação' : 'Renotificação'; }
+    if (txt)   { txt.textContent = _appPrimeira === 'sim' ? 'First notice' : 'Follow-up notice'; }
     clientCount = 0;
     var cc = document.getElementById('clients-container');
     if (cc) cc.innerHTML = '';
@@ -150,17 +150,17 @@ function addClient() {
     var div = document.createElement('div');
     div.id = 'client-group-' + n;
     div.innerHTML = sep +
-        '<div class="client-header">Cliente ' + n +
-        (n > 1 ? '<button class="remove-client-btn" onclick="removeClient(' + n + ')">✕ Remover</button>' : '') +
+        '<div class="client-header">Client ' + n +
+        (n > 1 ? '<button class="remove-client-btn" onclick="removeClient(' + n + ')">✕ Remove</button>' : '') +
         '</div>' +
-        '<div class="form-row"><div class="form-label">Nome da marca <span style="color:var(--error)">*</span></div>' +
-        '<input type="text" id="client' + n + '" class="form-input" placeholder="Nome do cliente…"></div>' +
-        '<div class="form-row"><div class="form-label">URL principal <span style="color:var(--error)">*</span></div>' +
+        '<div class="form-row"><div class="form-label">Brand name <span style="color:var(--error)">*</span></div>' +
+        '<input type="text" id="client' + n + '" class="form-input" placeholder="Client name…"></div>' +
+        '<div class="form-row"><div class="form-label">Main URL <span style="color:var(--error)">*</span></div>' +
         '<div><input type="url" class="client' + n + '-url form-input" placeholder="https://…">' +
         '<div id="extra-urls-' + n + '"></div>' +
         '<button type="button" class="add-url-link" onclick="addUrlField(' + n + ')">' +
         '<svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>' +
-        ' Adicionar outra URL</button></div></div>';
+        ' Add another URL</button></div></div>';
     container.appendChild(div);
     if (typeof updatePreview === 'function') updatePreview();
 }
@@ -182,8 +182,8 @@ function addUrlField(n) {
     var rm = document.createElement('button');
     rm.type = 'button';
     rm.className = 'remove-url-btn';
-    rm.title = 'Remover esta URL';
-    rm.setAttribute('aria-label', 'Remover esta URL');
+    rm.title = 'Remove this URL';
+    rm.setAttribute('aria-label', 'Remove this URL');
     rm.innerHTML = '✕';
     rm.onclick = function() {
         row.remove();

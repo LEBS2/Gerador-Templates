@@ -1,9 +1,9 @@
 ﻿<!DOCTYPE html>
-<html lang="pt-BR" data-theme="dark">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gerador de Templates Admin</title>
+<title>Template Generator Admin</title>
 <link rel="icon" type="image/png" href="logo.png?v=4">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -391,7 +391,7 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
 <div id="auth-gate">
   <div id="auth-gate-inner">
     <div class="spinner"></div>
-    <p>Verificando acesso…</p>
+    <p>Checking access…</p>
   </div>
 </div>
 
@@ -402,14 +402,14 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
   <div id="topbar">
     <a class="topbar-logo" href="/">
       <img src="logo.png?v=4" alt="Logo">
-      Gerador de Templates
+      Template Generator
     </a>
     <div class="topbar-divider"></div>
-    <span id="topbar-title">Painel Administrativo</span>
+    <span id="topbar-title">Admin Panel</span>
     <div class="topbar-spacer"></div>
     <span class="admin-badge">ADMIN</span>
     <span id="topbar-clock"></span>
-    <button class="topbar-theme-btn" id="theme-btn" title="Alternar tema">
+    <button class="topbar-theme-btn" id="theme-btn" title="Toggle theme">
       <svg id="th-moon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
       <svg id="th-sun"  width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
     </button>
@@ -421,27 +421,27 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
     <!-- Sidebar -->
     <nav id="sidebar">
       <div style="padding:.75rem .5rem .25rem;">
-        <div class="nav-section-label">Navegação</div>
+        <div class="nav-section-label">Navigation</div>
         <button class="nav-item active" data-section="overview">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Visão Geral
+          Overview
         </button>
         <button class="nav-item" data-section="users" id="nav-users-btn">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Usuários
+          Users
           <span class="nav-pending" id="nav-pending-count" style="display:none">0</span>
         </button>
         <button class="nav-item" data-section="logs">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          Logs de Acesso
+          Access Logs
         </button>
         <button class="nav-item" data-section="audit">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Auditoria
+          Audit
         </button>
         <button class="nav-item" data-section="locks">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Travas de envio
+          Send locks
         </button>
         <button class="nav-item" data-section="config">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
@@ -453,12 +453,12 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
           <div class="user-chip-avatar" id="sidebar-avatar">A</div>
           <div>
             <div class="user-chip-name" id="sidebar-user">Admin</div>
-            <div class="user-chip-role">Administrador</div>
+            <div class="user-chip-role">Administrator</div>
           </div>
         </div>
         <button class="logout-btn" id="sidebar-logout">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Sair da conta
+          Sign out
         </button>
       </div>
     </nav>
@@ -470,37 +470,37 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
       <div class="section active" id="section-overview">
         <div class="page-header">
           <div>
-            <h1>Visão Geral</h1>
-            <div class="page-subtitle">Resumo das atividades da plataforma</div>
+            <h1>Overview</h1>
+            <div class="page-subtitle">Summary of platform activity</div>
           </div>
           <button class="btn-primary" onclick="loadAll()">
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
-            Atualizar
+            Refresh
           </button>
         </div>
         <div class="stats-grid">
           <div class="stat-card" style="--stat-accent:var(--blue)">
-            <div class="stat-label">Total de usuários</div>
+            <div class="stat-label">Total users</div>
             <div class="stat-value blue" id="stat-total">-</div>
           </div>
           <div class="stat-card" style="--stat-accent:var(--amber)">
-            <div class="stat-label">Pendentes</div>
+            <div class="stat-label">Pending</div>
             <div class="stat-value amber" id="stat-pending">-</div>
           </div>
           <div class="stat-card" style="--stat-accent:var(--green)">
-            <div class="stat-label">Aprovados</div>
+            <div class="stat-label">Approved</div>
             <div class="stat-value green" id="stat-approved">-</div>
           </div>
           <div class="stat-card" style="--stat-accent:var(--red)">
-            <div class="stat-label">Negados</div>
+            <div class="stat-label">Denied</div>
             <div class="stat-value red" id="stat-denied">-</div>
           </div>
           <div class="stat-card" style="--stat-accent:var(--purple)">
-            <div class="stat-label">Logins hoje</div>
+            <div class="stat-label">Logins today</div>
             <div class="stat-value purple" id="stat-today">-</div>
           </div>
           <div class="stat-card" style="--stat-accent:var(--blue)">
-            <div class="stat-label">Denúncias enviadas</div>
+            <div class="stat-label">Reports sent</div>
             <div class="stat-value blue" id="stat-reports">-</div>
           </div>
         </div>
@@ -511,13 +511,13 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
               <div class="card-title-icon" style="background:var(--amber-bg);">
                 <svg width="13" height="13" fill="none" stroke="var(--amber)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               </div>
-              <span style="color:var(--amber)">Solicitações pendentes de aprovação</span>
+              <span style="color:var(--amber)">Requests pending approval</span>
             </div>
-            <button class="btn-primary" style="font-size:.78rem;padding:.35rem .75rem;" onclick="goToUsers('pending')">Ver todas</button>
+            <button class="btn-primary" style="font-size:.78rem;padding:.35rem .75rem;" onclick="goToUsers('pending')">View all</button>
           </div>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>E-mail</th><th>IP de cadastro</th><th>Data</th><th>Ações</th></tr></thead>
+              <thead><tr><th>Email</th><th>Sign-up IP</th><th>Date</th><th>Actions</th></tr></thead>
               <tbody id="pending-tbody"></tbody>
             </table>
           </div>
@@ -529,12 +529,12 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
               <div class="card-title-icon">
                 <svg width="13" height="13" fill="none" stroke="var(--blue)" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
               </div>
-              Atividade recente
+              Recent activity
             </div>
           </div>
           <div class="card-body">
             <div class="activity-list" id="activity-list">
-              <div class="empty-state"><p>Carregando…</p></div>
+              <div class="empty-state"><p>Loading…</p></div>
             </div>
           </div>
         </div>
@@ -544,8 +544,8 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
       <div class="section" id="section-users">
         <div class="page-header">
           <div>
-            <h1>Usuários</h1>
-            <div class="page-subtitle">Gerencie solicitações e acessos</div>
+            <h1>Users</h1>
+            <div class="page-subtitle">Manage requests and access</div>
           </div>
         </div>
         <div class="card">
@@ -554,15 +554,15 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
               <div class="card-title-icon">
                 <svg width="13" height="13" fill="none" stroke="var(--blue)" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
               </div>
-              Lista de usuários
+              User list
             </div>
             <div class="filter-bar">
-              <input id="user-search" type="text" placeholder="Buscar e-mail…">
+              <input id="user-search" type="text" placeholder="Search email…">
               <select id="user-status-filter">
-                <option value="">Todos</option>
-                <option value="pending">Pendente</option>
-                <option value="approved">Aprovado</option>
-                <option value="denied">Negado</option>
+                <option value="">All</option>
+                <option value="pending">Pending</option>
+                <option value="approved">Approved</option>
+                <option value="denied">Denied</option>
               </select>
             </div>
           </div>
@@ -570,18 +570,18 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
             <table id="users-table">
               <thead>
                 <tr>
-                  <th>Usuário</th>
+                  <th>User</th>
                   <th>Status</th>
                   <th>Role</th>
                   <th>2FA</th>
-                  <th>Tentativas</th>
-                  <th>Último IP</th>
-                  <th>Cadastro</th>
-                  <th>Ações</th>
+                  <th>Attempts</th>
+                  <th>Last IP</th>
+                  <th>Signed up</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody id="users-tbody">
-                <tr><td colspan="8"><div class="empty-state"><p>Carregando…</p></div></td></tr>
+                <tr><td colspan="8"><div class="empty-state"><p>Loading…</p></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -592,17 +592,17 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
       <div class="section" id="section-logs">
         <div class="page-header">
           <div>
-            <h1>Logs de Acesso</h1>
-            <div class="page-subtitle">Auditoria de requisições HTTP</div>
+            <h1>Access Logs</h1>
+            <div class="page-subtitle">HTTP request audit</div>
           </div>
           <div style="display:flex;gap:.5rem;">
-            <button class="btn-outline" id="export-logs-btn">
+            <button class="btn-secondary" id="export-logs-btn">
               <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Exportar CSV
+              Export CSV
             </button>
             <button class="btn-danger" id="clear-logs-btn">
               <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
-              Limpar logs
+              Clear logs
             </button>
           </div>
         </div>
@@ -612,12 +612,12 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
               <div class="card-title-icon">
                 <svg width="13" height="13" fill="none" stroke="var(--blue)" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
               </div>
-              Requisições recentes
+              Recent requests
             </div>
             <div class="filter-bar">
-              <input id="log-search" type="text" placeholder="Filtrar IP ou e-mail…">
+              <input id="log-search" type="text" placeholder="Filter by IP or email…">
               <select id="log-status-filter">
-                <option value="">Todos os status</option>
+                <option value="">All statuses</option>
                 <option value="2">2xx</option>
                 <option value="4">4xx</option>
                 <option value="5">5xx</option>
@@ -628,17 +628,17 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
             <table id="logs-table">
               <thead>
                 <tr>
-                  <th>Hora</th>
+                  <th>Time</th>
                   <th>IP</th>
-                  <th>Método</th>
-                  <th>Rota</th>
+                  <th>Method</th>
+                  <th>Route</th>
                   <th>Status</th>
-                  <th>Duração</th>
-                  <th>Usuário</th>
+                  <th>Duration</th>
+                  <th>User</th>
                 </tr>
               </thead>
               <tbody id="logs-tbody">
-                <tr><td colspan="7"><div class="empty-state"><p>Carregando…</p></div></td></tr>
+                <tr><td colspan="7"><div class="empty-state"><p>Loading…</p></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -649,8 +649,8 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
       <div class="section" id="section-audit">
         <div class="page-header">
           <div>
-            <h1>Auditoria de Segurança</h1>
-            <div class="page-subtitle">Verificações e findings da plataforma</div>
+            <h1>Security Audit</h1>
+            <div class="page-subtitle">Platform checks and findings</div>
           </div>
         </div>
 
@@ -660,7 +660,7 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
               <div class="card-title-icon">
                 <svg width="13" height="13" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </div>
-              Verificações aprovadas
+              Passed checks
             </div>
             <span class="badge badge-green">11 / 12 OK</span>
           </div>
@@ -669,99 +669,99 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
             <div class="finding ok">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
               <div>
-                <div class="finding-title">Autenticação baseada em HMAC-SHA256</div>
-                <div class="finding-desc">Tokens de sessão assinados com segredo de 32+ bytes. Sem JWT vulnerável a alg:none.</div>
-                <div class="finding-meta"><span class="badge badge-green">Corrigido</span><span style="font-size:.72rem;color:var(--text3)">CWE-345 · 2026-07</span></div>
+                <div class="finding-title">HMAC-SHA256-based authentication</div>
+                <div class="finding-desc">Session tokens signed with a 32+ byte secret. No JWT vulnerable to alg:none.</div>
+                <div class="finding-meta"><span class="badge badge-green">Fixed</span><span style="font-size:.72rem;color:var(--text3)">CWE-345 · 2026-07</span></div>
               </div>
             </div>
 
             <div class="finding ok">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
               <div>
-                <div class="finding-title">Rate limiting em /api/login</div>
-                <div class="finding-desc">Máximo 5 tentativas por IP em 15 min antes de bloqueio temporário.</div>
-                <div class="finding-meta"><span class="badge badge-green">Corrigido</span><span style="font-size:.72rem;color:var(--text3)">CWE-307</span></div>
+                <div class="finding-title">Rate limiting on /api/login</div>
+                <div class="finding-desc">Maximum of 5 attempts per IP in 15 min before a temporary lockout.</div>
+                <div class="finding-meta"><span class="badge badge-green">Fixed</span><span style="font-size:.72rem;color:var(--text3)">CWE-307</span></div>
               </div>
             </div>
 
             <div class="finding ok">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
               <div>
-                <div class="finding-title">Senha armazenada como hash bcrypt</div>
-                <div class="finding-desc">bcrypt com fator de custo 12. Nenhuma senha em texto plano no banco.</div>
-                <div class="finding-meta"><span class="badge badge-green">Corrigido</span><span style="font-size:.72rem;color:var(--text3)">CWE-256</span></div>
+                <div class="finding-title">Password stored as a bcrypt hash</div>
+                <div class="finding-desc">bcrypt with cost factor 12. No plain-text passwords in the database.</div>
+                <div class="finding-meta"><span class="badge badge-green">Fixed</span><span style="font-size:.72rem;color:var(--text3)">CWE-256</span></div>
               </div>
             </div>
 
             <div class="finding ok">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div>
               <div>
-                <div class="finding-title">Headers de segurança HTTP</div>
-                <div class="finding-desc">X-Content-Type-Options, X-Frame-Options, Referrer-Policy e Content-Security-Policy ativos.</div>
-                <div class="finding-meta"><span class="badge badge-green">Corrigido</span><span style="font-size:.72rem;color:var(--text3)">OWASP A05</span></div>
+                <div class="finding-title">HTTP security headers</div>
+                <div class="finding-desc">X-Content-Type-Options, X-Frame-Options, Referrer-Policy and Content-Security-Policy enabled.</div>
+                <div class="finding-meta"><span class="badge badge-green">Fixed</span><span style="font-size:.72rem;color:var(--text3)">OWASP A05</span></div>
               </div>
             </div>
 
             <div class="finding ok">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12l2 2 4-4"/></svg></div>
               <div>
-                <div class="finding-title">CORS restrito à origem configurada</div>
-                <div class="finding-desc">Access-Control-Allow-Origin definido via ALLOWED_ORIGIN (não wildcard).</div>
-                <div class="finding-meta"><span class="badge badge-green">Corrigido</span><span style="font-size:.72rem;color:var(--text3)">CWE-942</span></div>
+                <div class="finding-title">CORS restricted to the configured origin</div>
+                <div class="finding-desc">Access-Control-Allow-Origin set via ALLOWED_ORIGIN (no wildcard).</div>
+                <div class="finding-meta"><span class="badge badge-green">Fixed</span><span style="font-size:.72rem;color:var(--text3)">CWE-942</span></div>
               </div>
             </div>
 
             <div class="finding ok">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></div>
               <div>
-                <div class="finding-title">Output sanitizado (XSS Prevention)</div>
-                <div class="finding-desc">Função esc() escapa HTML em todas as renderizações dinâmicas.</div>
-                <div class="finding-meta"><span class="badge badge-green">Corrigido</span><span style="font-size:.72rem;color:var(--text3)">CWE-79</span></div>
+                <div class="finding-title">Sanitized output (XSS prevention)</div>
+                <div class="finding-desc">The esc() function escapes HTML in every dynamic render.</div>
+                <div class="finding-meta"><span class="badge badge-green">Fixed</span><span style="font-size:.72rem;color:var(--text3)">CWE-79</span></div>
               </div>
             </div>
 
             <div class="finding ok">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg></div>
               <div>
-                <div class="finding-title">2FA TOTP disponível para todos os usuários</div>
-                <div class="finding-desc">Suporte a Google Authenticator / Authy via RFC 6238 (TOTP).</div>
-                <div class="finding-meta"><span class="badge badge-green">Implementado</span><span style="font-size:.72rem;color:var(--text3)">OWASP A07</span></div>
+                <div class="finding-title">TOTP 2FA available to all users</div>
+                <div class="finding-desc">Google Authenticator / Authy support via RFC 6238 (TOTP).</div>
+                <div class="finding-meta"><span class="badge badge-green">Implemented</span><span style="font-size:.72rem;color:var(--text3)">OWASP A07</span></div>
               </div>
             </div>
 
             <div class="finding ok">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
               <div>
-                <div class="finding-title">Logs de acesso auditáveis</div>
-                <div class="finding-desc">Todos os requests registrados com IP, método, rota, status, latência e usuário.</div>
-                <div class="finding-meta"><span class="badge badge-green">Ativo</span><span style="font-size:.72rem;color:var(--text3)">ISO 27001 A.12.4</span></div>
+                <div class="finding-title">Auditable access logs</div>
+                <div class="finding-desc">Every request is logged with IP, method, route, status, latency and user.</div>
+                <div class="finding-meta"><span class="badge badge-green">Active</span><span style="font-size:.72rem;color:var(--text3)">ISO 27001 A.12.4</span></div>
               </div>
             </div>
 
             <div class="finding ok">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
               <div>
-                <div class="finding-title">Expiração de sessão (TTL)</div>
-                <div class="finding-desc">Tokens expiram em 24h. Renovação automática via KV EX.</div>
-                <div class="finding-meta"><span class="badge badge-green">Corrigido</span><span style="font-size:.72rem;color:var(--text3)">CWE-613</span></div>
+                <div class="finding-title">Session expiration (TTL)</div>
+                <div class="finding-desc">Tokens expire after 24h. Automatic renewal via KV EX.</div>
+                <div class="finding-meta"><span class="badge badge-green">Fixed</span><span style="font-size:.72rem;color:var(--text3)">CWE-613</span></div>
               </div>
             </div>
 
             <div class="finding ok">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
               <div>
-                <div class="finding-title">Painel admin protegido por token</div>
-                <div class="finding-desc">Middleware requireAdmin valida x-session-token + isAdmin=true antes de qualquer operação.</div>
-                <div class="finding-meta"><span class="badge badge-green">Ativo</span><span style="font-size:.72rem;color:var(--text3)">OWASP A01</span></div>
+                <div class="finding-title">Admin panel protected by token</div>
+                <div class="finding-desc">The requireAdmin middleware validates x-session-token + isAdmin=true before any operation.</div>
+                <div class="finding-meta"><span class="badge badge-green">Active</span><span style="font-size:.72rem;color:var(--text3)">OWASP A01</span></div>
               </div>
             </div>
 
             <div class="finding ok">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-.08-5"/></svg></div>
               <div>
-                <div class="finding-title">Fallback in-memory para ambiente local</div>
-                <div class="finding-desc">KV_AVAILABLE evita crash quando KV_REST_API_URL/TOKEN não estão definidos.</div>
-                <div class="finding-meta"><span class="badge badge-green">Implementado</span><span style="font-size:.72rem;color:var(--text3)">DevX</span></div>
+                <div class="finding-title">In-memory fallback for local environment</div>
+                <div class="finding-desc">KV_AVAILABLE prevents crashes when KV_REST_API_URL/TOKEN are not set.</div>
+                <div class="finding-meta"><span class="badge badge-green">Implemented</span><span style="font-size:.72rem;color:var(--text3)">DevX</span></div>
               </div>
             </div>
 
@@ -774,17 +774,17 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
               <div class="card-title-icon" style="background:var(--amber-bg);">
                 <svg width="13" height="13" fill="none" stroke="var(--amber)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
               </div>
-              Recomendações
+              Recommendations
             </div>
-            <span class="badge badge-amber">1 sugestão</span>
+            <span class="badge badge-amber">1 suggestion</span>
           </div>
           <div class="card-body">
             <div class="finding warn">
               <div class="finding-icon"><svg width="14" height="14" fill="none" stroke="var(--amber)" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg></div>
               <div>
-                <div class="finding-title">Variáveis de ambiente em produção</div>
-                <div class="finding-desc">Certifique-se de que SESSION_SECRET, KV_REST_API_URL e KV_REST_API_TOKEN estão configuradas no ambiente de produção (Vercel).</div>
-                <div class="finding-meta"><span class="badge badge-amber">Recomendado</span><span style="font-size:.72rem;color:var(--text3)">Produção</span></div>
+                <div class="finding-title">Production environment variables</div>
+                <div class="finding-desc">Make sure SESSION_SECRET, KV_REST_API_URL and KV_REST_API_TOKEN are set in the production environment (Vercel).</div>
+                <div class="finding-meta"><span class="badge badge-amber">Recommended</span><span style="font-size:.72rem;color:var(--text3)">Production</span></div>
               </div>
             </div>
           </div>
@@ -796,13 +796,13 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
       <div class="section" id="section-locks">
         <div class="page-header">
           <div>
-            <h1>Travas de envio</h1>
-            <div class="page-subtitle">Cada URL + cliente + template só pode ser enviada uma vez. Libere uma trava para permitir um novo envio.</div>
+            <h1>Send locks</h1>
+            <div class="page-subtitle">Each URL + client + template can only be sent once. Release a lock to allow a new send.</div>
           </div>
           <div style="display:flex;gap:.5rem;">
-            <button class="btn-outline" id="reload-locks-btn">
+            <button class="btn-secondary" id="reload-locks-btn">
               <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-5.46-1.5"/></svg>
-              Atualizar
+              Refresh
             </button>
           </div>
         </div>
@@ -812,26 +812,26 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
               <div class="card-title-icon">
                 <svg width="13" height="13" fill="none" stroke="var(--blue)" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
               </div>
-              Denúncias enviadas <span class="badge badge-gray" id="locks-count" style="margin-left:.4rem;">0</span>
+              Reports sent <span class="badge badge-gray" id="locks-count" style="margin-left:.4rem;">0</span>
             </div>
             <div class="filter-bar">
-              <input id="lock-search" type="text" placeholder="Filtrar URL, cliente ou e-mail…">
+              <input id="lock-search" type="text" placeholder="Filter by URL, client or email…">
               <select id="lock-template-filter">
-                <option value="">Todos os templates</option>
-                <option value="fsp_first">FSP · Primeira notificação</option>
-                <option value="fsp_renot">FSP · Renotificação</option>
-                <option value="efsp_first">EFSP · Primeira notificação</option>
-                <option value="efsp_renot">EFSP · Renotificação</option>
+                <option value="">All templates</option>
+                <option value="fsp_first">FSP · First notice</option>
+                <option value="fsp_renot">FSP · Follow-up notice</option>
+                <option value="efsp_first">EFSP · First notice</option>
+                <option value="efsp_renot">EFSP · Follow-up notice</option>
               </select>
             </div>
           </div>
           <div class="table-wrap">
             <table>
               <thead>
-                <tr><th>Enviada em</th><th>Cliente</th><th>URL</th><th>Template</th><th>Usuário</th><th>Ações</th></tr>
+                <tr><th>Sent on</th><th>Client</th><th>URL</th><th>Template</th><th>User</th><th>Actions</th></tr>
               </thead>
               <tbody id="locks-tbody">
-                <tr><td colspan="6"><div class="empty-state"><p>Carregando…</p></div></td></tr>
+                <tr><td colspan="6"><div class="empty-state"><p>Loading…</p></div></td></tr>
               </tbody>
             </table>
           </div>
@@ -842,21 +842,21 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
       <div class="section" id="section-config">
         <div class="page-header">
           <div>
-            <h1>Gerenciar Templates</h1>
-            <div class="page-subtitle">Edite as mensagens padrão usadas nas denúncias</div>
+            <h1>Manage Templates</h1>
+            <div class="page-subtitle">Edit the default messages used in reports</div>
           </div>
           <button class="btn-primary" id="save-templates-btn">
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Salvar todos
+            Save all
           </button>
         </div>
 
         <!-- Template selector tabs -->
         <div style="display:flex;gap:.4rem;margin-bottom:1.25rem;flex-wrap:wrap;">
-          <button class="tpl-tab active" data-tpl="fsp_first">FSP - 1ª notif.</button>
-          <button class="tpl-tab" data-tpl="fsp_renot">FSP - Renotif.</button>
-          <button class="tpl-tab" data-tpl="efsp_first">EFSP - 1ª notif.</button>
-          <button class="tpl-tab" data-tpl="efsp_renot">EFSP - Renotif.</button>
+          <button class="tpl-tab active" data-tpl="fsp_first">FSP - 1st notice</button>
+          <button class="tpl-tab" data-tpl="fsp_renot">FSP - Follow-up</button>
+          <button class="tpl-tab" data-tpl="efsp_first">EFSP - 1st notice</button>
+          <button class="tpl-tab" data-tpl="efsp_renot">EFSP - Follow-up</button>
         </div>
 
         <div class="card">
@@ -865,23 +865,23 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
               <div class="card-title-icon">
                 <svg width="13" height="13" fill="none" stroke="var(--blue)" stroke-width="2" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
               </div>
-              <span id="tpl-title">Template FSP - Primeira Notificação</span>
+              <span id="tpl-title">FSP Template - First Notice</span>
             </div>
             <div style="display:flex;align-items:center;gap:.75rem;">
-              <span style="font-size:.78rem;color:var(--text3);">Variáveis: <code style="background:var(--bg3);padding:.1rem .35rem;border-radius:3px;font-family:var(--mono);color:var(--blue);">{cliente}</code> <code style="background:var(--bg3);padding:.1rem .35rem;border-radius:3px;font-family:var(--mono);color:var(--blue);">{urls}</code> <code style="background:var(--bg3);padding:.1rem .35rem;border-radius:3px;font-family:var(--mono);color:var(--blue);">{data}</code></span>
+              <span style="font-size:.78rem;color:var(--text3);">Variables: <code style="background:var(--bg3);padding:.1rem .35rem;border-radius:3px;font-family:var(--mono);color:var(--blue);">{cliente}</code> <code style="background:var(--bg3);padding:.1rem .35rem;border-radius:3px;font-family:var(--mono);color:var(--blue);">{urls}</code> <code style="background:var(--bg3);padding:.1rem .35rem;border-radius:3px;font-family:var(--mono);color:var(--blue);">{data}</code></span>
               <button id="tpl-reset-btn" style="background:none;border:1px solid var(--border);color:var(--text2);padding:.3rem .65rem;border-radius:var(--r);font-size:.78rem;cursor:pointer;display:flex;align-items:center;gap:.3rem;">
                 <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.5"/></svg>
-                Restaurar padrão
+                Restore default
               </button>
             </div>
           </div>
           <div class="card-body">
-            <textarea id="tpl-editor" style="width:100%;min-height:240px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:.8rem;line-height:1.7;padding:.85rem 1rem;resize:vertical;outline:none;transition:border-color .2s;" placeholder="Carregando template..."></textarea>
+            <textarea id="tpl-editor" style="width:100%;min-height:240px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);color:var(--text);font-family:var(--mono);font-size:.8rem;line-height:1.7;padding:.85rem 1rem;resize:vertical;outline:none;transition:border-color .2s;" placeholder="Loading template..."></textarea>
             <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.75rem;flex-wrap:wrap;gap:.5rem;">
-              <span id="tpl-char-count" style="font-size:.75rem;color:var(--text3);font-family:var(--mono);">0 caracteres</span>
+              <span id="tpl-char-count" style="font-size:.75rem;color:var(--text3);font-family:var(--mono);">0 characters</span>
               <div style="display:flex;gap:.5rem;">
-                <button id="tpl-preview-btn" style="background:none;border:1px solid var(--border);color:var(--text2);padding:.4rem .85rem;border-radius:var(--r);font-size:.82rem;cursor:pointer;">Pré-visualizar</button>
-                <button id="tpl-save-one-btn" class="btn-primary" style="padding:.4rem .9rem;font-size:.82rem;">Salvar este</button>
+                <button id="tpl-preview-btn" style="background:none;border:1px solid var(--border);color:var(--text2);padding:.4rem .85rem;border-radius:var(--r);font-size:.82rem;cursor:pointer;">Preview</button>
+                <button id="tpl-save-one-btn" class="btn-primary" style="padding:.4rem .9rem;font-size:.82rem;">Save this one</button>
               </div>
             </div>
           </div>
@@ -894,9 +894,9 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
               <div class="card-title-icon" style="background:var(--green-bg);">
                 <svg width="13" height="13" fill="none" stroke="var(--green)" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               </div>
-              Pré-visualização (exemplo)
+              Preview (example)
             </div>
-            <button onclick="$('tpl-preview-card').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.8rem;">fechar</button>
+            <button onclick="$('tpl-preview-card').style.display='none'" style="background:none;border:none;color:var(--text3);cursor:pointer;font-size:.8rem;">close</button>
           </div>
           <div class="card-body">
             <pre id="tpl-preview-output" style="white-space:pre-wrap;word-break:break-word;font-family:var(--mono);font-size:.8rem;line-height:1.7;color:var(--text2);background:var(--bg3);padding:.85rem 1rem;border-radius:var(--r);border:1px solid var(--border);margin:0;"></pre>
@@ -910,34 +910,34 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
               <div class="card-title-icon">
                 <svg width="13" height="13" fill="none" stroke="var(--blue)" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
               </div>
-              Configurações da plataforma
+              Platform settings
             </div>
           </div>
           <div class="card-body">
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem;">
               <div>
-                <label style="font-size:.78rem;font-weight:600;color:var(--text2);display:block;margin-bottom:.4rem;">Nome da plataforma</label>
+                <label style="font-size:.78rem;font-weight:600;color:var(--text2);display:block;margin-bottom:.4rem;">Platform name</label>
                 <input id="cfg-app-name" type="text" value="Gerador de Templates" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.5rem .75rem;border-radius:var(--r);font-size:.875rem;outline:none;font-family:var(--sans);transition:border-color .2s;">
               </div>
               <div>
-                <label style="font-size:.78rem;font-weight:600;color:var(--text2);display:block;margin-bottom:.4rem;">Máx. tentativas de login</label>
+                <label style="font-size:.78rem;font-weight:600;color:var(--text2);display:block;margin-bottom:.4rem;">Max. login attempts</label>
                 <input id="cfg-max-attempts" type="number" value="5" min="1" max="20" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.5rem .75rem;border-radius:var(--r);font-size:.875rem;outline:none;font-family:var(--sans);transition:border-color .2s;">
               </div>
               <div>
-                <label style="font-size:.78rem;font-weight:600;color:var(--text2);display:block;margin-bottom:.4rem;">Expiração de sessão (horas)</label>
+                <label style="font-size:.78rem;font-weight:600;color:var(--text2);display:block;margin-bottom:.4rem;">Session expiration (hours)</label>
                 <input id="cfg-session-ttl" type="number" value="24" min="1" max="720" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.5rem .75rem;border-radius:var(--r);font-size:.875rem;outline:none;font-family:var(--sans);transition:border-color .2s;">
               </div>
               <div>
-                <label style="font-size:.78rem;font-weight:600;color:var(--text2);display:block;margin-bottom:.4rem;">Registro aberto ao público</label>
+                <label style="font-size:.78rem;font-weight:600;color:var(--text2);display:block;margin-bottom:.4rem;">Public registration</label>
                 <select id="cfg-open-register" style="width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:.5rem .75rem;border-radius:var(--r);font-size:.875rem;outline:none;font-family:var(--sans);">
-                  <option value="pending">Sim - requer aprovação manual</option>
-                  <option value="disabled">Não - apenas convite</option>
+                  <option value="pending">Yes - requires manual approval</option>
+                  <option value="disabled">No - invite only</option>
                 </select>
               </div>
             </div>
             <p style="font-size:.78rem;color:var(--text3);margin-top:.85rem;">
               <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:.25rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              Configurações de sessão e login requerem reinicialização do servidor para ter efeito.
+              Session and login settings require a server restart to take effect.
             </p>
           </div>
         </div>
@@ -954,24 +954,24 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
 <div id="edit-modal" style="display:none;" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="edit-modal-title">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="edit-modal-title">Editar usuário</div>
-      <button class="modal-close" id="edit-modal-close" aria-label="Fechar">✕</button>
+      <div class="modal-title" id="edit-modal-title">Edit user</div>
+      <button class="modal-close" id="edit-modal-close" aria-label="Close">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-group">
-        <div class="form-label">E-mail</div>
+        <div class="form-label">Email</div>
         <div class="form-value" id="edit-modal-email">-</div>
       </div>
       <div class="form-group">
-        <div class="form-label">Status da conta</div>
+        <div class="form-label">Account status</div>
         <div class="form-value" id="edit-modal-status">-</div>
       </div>
       <div class="form-group" style="margin-bottom:0">
-        <div class="form-label">Permissão de administrador</div>
+        <div class="form-label">Administrator permission</div>
         <div class="toggle-row">
           <div>
-            <div class="toggle-label">Acesso admin</div>
-            <div class="toggle-desc">Permite acesso ao painel administrativo</div>
+            <div class="toggle-label">Admin access</div>
+            <div class="toggle-desc">Allows access to the admin panel</div>
           </div>
           <label class="toggle-switch">
             <input type="checkbox" id="edit-modal-isadmin">
@@ -980,15 +980,15 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
         </div>
         <div style="margin-top:.65rem;padding:.6rem .75rem;background:var(--red-bg);border:1px solid rgba(248,113,113,.2);border-radius:var(--r);font-size:.75rem;color:var(--text2);">
           <svg width="12" height="12" fill="none" stroke="var(--red)" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:.3rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Administradores têm acesso total à plataforma - gerencie com cuidado.
+          Administrators have full access to the platform - manage with care.
         </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-secondary" id="edit-modal-cancel">Cancelar</button>
+      <button class="btn-secondary" id="edit-modal-cancel">Cancel</button>
       <button class="btn-primary" id="edit-modal-save">
         <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        Salvar
+        Save
       </button>
     </div>
   </div>
@@ -997,28 +997,28 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
 <div id="resetpw-modal" style="display:none;" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="resetpw-modal-title">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title" id="resetpw-modal-title">Senha temporária gerada</div>
-      <button class="modal-close" id="resetpw-modal-close" aria-label="Fechar">✕</button>
+      <div class="modal-title" id="resetpw-modal-title">Temporary password generated</div>
+      <button class="modal-close" id="resetpw-modal-close" aria-label="Close">✕</button>
     </div>
     <div class="modal-body">
       <div class="form-group">
-        <div class="form-label">Usuário</div>
+        <div class="form-label">User</div>
         <div class="form-value" id="resetpw-modal-email">-</div>
       </div>
       <div class="form-group" style="margin-bottom:0">
-        <div class="form-label">Senha temporária</div>
+        <div class="form-label">Temporary password</div>
         <div style="display:flex;gap:.5rem;">
           <input type="text" id="resetpw-modal-value" readonly class="mono" style="flex:1;padding:.55rem .7rem;border-radius:var(--r);border:1px solid var(--border);background:var(--bg3);color:var(--text);font-size:.9rem;">
-          <button class="btn-secondary" id="resetpw-modal-copy" type="button" style="white-space:nowrap;">Copiar</button>
+          <button class="btn-secondary" id="resetpw-modal-copy" type="button" style="white-space:nowrap;">Copy</button>
         </div>
         <div style="margin-top:.65rem;padding:.6rem .75rem;background:var(--amber-bg);border:1px solid rgba(245,158,11,.25);border-radius:var(--r);font-size:.75rem;color:var(--text2);">
           <svg width="12" height="12" fill="none" stroke="var(--amber)" stroke-width="2" viewBox="0 0 24 24" style="vertical-align:middle;margin-right:.3rem;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-          Essa senha só aparece agora - repasse ao usuário por um canal seguro (fora do sistema). No próximo login, ele será obrigado a definir uma senha nova, que só ele vai conhecer.
+          This password is only shown now - pass it to the user through a secure channel (outside the system). At their next login they will have to set a new password that only they will know.
         </div>
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn-primary" id="resetpw-modal-done">Concluído</button>
+      <button class="btn-primary" id="resetpw-modal-done">Done</button>
     </div>
   </div>
 </div>
@@ -1055,16 +1055,16 @@ function userBadge(st) {
     approved: 'badge-green', denied: 'badge-red',
     pending: 'badge-amber', blocked: 'badge-red',
   };
-  const labels = { approved: 'Aprovado', denied: 'Negado', pending: 'Pendente', blocked: 'Bloqueado' };
+  const labels = { approved: 'Approved', denied: 'Denied', pending: 'Pending', blocked: 'Blocked' };
   return `<span class="badge ${map[st]||'badge-gray'}">${esc(labels[st]||st)}</span>`;
 }
 
 function timeAgo(ts) {
   const s = Math.round((Date.now() - new Date(ts).getTime()) / 1000);
-  if (s < 60)   return `${s}s atrás`;
-  if (s < 3600) return `${Math.floor(s/60)}m atrás`;
-  if (s < 86400)return `${Math.floor(s/3600)}h atrás`;
-  return new Date(ts).toLocaleDateString('pt-BR');
+  if (s < 60)   return `${s}s ago`;
+  if (s < 3600) return `${Math.floor(s/60)}m ago`;
+  if (s < 86400)return `${Math.floor(s/3600)}h ago`;
+  return new Date(ts).toLocaleDateString('en-US');
 }
 
 /* ── Auth ──────────────────────────────────────────────────────────────────── */
@@ -1108,7 +1108,7 @@ document.querySelectorAll('.nav-item[data-section]').forEach(btn => {
 /* ── Clock ────────────────────────────────────────────────────────────────── */
 (function tick() {
   const n = new Date();
-  $('topbar-clock').textContent = n.toLocaleTimeString('pt-BR');
+  $('topbar-clock').textContent = n.toLocaleTimeString('en-US');
   setTimeout(tick, 1000);
 })();
 
@@ -1149,7 +1149,7 @@ async function loadUsers() {
     renderStats();
     renderActivity();
     renderPending();
-  } catch { toast('Erro ao carregar usuários','error'); }
+  } catch { toast('Failed to load users','error'); }
 }
 
 function renderStats() {
@@ -1177,13 +1177,13 @@ function renderPending() {
     <tr>
       <td><span class="mono">${esc(u.email)}</span></td>
       <td><span class="mono" style="color:var(--text2)">${esc(u.ip||'-')}</span></td>
-      <td style="color:var(--text2);font-size:.78rem">${u.createdAt ? new Date(u.createdAt).toLocaleString('pt-BR') : '-'}</td>
+      <td style="color:var(--text2);font-size:.78rem">${u.createdAt ? new Date(u.createdAt).toLocaleString('en-US') : '-'}</td>
       <td>
         <div class="action-group">
-          <button class="action-btn success" title="Aprovar" onclick="userAction('${esc(u.email)}','approve')">
+          <button class="action-btn success" title="Approve" onclick="userAction('${esc(u.email)}','approve')">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
           </button>
-          <button class="action-btn danger" title="Negar" onclick="userAction('${esc(u.email)}','deny')">
+          <button class="action-btn danger" title="Deny" onclick="userAction('${esc(u.email)}','deny')">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -1206,14 +1206,14 @@ async function loadAdminStats() {
 function renderActivity() {
   const recent = [...allUsers].sort((a,b)=>new Date(b.createdAt||0)-new Date(a.createdAt||0)).slice(0,8);
   const list = $('activity-list');
-  if (!recent.length) { list.innerHTML = '<div class="empty-state"><p>Nenhuma atividade.</p></div>'; return; }
+  if (!recent.length) { list.innerHTML = '<div class="empty-state"><p>No activity.</p></div>'; return; }
   list.innerHTML = recent.map(u => {
     const color = u.status==='approved'?'var(--green)':u.status==='denied'?'var(--red)':'var(--amber)';
     return `<div class="activity-item">
       <div class="activity-dot" style="background:${color}"></div>
       <div>
-        <div class="activity-msg">${esc(u.email)} - ${esc(u.status==='approved'?'aprovado':u.status==='denied'?'negado':'pendente')}</div>
-        <div class="activity-time">${u.createdAt ? timeAgo(u.createdAt) : 'data desconhecida'}</div>
+        <div class="activity-msg">${esc(u.email)} - ${esc(u.status==='approved'?'approved':u.status==='denied'?'denied':'pending')}</div>
+        <div class="activity-time">${u.createdAt ? timeAgo(u.createdAt) : 'unknown date'}</div>
       </div>
     </div>`;
   }).join('');
@@ -1228,29 +1228,29 @@ function renderUsers() {
     (!statusF || u.status === statusF)
   );
   if (!filtered.length) {
-    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>Nenhum usuário encontrado.</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty-state"><svg width="32" height="32" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><p>No users found.</p></div></td></tr>';
     return;
   }
   tbody.innerHTML = filtered.map(u => `
     <tr>
-      <td><span class="mono">${esc(u.email)}</span>${u.mustChangePassword ? ' <span class="badge badge-amber" title="Senha temporaria - aguardando troca pelo usuario">Troca pendente</span>' : ''}</td>
+      <td><span class="mono">${esc(u.email)}</span>${u.mustChangePassword ? ' <span class="badge badge-amber" title="Temporary password - waiting for the user to change it">Change pending</span>' : ''}</td>
       <td>${userBadge(u.status)}</td>
-      <td>${u.isAdmin ? '<span class="badge badge-purple">Admin</span>' : '<span class="badge badge-gray">Usuário</span>'}</td>
-      <td>${u.has2fa ? '<span class="badge badge-blue">Ativo</span>' : '<span class="badge badge-gray">Off</span>'}</td>
+      <td>${u.isAdmin ? '<span class="badge badge-purple">Admin</span>' : '<span class="badge badge-gray">User</span>'}</td>
+      <td>${u.has2fa ? '<span class="badge badge-blue">On</span>' : '<span class="badge badge-gray">Off</span>'}</td>
       <td><span style="font-family:var(--mono);${parseInt(u.failedAttempts)>2?'color:var(--amber)':''}">${esc(u.failedAttempts||0)}</span></td>
       <td><span class="mono" style="color:var(--text2)">${esc(u.ip||'-')}</span></td>
-      <td style="color:var(--text2);font-size:.78rem">${u.createdAt ? new Date(u.createdAt).toLocaleDateString('pt-BR') : '-'}</td>
+      <td style="color:var(--text2);font-size:.78rem">${u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-US') : '-'}</td>
       <td>
         <div class="action-group">
-          <button class="action-btn" title="Editar permissões" onclick="openEditModal('${esc(u.email)}')">
+          <button class="action-btn" title="Edit permissions" onclick="openEditModal('${esc(u.email)}')">
             <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
           </button>
-          ${u.status !== 'approved' ? `<button class="action-btn success" title="Aprovar" onclick="userAction('${esc(u.email)}','approve')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>` : ''}
-          ${u.status !== 'denied'   ? `<button class="action-btn danger"  title="Negar"  onclick="userAction('${esc(u.email)}','deny')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
+          ${u.status !== 'approved' ? `<button class="action-btn success" title="Approve" onclick="userAction('${esc(u.email)}','approve')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></button>` : ''}
+          ${u.status !== 'denied'   ? `<button class="action-btn danger"  title="Deny"  onclick="userAction('${esc(u.email)}','deny')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>` : ''}
           ${parseInt(u.failedAttempts)>0 ? `<button class="action-btn" title="Desbloquear conta" onclick="userAction('${esc(u.email)}','unlock')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></button>` : ''}
-          ${u.has2fa ? `<button class="action-btn" title="Resetar 2FA" onclick="userAction('${esc(u.email)}','reset2fa')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button>` : ''}
-          ${u.status === 'approved' ? `<button class="action-btn" title="Resetar senha" onclick="resetUserPassword('${esc(u.email)}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></button>` : ''}
-          <button class="action-btn danger" title="Remover" onclick="userAction('${esc(u.email)}','delete')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+          ${u.has2fa ? `<button class="action-btn" title="Reset 2FA" onclick="userAction('${esc(u.email)}','reset2fa')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></button>` : ''}
+          ${u.status === 'approved' ? `<button class="action-btn" title="Reset password" onclick="resetUserPassword('${esc(u.email)}')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></button>` : ''}
+          <button class="action-btn danger" title="Remove" onclick="userAction('${esc(u.email)}','delete')"><svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
         </div>
       </td>
     </tr>`).join('');
@@ -1266,35 +1266,35 @@ const ACTION_MAP = {
 };
 
 async function userAction(email, action) {
-  if (action === 'delete' && !confirm(`Remover permanentemente "${email}"?\nCertifique-se de que o acesso foi negado antes.`)) return;
+  if (action === 'delete' && !confirm(`Permanently remove "${email}"?\nMake sure access has been denied first.`)) return;
   const cfg = ACTION_MAP[action];
-  if (!cfg) { toast('Ação desconhecida','error'); return; }
+  if (!cfg) { toast('Unknown action','error'); return; }
   try {
     const r = await api(cfg.path, { method: cfg.method, body: JSON.stringify({ email }) });
     const d = await r.json();
-    toast(d.message || (r.ok ? 'Operação concluída' : d.error || 'Erro'), r.ok ? 'success' : 'error');
+    toast(d.message || (r.ok ? 'Operation completed' : d.error || 'Error'), r.ok ? 'success' : 'error');
     if (r.ok) loadUsers();
-  } catch { toast('Erro de rede','error'); }
+  } catch { toast('Network error','error'); }
 }
 
 /* ── Resetar senha (gera temporaria + mostra num modal) ──────────────────── */
 async function resetUserPassword(email) {
-  if (!confirm(`Gerar uma senha temporária para "${email}"?\n\nTodas as sessões ativas desse usuário serão encerradas e ele precisará trocar a senha no próximo login.`)) return;
+  if (!confirm(`Generate a temporary password for "${email}"?\n\nAll of this user\'s active sessions will be ended and they will have to change the password at their next login.`)) return;
   try {
     const r = await api('/api/admin/reset-password', { method: 'POST', body: JSON.stringify({ email }) });
     const d = await r.json();
-    if (!r.ok || !d.success) { toast(d.error || 'Erro ao resetar senha', 'error'); return; }
+    if (!r.ok || !d.success) { toast(d.error || 'Failed to reset password', 'error'); return; }
     $('resetpw-modal-email').textContent = email;
     $('resetpw-modal-value').value = d.tempPassword;
     $('resetpw-modal').style.display = 'flex';
     loadUsers();
-  } catch { toast('Erro de rede','error'); }
+  } catch { toast('Network error','error'); }
 }
 
 $('resetpw-modal-copy').addEventListener('click', () => {
   navigator.clipboard.writeText($('resetpw-modal-value').value).then(() => {
-    toast('Senha copiada','success');
-  }).catch(() => toast('Não foi possível copiar','error'));
+    toast('Password copied','success');
+  }).catch(() => toast('Could not copy','error'));
 });
 function closeResetPwModal() {
   $('resetpw-modal').style.display = 'none';
@@ -1312,7 +1312,7 @@ function openEditModal(email) {
   if (!user) return;
   editTargetEmail = email;
   $('edit-modal-email').textContent  = email;
-  const statusLabels = { approved:'Aprovado', denied:'Negado', pending:'Pendente' };
+  const statusLabels = { approved:'Approved', denied:'Denied', pending:'Pending' };
   $('edit-modal-status').textContent = statusLabels[user.status] || user.status;
   $('edit-modal-isadmin').checked    = !!user.isAdmin;
   $('edit-modal').style.display      = 'flex';
@@ -1335,9 +1335,9 @@ $('edit-modal-save').addEventListener('click', async () => {
   try {
     const r = await api('/api/admin/set-role', { method:'POST', body: JSON.stringify({ email: editTargetEmail, isAdmin }) });
     const d = await r.json();
-    toast(d.error || (r.ok ? `Permissão atualizada para ${editTargetEmail}` : 'Erro'), r.ok ? 'success' : 'error');
+    toast(d.error || (r.ok ? `Permission updated for ${editTargetEmail}` : 'Error'), r.ok ? 'success' : 'error');
     if (r.ok) { closeEditModal(); loadUsers(); }
-  } catch { toast('Erro de rede','error'); }
+  } catch { toast('Network error','error'); }
 });
 
 /* ── Navegar para usuários com filtro ─────────────────────────────────────── */
@@ -1346,7 +1346,7 @@ function goToUsers(status) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   $('nav-users-btn').classList.add('active');
   $('section-users').classList.add('active');
-  $('topbar-title').textContent = 'Usuários';
+  $('topbar-title').textContent = 'Users';
   $('user-status-filter').value = status;
   renderUsers();
 }
@@ -1369,7 +1369,7 @@ async function loadLogs() {
     }).length;
     $('stat-today').textContent = today;
     renderLogs();
-  } catch { toast('Erro ao carregar logs','error'); }
+  } catch { toast('Failed to load logs','error'); }
 }
 
 function renderLogs() {
@@ -1385,12 +1385,12 @@ function renderLogs() {
     return ok && sOk;
   });
   if (!filtered.length) {
-    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><p>Nenhum log encontrado.</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7"><div class="empty-state"><p>No logs found.</p></div></td></tr>';
     return;
   }
   tbody.innerHTML = filtered.slice(0, 200).map(l => {
     const ts = l.ts || l.time || l.timestamp;
-    const timeStr = ts ? new Date(ts).toLocaleTimeString('pt-BR') : '-';
+    const timeStr = ts ? new Date(ts).toLocaleTimeString('en-US') : '-';
     const method = l.method || '-';
     const mColor = method==='GET'?'var(--blue)':method==='POST'?'var(--green)':method==='DELETE'?'var(--red)':'var(--text2)';
     return `<tr>
@@ -1409,10 +1409,10 @@ $('log-search').addEventListener('input', renderLogs);
 $('log-status-filter').addEventListener('change', renderLogs);
 
 $('export-logs-btn').addEventListener('click', () => {
-  if (!allLogs.length) { toast('Nenhum log para exportar','error'); return; }
-  const header = ['Hora','IP','Método','Path','Status','ms','E-mail'];
+  if (!allLogs.length) { toast('No logs to export','error'); return; }
+  const header = ['Time','IP','Method','Path','Status','ms','Email'];
   const rows = allLogs.map(l => [
-    new Date(l.ts).toLocaleString('pt-BR'), l.ip||'', l.method, l.path, l.status, l.ms, l.email||''
+    new Date(l.ts).toLocaleString('en-US'), l.ip||'', l.method, l.path, l.status, l.ms, l.email||''
   ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
   const csv = [header.join(','), ...rows].join('\r\n');
   const blob = new Blob(['﻿'+csv], {type:'text/csv;charset=utf-8;'});
@@ -1421,13 +1421,13 @@ $('export-logs-btn').addEventListener('click', () => {
   a.href=url; a.download=`logs_${new Date().toISOString().slice(0,10)}.csv`;
   document.body.appendChild(a); a.click();
   document.body.removeChild(a); URL.revokeObjectURL(url);
-  toast('CSV exportado','success');
+  toast('CSV exported','success');
 });
 
 /* ── Travas de envio ───────────────────────────────────────────────────────── */
 const LOCK_TPL_LABEL = {
-  fsp_first: 'FSP · 1ª notif.', fsp_renot: 'FSP · Renotif.',
-  efsp_first: 'EFSP · 1ª notif.', efsp_renot: 'EFSP · Renotif.'
+  fsp_first: 'FSP · First notice', fsp_renot: 'FSP · Follow-up',
+  efsp_first: 'EFSP · First notice', efsp_renot: 'EFSP · Follow-up'
 };
 let allLocks = [];
 async function loadLocks() {
@@ -1437,7 +1437,7 @@ async function loadLocks() {
     const d = await r.json();
     allLocks = d.locks || [];
     renderLocks();
-  } catch { toast('Erro ao carregar travas de envio','error'); }
+  } catch { toast('Failed to load send locks','error'); }
 }
 
 function renderLocks() {
@@ -1450,11 +1450,11 @@ function renderLocks() {
   $('locks-count').textContent = allLocks.length;
   const tbody = $('locks-tbody');
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>Nenhuma trava encontrada.</p></div></td></tr>';
+    tbody.innerHTML = '<tr><td colspan="6"><div class="empty-state"><p>No locks found.</p></div></td></tr>';
     return;
   }
   tbody.innerHTML = list.slice(0, 500).map(l => {
-    const when = l.sentAt ? new Date(l.sentAt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}) : '-';
+    const when = l.sentAt ? new Date(l.sentAt).toLocaleString('en-US',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}) : '-';
     const renot = String(l.template||'').endsWith('_renot');
     return `<tr>
       <td class="mono" style="color:var(--text2);font-size:.75rem;white-space:nowrap">${esc(when)}</td>
@@ -1464,7 +1464,7 @@ function renderLocks() {
       <td class="mono" style="color:var(--text3)">${esc(l.email||'-')}</td>
       <td>
         <div class="action-group">
-          <button class="action-btn danger" title="Liberar reenvio" onclick="releaseLock('${esc(l.id)}')">
+          <button class="action-btn danger" title="Allow resend" onclick="releaseLock('${esc(l.id)}')">
             <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>
           </button>
         </div>
@@ -1476,14 +1476,14 @@ function renderLocks() {
 async function releaseLock(id) {
   const l = allLocks.find(x => x.id === id);
   if (!l) return;
-  if (!confirm(`Liberar novo envio?\n\nCliente: ${l.client}\nURL: ${l.url}\nTemplate: ${LOCK_TPL_LABEL[l.template]||l.template}\n\nA mesma denúncia poderá ser enviada de novo.`)) return;
+  if (!confirm(`Allow a new send?\n\nClient: ${l.client}\nURL: ${l.url}\nTemplate: ${LOCK_TPL_LABEL[l.template]||l.template}\n\nThe same report can be sent again.`)) return;
   try {
     const r = await api('/api/admin/sent-locks/release', { method:'POST', body: JSON.stringify({ id }) });
     const d = await r.json();
-    if (!r.ok || !d.success) throw new Error(d.error || 'Erro');
-    toast('Trava liberada','success');
+    if (!r.ok || !d.success) throw new Error(d.error || 'Error');
+    toast('Lock released','success');
     loadLocks();
-  } catch (e) { toast(e.message || 'Erro ao liberar trava','error'); }
+  } catch (e) { toast(e.message || 'Failed to release lock','error'); }
 }
 window.releaseLock = releaseLock;
 
@@ -1492,13 +1492,13 @@ $('lock-template-filter').addEventListener('change', renderLocks);
 $('reload-locks-btn').addEventListener('click', loadLocks);
 
 $('clear-logs-btn').addEventListener('click', async () => {
-  if (!confirm('Apagar todos os logs?')) return;
+  if (!confirm('Delete all logs?')) return;
   try {
     const r = await api('/api/admin/logs', { method:'DELETE' });
     const d = await r.json();
-    toast(d.message || 'Logs limpos', r.ok ? 'success' : 'error');
+    toast(d.message || 'Logs cleared', r.ok ? 'success' : 'error');
     if (r.ok) { allLogs = []; renderLogs(); $('stat-today').textContent = '0'; }
-  } catch { toast('Erro de rede','error'); }
+  } catch { toast('Network error','error'); }
 });
 
 /* ── Keyboard ────────────────────────────────────────────────────────────── */
@@ -1506,76 +1506,46 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') {} });
 
 /* ── Templates ───────────────────────────────────────────────────────────── */
 const DEFAULT_TEMPLATES = {
-  fsp_first: `🚨 *SOLICITAÇÃO DE REMOÇÃO DE PERFIL FALSO* 🚨
+  fsp_first: `Hello Telegram Team,
+The following profile is impersonating {cliente}.
 
-Prezada equipe de suporte,
-
-Identificamos a existência de um perfil falso que se passa pelo(a) cliente *{cliente}* em sua plataforma.
-
-🔗 *URL(s) do perfil falso:*
 {urls}
 
-Este perfil está causando danos à reputação do cliente ao induzir terceiros ao erro. Solicitamos a remoção imediata do conteúdo.
+Could you help us by removing this profile?`,
 
-📅 Data da denúncia: {data}
+  fsp_renot: `Hello Telegram Team,
+The following profile is impersonating {cliente}.
 
-Atenciosamente,
-Equipe de Proteção de Marca`,
-
-  fsp_renot: `🔁 *RENOTIFICAÇÃO - PERFIL FALSO AINDA ATIVO* 🔁
-
-Prezada equipe de suporte,
-
-Esta é uma renotificação referente ao perfil falso do(a) cliente *{cliente}*, já denunciado anteriormente e que permanece ativo.
-
-🔗 *URL(s) ainda ativas:*
 {urls}
 
-Reiteramos a necessidade de remoção urgente. A manutenção deste perfil configura violação continuada dos termos de uso e pode acarretar responsabilidade legal.
+Could you help us by removing this profile? We've been reporting this profile for a while and it's still up.`,
 
-📅 Data desta renotificação: {data}
+  efsp_first: `Dear Telegram,
 
-Atenciosamente,
-Equipe de Proteção de Marca`,
+The following profiles are using the executive {cliente} to commit scams.
 
-  efsp_first: `🏢 *SOLICITAÇÃO DE REMOÇÃO - PERFIL EXECUTIVO FALSO* 🏢
-
-Prezada equipe de confiança e segurança,
-
-Identificamos um perfil falso que se passa por executivo(a) da empresa *{cliente}*, o que constitui grave violação de identidade corporativa.
-
-🔗 *URL(s) do perfil fraudulento:*
 {urls}
 
-Este tipo de impersonação pode ser utilizado para golpes financeiros, fraudes e danos à credibilidade institucional. Solicitamos remoção imediata e, se possível, retenção de dados para fins legais.
+Can you help us by removing it from Telegram?
 
-📅 Data da denúncia: {data}
+Thank you!`,
 
-Atenciosamente,
-Equipe Jurídica / Proteção de Marca`,
+  efsp_renot: `Dear Telegram,
 
-  efsp_renot: `🔁 *RENOTIFICAÇÃO - EXECUTIVO FALSO AINDA ATIVO* 🔁
+The following profiles are using the executive {cliente} to commit scams.
 
-Prezada equipe de confiança e segurança,
-
-Esta é uma renotificação sobre o perfil executivo falso da empresa *{cliente}*, já denunciado anteriormente sem resolução.
-
-🔗 *URL(s) ainda ativas:*
 {urls}
 
-A permanência deste perfil representa risco contínuo de fraude e dano reputacional. Reiteramos a solicitação de remoção urgente e ressaltamos a possibilidade de medidas legais cabíveis.
+Can you help us by removing it from Telegram? We've been reporting this profile for a while and it's still up.
 
-📅 Data desta renotificação: {data}
-
-Atenciosamente,
-Equipe Jurídica / Proteção de Marca`,
+Thank you!`,
 };
 
 const TPL_TITLES = {
-  fsp_first:  'Template FSP - Primeira Notificação',
-  fsp_renot:  'Template FSP - Renotificação',
-  efsp_first: 'Template EFSP - Primeira Notificação',
-  efsp_renot: 'Template EFSP - Renotificação',
+  fsp_first:  'FSP Template - First Notice',
+  fsp_renot:  'FSP Template - Follow-up Notice',
+  efsp_first: 'EFSP Template - First Notice',
+  efsp_renot: 'EFSP Template - Follow-up Notice',
 };
 
 // Cache local: so para pintar a tela antes da resposta do servidor.
@@ -1607,7 +1577,7 @@ async function saveTemplatesToServer(t) {
     body: JSON.stringify({ templates: t }),
   });
   if (!r.ok) {
-    let msg = 'Nao foi possivel salvar no servidor.';
+    let msg = 'Could not save to the server.';
     try { const d = await r.json(); if (d && d.error) msg = d.error; } catch(_) {}
     throw new Error(msg);
   }
@@ -1633,7 +1603,7 @@ function setCurrentTemplate(key) {
 
 function updateCharCount() {
   const n = $('tpl-editor').value.length;
-  $('tpl-char-count').textContent = n + ' caractere' + (n!==1?'s':'');
+  $('tpl-char-count').textContent = n + ' character' + (n!==1?'s':'');
 }
 
 $('tpl-editor').addEventListener('input', updateCharCount);
@@ -1653,9 +1623,9 @@ $('tpl-save-one-btn').addEventListener('click', async () => {
   try {
     await saveTemplatesToServer({ [currentTpl]: templates[currentTpl] });
     cacheTemplates(templates);
-    toast('Template salvo para toda a equipe!', 'success');
+    toast('Template saved for the whole team!', 'success');
   } catch (e) {
-    toast(e.message || 'Falha ao salvar no servidor.', 'error');
+    toast(e.message || 'Failed to save to the server.', 'error');
   } finally {
     btn.disabled = false;
   }
@@ -1668,27 +1638,27 @@ $('save-templates-btn').addEventListener('click', async () => {
   try {
     await saveTemplatesToServer(templates);
     cacheTemplates(templates);
-    toast('Todos os templates salvos para toda a equipe!', 'success');
+    toast('All templates saved for the whole team!', 'success');
   } catch (e) {
-    toast(e.message || 'Falha ao salvar no servidor.', 'error');
+    toast(e.message || 'Failed to save to the server.', 'error');
   } finally {
     btn.disabled = false;
   }
 });
 
 $('tpl-reset-btn').addEventListener('click', () => {
-  if (!confirm('Restaurar template padrão?')) return;
+  if (!confirm('Restore the default template?')) return;
   $('tpl-editor').value = DEFAULT_TEMPLATES[currentTpl] || '';
   templates[currentTpl] = DEFAULT_TEMPLATES[currentTpl] || '';
   updateCharCount();
-  toast('Template restaurado', 'info');
+  toast('Template restored', 'info');
 });
 
 $('tpl-preview-btn').addEventListener('click', () => {
   const txt = $('tpl-editor').value
-    .replace(/\{cliente\}/g, 'Empresa Exemplo S.A.')
-    .replace(/\{urls\}/g, '- https://facebook.com/perfil-falso-exemplo\n- https://instagram.com/outro-perfil-falso')
-    .replace(/\{data\}/g, new Date().toLocaleDateString('pt-BR'));
+    .replace(/\{cliente\}/g, 'Example Company Inc.')
+    .replace(/\{urls\}/g, '- https://facebook.com/fake-profile-example\n- https://instagram.com/another-fake-profile')
+    .replace(/\{data\}/g, new Date().toLocaleDateString('en-US'));
   $('tpl-preview-output').textContent = txt;
   $('tpl-preview-card').style.display = 'block';
   $('tpl-preview-card').scrollIntoView({ behavior: 'smooth', block: 'start' });

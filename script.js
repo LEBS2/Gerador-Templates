@@ -83,14 +83,14 @@ function renderDupWarning(duplicates, templateLabel) {
         return;
     }
     const items = duplicates.map(d => {
-        const when = d.sentAt ? new Date(d.sentAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
-        const meta = [when && `enviada em ${when}`, d.email && `por ${d.email}`].filter(Boolean).join(' ');
+        const when = d.sentAt ? new Date(d.sentAt).toLocaleString('en-US', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+        const meta = [when && `sent on ${when}`, d.email && `by ${d.email}`].filter(Boolean).join(' ');
         return `<li>${escHtml(d.url)} <span class="dup-meta">— ${escHtml(d.client)}${meta ? ' · ' + escHtml(meta) : ''}</span></li>`;
     }).join('');
     const one = duplicates.length === 1;
-    box.innerHTML = `<strong>Denúncia duplicada — envio bloqueado</strong>`
-        + `${one ? 'Esta URL já foi enviada' : 'Estas URLs já foram enviadas'} com o template <b>${escHtml(templateLabel || '')}</b>. `
-        + `Remova ${one ? 'a URL' : 'as URLs'} para enviar o restante, ou peça a um admin para liberar o reenvio.`
+    box.innerHTML = `<strong>Duplicate report — sending blocked</strong>`
+        + `${one ? 'This URL has already been sent' : 'These URLs have already been sent'} with the <b>${escHtml(templateLabel || '')}</b> template. `
+        + `Remove ${one ? 'it' : 'them'} to send the rest, or ask an admin to unlock a resend.`
         + `<ul>${items}</ul>`;
     box.style.display = 'block';
 }
@@ -98,7 +98,7 @@ function renderDupWarning(duplicates, templateLabel) {
 function applyDupState() {
     if (dupDuplicates.length) {
         elements.submitBtn.disabled = true;
-        elements.submitBtn.title = 'Envio bloqueado: denúncia duplicada';
+        elements.submitBtn.title = 'Sending blocked: duplicate report';
     } else {
         elements.submitBtn.title = '';
     }
@@ -142,7 +142,7 @@ function generateTemplate() {
 
     if (!clientsData.length) {
         if (!isTemplateEdited) {
-            elements.previewText.value = 'Preencha o Nome e a URL do cliente para gerar a mensagem.';
+            elements.previewText.value = 'Enter the client name and URL to generate the message.';
         }
         elements.submitBtn.disabled = true;
         elements.copyBtn.disabled = true;
@@ -222,7 +222,7 @@ function buildTemplate(clientsData) {
             // Variaveis documentadas no painel admin.
             .replace(/\{cliente\}/g, clientNames)
             .replace(/\{urls\}/g, bulletLines)
-            .replace(/\{data\}/g, new Date().toLocaleDateString('pt-BR'))
+            .replace(/\{data\}/g, new Date().toLocaleDateString('en-US'))
             // Nomes legados, mantidos para nao quebrar templates antigos.
             .replace(/\{clientNames\}/g, clientNames)
             .replace(/\{bulletLines\}/g, bulletLines)
@@ -294,7 +294,7 @@ elements.submitBtn.addEventListener('click', async (e) => {
     });
 
     if (!hasData) {
-        alert('Por favor, preencha o Nome e a URL principal de pelo menos um cliente.');
+        alert('Please enter the name and main URL of at least one client.');
         return;
     }
 
@@ -306,7 +306,7 @@ elements.submitBtn.addEventListener('click', async (e) => {
     const message = elements.previewText.value;
     const clients = collectClientsData();
     const originalText = elements.submitBtn.innerHTML;
-    elements.submitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-5.46-1.5"/></svg> Enviando…`;
+    elements.submitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.59-9.21l-5.46-1.5"/></svg> Sending…`;
     elements.submitBtn.disabled = true;
 
     try {
@@ -327,7 +327,7 @@ elements.submitBtn.addEventListener('click', async (e) => {
         }
 
         if (data.success) {
-            elements.submitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Enviado!`;
+            elements.submitBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Sent!`;
             elements.submitBtn.style.background = '#10B981';
             setTimeout(async () => {
                 elements.submitBtn.innerHTML = originalText;
@@ -337,10 +337,10 @@ elements.submitBtn.addEventListener('click', async (e) => {
                 if (!dupDuplicates.length) elements.submitBtn.disabled = !collectClientsData().length;
             }, 3000);
         } else {
-            throw new Error(data.error || 'Erro desconhecido');
+            throw new Error(data.error || 'Unknown error');
         }
     } catch (error) {
-        alert('Erro ao enviar: ' + error.message);
+        alert('Failed to send: ' + error.message);
         elements.submitBtn.innerHTML = originalText;
         elements.submitBtn.disabled = false;
     }
@@ -354,7 +354,7 @@ elements.copyBtn.addEventListener('click', (e) => {
 
     navigator.clipboard.writeText(message).then(() => {
         const orig = elements.copyBtn.innerHTML;
-        elements.copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copiado!`;
+        elements.copyBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg> Copied!`;
         elements.copyBtn.style.color = '#10B981';
         elements.copyBtn.style.borderColor = '#10B981';
         setTimeout(() => {
@@ -362,7 +362,7 @@ elements.copyBtn.addEventListener('click', (e) => {
             elements.copyBtn.style.color = '';
             elements.copyBtn.style.borderColor = '';
         }, 2000);
-    }).catch(() => alert('Erro ao copiar. Seu navegador pode não suportar esta função.'));
+    }).catch(() => alert('Failed to copy. Your browser may not support this feature.'));
 });
 
 // ─── Sessão via token assinado no servidor ────────────────────────────────────
@@ -432,7 +432,7 @@ async function startMandatoryMfaSetup() {
         });
         const data = await resp.json();
         if (!data.success) {
-            alert(data.error || 'Erro ao iniciar configuração de 2FA.');
+            alert(data.error || 'Failed to start 2FA setup.');
             return;
         }
         document.getElementById('login-mfa-secret').textContent = data.secret;
@@ -441,11 +441,11 @@ async function startMandatoryMfaSetup() {
         if (typeof QRCode !== 'undefined') {
             new QRCode(qrDiv, { text: data.uri, width: 180, height: 180, colorDark: '#E6EDF3', colorLight: '#161B22' });
         } else {
-            qrDiv.textContent = 'QR Code indisponível. Use a chave manual.';
+            qrDiv.textContent = 'QR code unavailable. Use the manual key.';
         }
         showLoginStep(4);
     } catch {
-        alert('Não foi possível conectar ao servidor para configurar o 2FA.');
+        alert('Could not connect to the server to set up 2FA.');
     }
 }
 
@@ -456,7 +456,7 @@ document.getElementById('login-btn').addEventListener('click', async () => {
     errorMsg.style.display = 'none';
 
     if (!userVal || !passVal) {
-        errorMsg.textContent = 'Preencha usuário e senha.';
+        errorMsg.textContent = 'Enter your username and password.';
         errorMsg.style.display = 'block';
         return;
     }
@@ -489,11 +489,11 @@ document.getElementById('login-btn').addEventListener('click', async () => {
             onLoginSuccess(data.token, data.isAdmin, userVal);
         } else {
             _pendingCurrentPassword = null;
-            errorMsg.textContent = data.error || 'E-mail ou senha incorretos.';
+            errorMsg.textContent = data.error || 'Incorrect email or password.';
             errorMsg.style.display = 'block';
         }
     } catch {
-        errorMsg.textContent = 'Não foi possível conectar ao servidor.';
+        errorMsg.textContent = 'Could not connect to the server.';
         errorMsg.style.display = 'block';
     }
 });
@@ -504,7 +504,7 @@ document.getElementById('login-2fa-btn').addEventListener('click', async () => {
     errEl.style.display = 'none';
 
     if (!/^\d{6}$/.test(code)) {
-        errEl.textContent = 'O código deve ter 6 dígitos numéricos.';
+        errEl.textContent = 'The code must be 6 digits.';
         errEl.style.display = 'block';
         return;
     }
@@ -531,11 +531,11 @@ document.getElementById('login-2fa-btn').addEventListener('click', async () => {
             _pendingCurrentPassword = null;
             onLoginSuccess(data.token, data.isAdmin, _pendingUserEmail);
         } else {
-            errEl.textContent = data.error || 'Código incorreto.';
+            errEl.textContent = data.error || 'Incorrect code.';
             errEl.style.display = 'block';
         }
     } catch {
-        errEl.textContent = 'Erro de conexão. Tente novamente.';
+        errEl.textContent = 'Connection error. Please try again.';
         errEl.style.display = 'block';
     }
 });
@@ -562,13 +562,13 @@ document.getElementById('login-changepw-btn').addEventListener('click', async ()
     errEl.style.display = 'none';
 
     if (p1 !== p2) {
-        errEl.textContent = 'As senhas não coincidem.';
+        errEl.textContent = 'Passwords do not match.';
         errEl.style.display = 'block';
         return;
     }
     const strong = p1.length >= 10 && /[A-Z]/.test(p1) && /[a-z]/.test(p1) && /[0-9]/.test(p1) && /[^A-Za-z0-9]/.test(p1);
     if (!strong) {
-        errEl.textContent = 'A senha deve ter pelo menos 10 caracteres, com maiúscula, minúscula, número e símbolo.';
+        errEl.textContent = 'Password must be at least 10 characters, with an uppercase letter, a lowercase letter, a number and a symbol.';
         errEl.style.display = 'block';
         return;
     }
@@ -592,11 +592,11 @@ document.getElementById('login-changepw-btn').addEventListener('click', async ()
             _pendingUserEmail = '';
             onLoginSuccess(data.token, isAdmin, email);
         } else {
-            errEl.textContent = data.error || 'Erro ao definir a nova senha.';
+            errEl.textContent = data.error || 'Failed to set the new password.';
             errEl.style.display = 'block';
         }
     } catch {
-        errEl.textContent = 'Erro de conexão. Tente novamente.';
+        errEl.textContent = 'Connection error. Please try again.';
         errEl.style.display = 'block';
     }
 });
@@ -612,7 +612,7 @@ document.getElementById('login-mfa-btn').addEventListener('click', async () => {
     errEl.style.display = 'none';
 
     if (!/^\d{6}$/.test(code)) {
-        errEl.textContent = 'O código deve ter 6 dígitos numéricos.';
+        errEl.textContent = 'The code must be 6 digits.';
         errEl.style.display = 'block';
         return;
     }
@@ -632,11 +632,11 @@ document.getElementById('login-mfa-btn').addEventListener('click', async () => {
             _pendingUserEmail = '';
             onLoginSuccess(token, isAdmin, email);
         } else {
-            errEl.textContent = data.error || 'Código incorreto.';
+            errEl.textContent = data.error || 'Incorrect code.';
             errEl.style.display = 'block';
         }
     } catch {
-        errEl.textContent = 'Erro de conexão. Tente novamente.';
+        errEl.textContent = 'Connection error. Please try again.';
         errEl.style.display = 'block';
     }
 });
@@ -683,11 +683,11 @@ document.getElementById('register-btn').addEventListener('click', async () => {
         msg.style.display = 'block';
     };
 
-    if (!email) { showMsg('Digite um e-mail ou usuário.', true); return; }
+    if (!email) { showMsg('Enter an email or username.', true); return; }
     if (password.length < 8 || !/[a-zA-Z]/.test(password) || !/[0-9]/.test(password)) {
-        showMsg('A senha deve ter no mínimo 8 caracteres, uma letra e um número.', true); return;
+        showMsg('Password must be at least 8 characters, with a letter and a number.', true); return;
     }
-    if (password !== passwordConfirm) { showMsg('As senhas não coincidem.', true); return; }
+    if (password !== passwordConfirm) { showMsg('Passwords do not match.', true); return; }
 
     try {
         const resp = await fetch(`${API_BASE}/api/register`, {
@@ -697,15 +697,15 @@ document.getElementById('register-btn').addEventListener('click', async () => {
         });
         const data = await resp.json();
         if (data.success) {
-            showMsg('Solicitação enviada! Aguarde a aprovação do administrador.', false);
+            showMsg('Request sent! Please wait for administrator approval.', false);
             document.getElementById('register-email').value = '';
             document.getElementById('register-password').value = '';
             document.getElementById('register-password-confirm').value = '';
         } else {
-            showMsg(data.error || 'Erro ao solicitar cadastro.', true);
+            showMsg(data.error || 'Failed to request registration.', true);
         }
     } catch {
-        showMsg('Não foi possível conectar ao servidor. Ele está rodando?', true);
+        showMsg('Could not connect to the server. Is it running?', true);
     }
 });
 
@@ -767,7 +767,7 @@ async function load2faStatus() {
         const d = await r.json();
         render2faStatus(d.enabled, d.enabledAt);
     } catch {
-        document.getElementById('twofa-current-status').textContent = 'Erro ao carregar status do 2FA.';
+        document.getElementById('twofa-current-status').textContent = 'Failed to load 2FA status.';
     }
 }
 
@@ -780,14 +780,14 @@ function render2faStatus(enabled, enabledAt) {
     disableSec.style.display = 'none';
 
     if (enabled) {
-        statusEl.innerHTML = `<span style="color:var(--color-success)">2FA ativo</span>${enabledAt ? ` <span style="font-size:.8rem;color:var(--color-text-light);">desde ${new Date(enabledAt).toLocaleDateString('pt-BR')}</span>` : ''}`;
+        statusEl.innerHTML = `<span style="color:var(--color-success)">2FA enabled</span>${enabledAt ? ` <span style="font-size:.8rem;color:var(--color-text-light);">since ${new Date(enabledAt).toLocaleDateString('en-US')}</span>` : ''}`;
         statusEl.style.borderColor = 'rgba(63,185,80,.4)';
-        toggleBtn.textContent = 'Desativar 2FA';
+        toggleBtn.textContent = 'Disable 2FA';
         toggleBtn.style.background = 'var(--color-error)';
     } else {
-        statusEl.innerHTML = `<span style="color:var(--color-text-light)">2FA desativado</span>`;
+        statusEl.innerHTML = `<span style="color:var(--color-text-light)">2FA disabled</span>`;
         statusEl.style.borderColor = 'rgba(227,162,26,.3)';
-        toggleBtn.textContent = 'Ativar 2FA';
+        toggleBtn.textContent = 'Enable 2FA';
         toggleBtn.style.background = '';
     }
 }
@@ -813,9 +813,9 @@ document.getElementById('twofa-toggle-btn')?.addEventListener('click', async () 
             if (typeof QRCode !== 'undefined') {
                 new QRCode(qrDiv, { text: sd.uri, width: 180, height: 180, colorDark: '#E6EDF3', colorLight: '#161B22' });
             } else {
-                qrDiv.textContent = 'QR Code indisponível. Use a chave manual.';
+                qrDiv.textContent = 'QR code unavailable. Use the manual key.';
             }
-        } catch { alert('Erro ao iniciar setup de 2FA.'); }
+        } catch { alert('Failed to start 2FA setup.'); }
     }
 });
 
@@ -823,7 +823,7 @@ document.getElementById('twofa-enable-btn')?.addEventListener('click', async () 
     const code  = document.getElementById('twofa-enable-code').value.trim();
     const msgEl = document.getElementById('twofa-enable-msg');
     if (!/^\d{6}$/.test(code)) {
-        msgEl.textContent = 'Digite 6 dígitos numéricos.';
+        msgEl.textContent = 'Enter 6 digits.';
         msgEl.style.color = 'var(--color-error)';
         msgEl.style.display = 'block';
         return;
@@ -838,7 +838,7 @@ document.getElementById('twofa-enable-btn')?.addEventListener('click', async () 
         document.getElementById('twofa-status-section').style.display = 'block';
         render2faStatus(true, new Date().toISOString());
     } else {
-        msgEl.textContent = d.error || 'Código inválido.';
+        msgEl.textContent = d.error || 'Invalid code.';
         msgEl.style.color = 'var(--color-error)';
         msgEl.style.display = 'block';
     }
@@ -853,7 +853,7 @@ document.getElementById('twofa-disable-btn')?.addEventListener('click', async ()
     const code  = document.getElementById('twofa-disable-code').value.trim();
     const msgEl = document.getElementById('twofa-disable-msg');
     if (!/^\d{6}$/.test(code)) {
-        msgEl.textContent = 'Digite 6 dígitos numéricos.';
+        msgEl.textContent = 'Enter 6 digits.';
         msgEl.style.color = 'var(--color-error)';
         msgEl.style.display = 'block';
         return;
@@ -868,7 +868,7 @@ document.getElementById('twofa-disable-btn')?.addEventListener('click', async ()
         document.getElementById('twofa-status-section').style.display = 'block';
         render2faStatus(false, null);
     } else {
-        msgEl.textContent = d.error || 'Código inválido.';
+        msgEl.textContent = d.error || 'Invalid code.';
         msgEl.style.color = 'var(--color-error)';
         msgEl.style.display = 'block';
     }
@@ -895,15 +895,15 @@ window._loadHistory = async function() {
         const resp = await fetch(`${API_BASE}/api/reports`, { headers: authHeaders() });
         const data = await resp.json();
         if (!data.success) {
-            cont.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width="22" height="22" fill="none" stroke="var(--color-error)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="empty-title">Erro ao carregar</div><div class="empty-desc">${data.error}</div></div>`;
+            cont.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg width="22" height="22" fill="none" stroke="var(--color-error)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></div><div class="empty-title">Failed to load</div><div class="empty-desc">${data.error}</div></div>`;
             return;
         }
         if (!data.reports.length) {
             cont.innerHTML = `<div class="empty-state">
                 <div class="empty-icon"><svg width="22" height="22" fill="none" stroke="var(--color-text-muted)" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-                <div class="empty-title">Nenhuma denúncia ainda</div>
-                <div class="empty-desc">Suas denúncias enviadas aparecerão aqui. Comece pela opção "Nova Denúncia".</div>
-                <button class="chip" onclick="setView('home')" style="margin-top:.5rem;">Fazer primeira denúncia →</button>
+                <div class="empty-title">No reports yet</div>
+                <div class="empty-desc">Your sent reports will appear here. Start with "New Report".</div>
+                <button class="chip" onclick="setView('home')" style="margin-top:.5rem;">Send your first report →</button>
             </div>`;
             return;
         }
@@ -915,13 +915,13 @@ window._loadHistory = async function() {
                 </div>
                 <div style="flex:1;min-width:0;">
                     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:.5rem;">
-                        <span style="font-weight:700;font-size:.85rem;color:var(--color-text);">${r.isPrimeira ? 'Primeira notificação' : 'Renotificação'}</span>
-                        <span class="hist-meta" style="white-space:nowrap;">${new Date(r.sentAt).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
+                        <span style="font-weight:700;font-size:.85rem;color:var(--color-text);">${r.isPrimeira ? 'First notice' : 'Follow-up notice'}</span>
+                        <span class="hist-meta" style="white-space:nowrap;">${new Date(r.sentAt).toLocaleString('en-US',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span>
                     </div>
                     <div class="hist-preview">${r.preview || '-'}</div>
                 </div>
             </div>`).join('');
-    } catch { cont.innerHTML = '<div class="empty-state"><div class="empty-title" style="color:var(--color-error);">Erro de conexão</div><div class="empty-desc">Não foi possível carregar o histórico.</div></div>'; }
+    } catch { cont.innerHTML = '<div class="empty-state"><div class="empty-title" style="color:var(--color-error);">Connection error</div><div class="empty-desc">Could not load the history.</div></div>'; }
 };
 
 // ─── Export CSV de logs ───────────────────────────────────────────────────────
@@ -929,11 +929,11 @@ window._exportLogsCsv = async function() {
     try {
         const resp = await fetch(`${API_BASE}/api/admin/logs?limit=500`, { headers: authHeaders() });
         const data = await resp.json();
-        if (!data.success) { alert(data.error || 'Erro ao exportar.'); return; }
+        if (!data.success) { alert(data.error || 'Failed to export.'); return; }
 
-        const header = ['Hora', 'IP', 'Método', 'Path', 'Status', 'ms', 'E-mail'];
+        const header = ['Time', 'IP', 'Method', 'Path', 'Status', 'ms', 'Email'];
         const rows = data.logs.map(l => [
-            new Date(l.ts).toLocaleString('pt-BR'),
+            new Date(l.ts).toLocaleString('en-US'),
             l.ip || '', l.method, l.path, l.status, l.ms, l.email || ''
         ].map(v => `"${String(v).replace(/"/g, '""')}"`).join(','));
         const csv = [header.join(','), ...rows].join('\r\n');
@@ -944,5 +944,5 @@ window._exportLogsCsv = async function() {
         a.href = url; a.download = `logs_${new Date().toISOString().slice(0,10)}.csv`;
         document.body.appendChild(a); a.click();
         document.body.removeChild(a); URL.revokeObjectURL(url);
-    } catch { alert('Erro ao exportar CSV.'); }
+    } catch { alert('Failed to export CSV.'); }
 };

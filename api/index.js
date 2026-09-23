@@ -11,7 +11,7 @@ if (KV_AVAILABLE) {
     kv = require('@vercel/kv').kv;
 } else {
     // Fallback in-memory (nao persiste entre restarts, apenas para testes locais)
-    console.warn('[kv] KV_REST_API_URL/TOKEN nao definidos - usando armazenamento em memoria (apenas dev)');
+    console.warn('[kv] KV_REST_API_URL/TOKEN not set - using in-memory storage (dev only)');
     const _store = new Map();
     kv = {
         get: async (k) => { const r = _store.get(k); if (!r) return null; if (r.exp && Date.now() > r.exp) { _store.delete(k); return null; } return r.v; },
@@ -343,7 +343,7 @@ app.use((req, res, next) => {
         const hasBody = (req.headers['content-length'] && req.headers['content-length'] !== '0')
             || req.headers['transfer-encoding'];
         if (hasBody && !ct.includes('application/json')) {
-            return res.status(415).json({ success: false, error: 'Content-Type deve ser application/json.' });
+            return res.status(415).json({ success: false, error: 'Content-Type must be application/json.' });
         }
     }
     next();
@@ -399,14 +399,14 @@ app.use(express.static(path.join(__dirname, '..'), {
 // ─────────────────────────────────────────────────────────────────────────────
 async function requireSession(req, res, next) {
     const sess = await getSession(req.headers['x-session-token']);
-    if (!sess) return res.status(401).json({ success: false, error: 'Sessao invalida ou expirada. Faca login novamente.' });
+    if (!sess) return res.status(401).json({ success: false, error: 'Invalid or expired session. Please log in again.' });
     req.session = sess;
     next();
 }
 
 async function requireAdmin(req, res, next) {
     const sess = await getSession(req.headers['x-session-token']);
-    if (!sess || !sess.isAdmin) return res.status(403).json({ success: false, error: 'Nao autorizado.' });
+    if (!sess || !sess.isAdmin) return res.status(403).json({ success: false, error: 'Unauthorized.' });
     req.session = sess;
     next();
 }
@@ -433,12 +433,12 @@ app.post('/api/session/logout', async (req, res) => {
 app.post('/api/login', async (req, res) => {
     const ip = getIp(req);
     if (await checkRateLimit(`login:${ip}`, 10, 900)) {
-        return res.status(429).json({ success: false, error: 'Muitas tentativas. Aguarde 15 minutos.' });
+        return res.status(429).json({ success: false, error: 'Too many attempts. Please wait 15 minutes.' });
     }
 
     const { email, password } = req.body || {};
     if (!email || !password) {
-        return res.status(400).json({ success: false, error: 'Preencha e-mail e senha.' });
+        return res.status(400).json({ success: false, error: 'Please enter your email and password.' });
     }
 
     // Admin via env - mesmo com credenciais corretas, aplica rate limit por IP
@@ -448,7 +448,7 @@ app.post('/api/login', async (req, res) => {
             && crypto.timingSafeEqual(Buffer.from(password), Buffer.from(ADMIN_PASS));
         if (!passMatch) {
             await writeAdminLog({ action: 'admin_login_fail', ip, email });
-            return res.status(401).json({ success: false, error: 'E-mail ou senha incorretos.' });
+            return res.status(401).json({ success: false, error: 'Incorrect email or password.' });
         }
         await writeAdminLog({ action: 'admin_login_ok', ip, email });
         // Verificar se admin tem 2FA ativo
@@ -474,21 +474,21 @@ app.post('/api/login', async (req, res) => {
     // mensagem generica para evitar enumeracao
     if (!user || !verifyPassword(password, user.salt, user.hash)) {
         if (user) await recordFailedLogin(users, user, saveUsers);
-        return res.status(401).json({ success: false, error: 'E-mail ou senha incorretos.' });
+        return res.status(401).json({ success: false, error: 'Incorrect email or password.' });
     }
 
     // Conta bloqueada por tentativas excessivas
     if (isLockedOut(user)) {
         const unlockAt = new Date(user.lockedUntil);
         const mins = Math.ceil((unlockAt - Date.now()) / 60000);
-        return res.status(403).json({ success: false, error: `Conta bloqueada por tentativas excessivas. Tente novamente em ${mins} minuto(s).` });
+        return res.status(403).json({ success: false, error: `Account locked due to too many failed attempts. Try again in ${mins} minute(s).` });
     }
 
     if (user.status === 'pending') {
-        return res.status(403).json({ success: false, error: 'Cadastro aguardando aprovacao do administrador.' });
+        return res.status(403).json({ success: false, error: 'Your registration is awaiting administrator approval.' });
     }
     if (user.status === 'denied') {
-        return res.status(403).json({ success: false, error: 'Cadastro negado pelo administrador.' });
+        return res.status(403).json({ success: false, error: 'Your registration was denied by the administrator.' });
     }
 
     // Limpa contador de falhas apos login valido
@@ -517,27 +517,27 @@ app.post('/api/login', async (req, res) => {
 app.post('/api/2fa/verify-login', async (req, res) => {
     const ip = getIp(req);
     if (await checkRateLimit(`2fa:${ip}`, 10, 300)) {
-        return res.status(429).json({ success: false, error: 'Muitas tentativas de 2FA. Aguarde.' });
+        return res.status(429).json({ success: false, error: 'Too many 2FA attempts. Please wait.' });
     }
 
     const { tempToken, code } = req.body || {};
     if (!tempToken || !code) {
-        return res.status(400).json({ success: false, error: 'Dados incompletos.' });
+        return res.status(400).json({ success: false, error: 'Incomplete data.' });
     }
 
     const data = await consumeTemp2faToken(tempToken);
     if (!data) {
-        return res.status(401).json({ success: false, error: 'Token expirado ou invalido. Faca login novamente.' });
+        return res.status(401).json({ success: false, error: 'Expired or invalid token. Please log in again.' });
     }
 
     // resolveUser suporta tanto admin-env quanto usuarios KV
     const user = await resolveUser(data.email);
     if (!user || !user.twofa?.enabled || !user.twofa?.secret) {
-        return res.status(401).json({ success: false, error: 'Configuracao de 2FA invalida.' });
+        return res.status(401).json({ success: false, error: 'Invalid 2FA configuration.' });
     }
 
     if (!totpVerify(user.twofa.secret, code)) {
-        return res.status(401).json({ success: false, error: 'Codigo incorreto. Verifique seu aplicativo autenticador.' });
+        return res.status(401).json({ success: false, error: 'Incorrect code. Check your authenticator app.' });
     }
 
     const token = await createSession(data.email, data.isAdmin, user.sessionEpoch || 0);
@@ -553,28 +553,28 @@ app.post('/api/2fa/verify-login', async (req, res) => {
 app.post('/api/register', async (req, res) => {
     const ip = getIp(req);
     if (await checkRateLimit(`reg:${ip}`, 5, 3600)) {
-        return res.status(429).json({ success: false, error: 'Limite de cadastros atingido. Tente mais tarde.' });
+        return res.status(429).json({ success: false, error: 'Registration limit reached. Please try again later.' });
     }
 
     const email    = String(req.body?.email    || '').trim().toLowerCase();
     const password = String(req.body?.password || '');
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254) {
-        return res.status(400).json({ success: false, error: 'E-mail invalido.' });
+        return res.status(400).json({ success: false, error: 'Invalid email.' });
     }
     if (!isStrongPassword(password)) {
-        return res.status(400).json({ success: false, error: 'A senha deve ter pelo menos 10 caracteres, incluindo maiúscula, minúscula, número e símbolo (ex: @, #, !).' });
+        return res.status(400).json({ success: false, error: 'Password must be at least 10 characters and include an uppercase letter, a lowercase letter, a number and a symbol (e.g. @, #, !).' });
     }
 
     const users = await loadUsers();
     if (users.some(u => u.email === email)) {
-        return res.status(409).json({ success: false, error: 'Ja existe uma solicitacao para este e-mail.' });
+        return res.status(409).json({ success: false, error: 'A request for this email already exists.' });
     }
 
     const { salt, hash } = hashPassword(password);
     users.push({ id: crypto.randomUUID(), email, salt, hash, status: 'pending', createdAt: new Date().toISOString(), ip });
     await saveUsers(users);
-    res.json({ success: true, message: 'Solicitacao enviada. Aguarde a aprovacao do administrador.' });
+    res.json({ success: true, message: 'Request submitted. Please wait for administrator approval.' });
 });
 
 // =============================================================================
@@ -631,31 +631,31 @@ function parseSentRecord(v) {
 }
 
 const TEMPLATE_LABEL = {
-    fsp_first: 'FSP · Primeira notificação', fsp_renot: 'FSP · Renotificação',
-    efsp_first: 'EFSP · Primeira notificação', efsp_renot: 'EFSP · Renotificação'
+    fsp_first: 'FSP · First notice', fsp_renot: 'FSP · Follow-up notice',
+    efsp_first: 'EFSP · First notice', efsp_renot: 'EFSP · Follow-up notice'
 };
 
 // Enviar denuncia
 app.post('/api/send-report', requireSession, async (req, res) => {
     const ip = getIp(req);
     if (await checkRateLimit(`report:${ip}:${req.session.email}`, 20, 3600)) {
-        return res.status(429).json({ success: false, error: 'Limite de envios atingido. Aguarde 1 hora.' });
+        return res.status(429).json({ success: false, error: 'Submission limit reached. Please wait 1 hour.' });
     }
 
     const { message, oferta, isPrimeira, clients } = req.body || {};
     if (!message || String(message).trim().length === 0) {
-        return res.status(400).json({ success: false, error: 'Mensagem vazia.' });
+        return res.status(400).json({ success: false, error: 'Empty message.' });
     }
     if (String(message).length > 4096) {
-        return res.status(400).json({ success: false, error: 'Mensagem muito longa (max. 4096 caracteres).' });
+        return res.status(400).json({ success: false, error: 'Message too long (max. 4096 characters).' });
     }
     if (!OFERTAS_VALIDAS.includes(oferta)) {
-        return res.status(400).json({ success: false, error: 'Selecione a oferta (FSP ou EFSP) antes de enviar.' });
+        return res.status(400).json({ success: false, error: 'Select the offering (FSP or EFSP) before sending.' });
     }
     // Sem a lista estruturada nao ha como aplicar a trava: provavelmente e o
     // script.js antigo em cache no navegador.
     if (!Array.isArray(clients) || clients.length === 0) {
-        return res.status(400).json({ success: false, error: 'Versão desatualizada da página. Atualize com Ctrl+Shift+R e tente novamente.' });
+        return res.status(400).json({ success: false, error: 'Outdated page version. Refresh with Ctrl+Shift+R and try again.' });
     }
 
     const first       = isPrimeira !== false;
@@ -678,7 +678,7 @@ app.post('/api/send-report', requireSession, async (req, res) => {
         }
     }
     if (!entries.length) {
-        return res.status(400).json({ success: false, error: 'Informe o cliente e pelo menos uma URL.' });
+        return res.status(400).json({ success: false, error: 'Enter the client and at least one URL.' });
     }
 
     const reportId = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
@@ -699,8 +699,8 @@ app.post('/api/send-report', requireSession, async (req, res) => {
         }
     } catch (error) {
         if (claimed.length) await kv.hdel(SENT_KEY, ...claimed).catch(() => {});
-        console.error('Erro na trava de duplicidade:', error.message);
-        return res.status(500).json({ success: false, error: 'Falha ao verificar duplicidade. Tente novamente.' });
+        console.error('Duplicate-lock error:', error.message);
+        return res.status(500).json({ success: false, error: 'Failed to check for duplicates. Please try again.' });
     }
 
     if (duplicates.length) {
@@ -720,7 +720,7 @@ app.post('/api/send-report', requireSession, async (req, res) => {
             template: templateKey,
             templateLabel: TEMPLATE_LABEL[templateKey] || templateKey,
             duplicates: details,
-            error: `Denúncia duplicada: ${details.length === 1 ? 'esta URL já foi enviada' : 'estas URLs já foram enviadas'} para este cliente com o template ${TEMPLATE_LABEL[templateKey] || templateKey}.`
+            error: `Duplicate report: ${details.length === 1 ? 'this URL has already been sent' : 'these URLs have already been sent'} for this client with the ${TEMPLATE_LABEL[templateKey] || templateKey} template.`
         });
     }
 
@@ -732,7 +732,7 @@ app.post('/api/send-report', requireSession, async (req, res) => {
         const sent = await sendTelegramNotification(text);
         if (!sent) {
             await kv.hdel(SENT_KEY, ...claimed).catch(() => {});
-            return res.status(502).json({ success: false, error: 'Falha ao enviar para o Telegram. Nada foi registrado — tente novamente.' });
+            return res.status(502).json({ success: false, error: 'Failed to send to Telegram. Nothing was recorded — please try again.' });
         }
     }
 
@@ -753,10 +753,10 @@ app.post('/api/send-report', requireSession, async (req, res) => {
         await kv.set(REPORTS_KEY, reports.slice(0, MAX_REPORTS));
     } catch (error) {
         // A denuncia ja foi enviada e travada; so o historico falhou.
-        console.error('Erro ao salvar historico da denuncia:', error.message);
+        console.error('Failed to save report history:', error.message);
     }
 
-    res.json({ success: true, message: 'Denúncia enviada com sucesso!', count: entries.length });
+    res.json({ success: true, message: 'Report sent successfully!', count: entries.length });
 });
 
 // Verificacao previa (somente leitura) para o gerador avisar antes do envio.
@@ -804,8 +804,8 @@ app.get('/api/admin/sent-locks', requireAdmin, async (req, res) => {
             .sort((a, b) => String(b.sentAt).localeCompare(String(a.sentAt)));
         res.json({ success: true, total: locks.length, locks });
     } catch (error) {
-        console.error('Erro ao listar travas:', error.message);
-        res.status(500).json({ success: false, error: 'Falha ao carregar as travas.' });
+        console.error('Failed to list locks:', error.message);
+        res.status(500).json({ success: false, error: 'Failed to load locks.' });
     }
 });
 
@@ -813,10 +813,10 @@ app.get('/api/admin/sent-locks', requireAdmin, async (req, res) => {
 app.post('/api/admin/sent-locks/release', requireAdmin, async (req, res) => {
     const { id } = req.body || {};
     if (!id || !/^[a-f0-9]{40}$/.test(String(id))) {
-        return res.status(400).json({ success: false, error: 'ID inválido.' });
+        return res.status(400).json({ success: false, error: 'Invalid ID.' });
     }
     const prev = parseSentRecord(await kv.hget(SENT_KEY, id));
-    if (!prev) return res.status(404).json({ success: false, error: 'Trava não encontrada.' });
+    if (!prev) return res.status(404).json({ success: false, error: 'Lock not found.' });
     await kv.hdel(SENT_KEY, id);
     await writeAdminLog({
         actor: req.session.email, action: 'release-sent-lock',
@@ -832,31 +832,31 @@ app.post('/api/admin/sent-locks/release', requireAdmin, async (req, res) => {
 app.post('/api/change-password', requireSession, async (req, res) => {
     const ip = getIp(req);
     if (await checkRateLimit(`chpw:${ip}:${req.session.email}`, 10, 3600)) {
-        return res.status(429).json({ success: false, error: 'Muitas tentativas. Aguarde 1 hora.' });
+        return res.status(429).json({ success: false, error: 'Too many attempts. Please wait 1 hour.' });
     }
 
     const { currentPassword, newPassword } = req.body || {};
     if (!currentPassword || !newPassword) {
-        return res.status(400).json({ success: false, error: 'Preencha a senha atual e a nova senha.' });
+        return res.status(400).json({ success: false, error: 'Enter your current password and the new password.' });
     }
     if (!isStrongPassword(newPassword)) {
-        return res.status(400).json({ success: false, error: 'A nova senha deve ter pelo menos 10 caracteres, incluindo maiúscula, minúscula, número e símbolo.' });
+        return res.status(400).json({ success: false, error: 'The new password must be at least 10 characters and include an uppercase letter, a lowercase letter, a number and a symbol.' });
     }
 
     const email = req.session.email;
     if (ADMIN_USER && email === ADMIN_USER) {
-        return res.status(400).json({ success: false, error: 'A senha do administrador principal e definida por variavel de ambiente.' });
+        return res.status(400).json({ success: false, error: 'The main administrator password is set by an environment variable.' });
     }
 
     const users = await loadUsers();
     const user  = users.find(u => u.email === email);
-    if (!user) return res.status(404).json({ success: false, error: 'Usuario nao encontrado.' });
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
 
     if (!verifyPassword(currentPassword, user.salt, user.hash)) {
-        return res.status(401).json({ success: false, error: 'Senha atual incorreta.' });
+        return res.status(401).json({ success: false, error: 'Current password is incorrect.' });
     }
     if (verifyPassword(newPassword, user.salt, user.hash)) {
-        return res.status(400).json({ success: false, error: 'A nova senha deve ser diferente da atual.' });
+        return res.status(400).json({ success: false, error: 'The new password must be different from the current one.' });
     }
 
     const { salt, hash } = hashPassword(newPassword);
@@ -906,7 +906,7 @@ app.post('/api/admin/templates', requireAdmin, async (req, res) => {
     const incoming = (body.templates && typeof body.templates === 'object') ? body.templates : body;
 
     if (!incoming || typeof incoming !== 'object' || Array.isArray(incoming)) {
-        return res.status(400).json({ success: false, error: 'Formato invalido.' });
+        return res.status(400).json({ success: false, error: 'Invalid format.' });
     }
 
     const clean = {};
@@ -914,16 +914,16 @@ app.post('/api/admin/templates', requireAdmin, async (req, res) => {
         if (!Object.prototype.hasOwnProperty.call(incoming, key)) continue;
         const val = incoming[key];
         if (typeof val !== 'string') {
-            return res.status(400).json({ success: false, error: `Template "${key}" deve ser texto.` });
+            return res.status(400).json({ success: false, error: `Template "${key}" must be text.` });
         }
         if (val.length > MAX_TPL_LEN) {
-            return res.status(400).json({ success: false, error: `Template "${key}" excede ${MAX_TPL_LEN} caracteres.` });
+            return res.status(400).json({ success: false, error: `Template "${key}" exceeds ${MAX_TPL_LEN} characters.` });
         }
         clean[key] = val;
     }
 
     if (Object.keys(clean).length === 0) {
-        return res.status(400).json({ success: false, error: 'Nenhum template valido enviado.' });
+        return res.status(400).json({ success: false, error: 'No valid template was sent.' });
     }
 
     const merged = { ...(await loadTemplates()), ...clean };
@@ -956,7 +956,7 @@ async function persistUser(user) {
 // --- 2FA: iniciar setup (gera secret pendente) ---
 app.post('/api/2fa/setup', requireSession, async (req, res) => {
     const user = await resolveUser(req.session.email);
-    if (!user) return res.status(404).json({ success: false, error: 'Usuario nao encontrado.' });
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
 
     const secret = generateTotpSecret();
     user.twofa = { ...user.twofa, pendingSecret: secret, enabled: user.twofa?.enabled || false };
@@ -970,14 +970,14 @@ app.post('/api/2fa/enable', requireSession, async (req, res) => {
     const { code } = req.body || {};
     const user = await resolveUser(req.session.email);
     if (!user || !user.twofa?.pendingSecret) {
-        return res.status(400).json({ success: false, error: 'Inicie o setup de 2FA primeiro.' });
+        return res.status(400).json({ success: false, error: 'Start the 2FA setup first.' });
     }
     if (!totpVerify(user.twofa.pendingSecret, code)) {
-        return res.status(401).json({ success: false, error: 'Codigo incorreto. Verifique o aplicativo e tente novamente.' });
+        return res.status(401).json({ success: false, error: 'Incorrect code. Check the app and try again.' });
     }
     user.twofa = { enabled: true, secret: user.twofa.pendingSecret, enabledAt: new Date().toISOString() };
     await persistUser(user);
-    res.json({ success: true, message: '2FA ativado com sucesso.' });
+    res.json({ success: true, message: '2FA enabled successfully.' });
 });
 
 // --- 2FA: desativar (exige codigo valido) ---
@@ -985,14 +985,14 @@ app.post('/api/2fa/disable', requireSession, async (req, res) => {
     const { code } = req.body || {};
     const user = await resolveUser(req.session.email);
     if (!user || !user.twofa?.enabled) {
-        return res.status(400).json({ success: false, error: '2FA nao esta ativo.' });
+        return res.status(400).json({ success: false, error: '2FA is not enabled.' });
     }
     if (!totpVerify(user.twofa.secret, code)) {
-        return res.status(401).json({ success: false, error: 'Codigo incorreto.' });
+        return res.status(401).json({ success: false, error: 'Incorrect code.' });
     }
     user.twofa = { enabled: false };
     await persistUser(user);
-    res.json({ success: true, message: '2FA desativado.' });
+    res.json({ success: true, message: '2FA disabled.' });
 });
 
 // --- 2FA: verificar se esta ativo para o usuario logado ---
@@ -1016,7 +1016,7 @@ app.post('/api/admin/approve', requireAdmin, async (req, res) => {
     const email = String(req.body?.email || '').trim().toLowerCase();
     const users = await loadUsers();
     const user  = users.find(u => u.email === email);
-    if (!user) return res.status(404).json({ success: false, error: 'Usuario nao encontrado.' });
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
     user.status     = 'approved';
     user.approvedAt = new Date().toISOString();
     await saveUsers(users);
@@ -1028,7 +1028,7 @@ app.post('/api/admin/deny', requireAdmin, async (req, res) => {
     const email = String(req.body?.email || '').trim().toLowerCase();
     const users = await loadUsers();
     const user  = users.find(u => u.email === email);
-    if (!user) return res.status(404).json({ success: false, error: 'Usuario nao encontrado.' });
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
     user.status = 'denied';
     await saveUsers(users);
     await writeAdminLog({ actor: req.session.email, action: 'deny', target: email });
@@ -1039,8 +1039,8 @@ app.post('/api/admin/delete-request', requireAdmin, async (req, res) => {
     const email = String(req.body?.email || '').trim().toLowerCase();
     const users = await loadUsers();
     const user  = users.find(u => u.email === email);
-    if (!user) return res.status(404).json({ success: false, error: 'Usuario nao encontrado.' });
-    if (user.status === 'approved') return res.status(400).json({ success: false, error: 'Negue o acesso antes de excluir.' });
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
+    if (user.status === 'approved') return res.status(400).json({ success: false, error: 'Deny access before deleting.' });
     await saveUsers(users.filter(u => u.email !== email));
     await writeAdminLog({ actor: req.session.email, action: 'delete', target: email });
     res.json({ success: true });
@@ -1051,7 +1051,7 @@ app.post('/api/admin/unlock', requireAdmin, async (req, res) => {
     const email = String(req.body?.email || '').trim().toLowerCase();
     const users = await loadUsers();
     const user  = users.find(u => u.email === email);
-    if (!user) return res.status(404).json({ success: false, error: 'Usuario nao encontrado.' });
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
     user.failedAttempts = 0;
     user.lockedUntil    = null;
     await saveUsers(users);
@@ -1065,11 +1065,11 @@ app.post('/api/admin/set-role', requireAdmin, async (req, res) => {
     const isAdmin = req.body?.isAdmin === true;
     // Impede que o admin env seja modificado via API
     if (ADMIN_USER && email === ADMIN_USER) {
-        return res.status(400).json({ success: false, error: 'O administrador principal nao pode ser editado via painel.' });
+        return res.status(400).json({ success: false, error: 'The main administrator cannot be edited from the panel.' });
     }
     const users = await loadUsers();
     const user  = users.find(u => u.email === email);
-    if (!user) return res.status(404).json({ success: false, error: 'Usuario nao encontrado.' });
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
     user.isAdmin = isAdmin;
     await saveUsers(users);
     await writeAdminLog({ actor: req.session.email, action: isAdmin ? 'grant-admin' : 'revoke-admin', target: email });
@@ -1081,7 +1081,7 @@ app.post('/api/admin/reset-2fa', requireAdmin, async (req, res) => {
     const email = String(req.body?.email || '').trim().toLowerCase();
     const users = await loadUsers();
     const user  = users.find(u => u.email === email);
-    if (!user) return res.status(404).json({ success: false, error: 'Usuario nao encontrado.' });
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
     user.twofa = { enabled: false };
     await saveUsers(users);
     await writeAdminLog({ actor: req.session.email, action: 'reset-2fa', target: email });
@@ -1096,12 +1096,12 @@ app.post('/api/admin/reset-2fa', requireAdmin, async (req, res) => {
 app.post('/api/admin/reset-password', requireAdmin, async (req, res) => {
     const email = String(req.body?.email || '').trim().toLowerCase();
     if (ADMIN_USER && email === ADMIN_USER) {
-        return res.status(400).json({ success: false, error: 'A senha do administrador principal nao pode ser resetada por aqui.' });
+        return res.status(400).json({ success: false, error: 'The main administrator password cannot be reset here.' });
     }
 
     const users = await loadUsers();
     const user  = users.find(u => u.email === email);
-    if (!user) return res.status(404).json({ success: false, error: 'Usuario nao encontrado.' });
+    if (!user) return res.status(404).json({ success: false, error: 'User not found.' });
 
     const tempPassword    = generateTempPassword();
     const { salt, hash }  = hashPassword(tempPassword);
@@ -1174,5 +1174,5 @@ module.exports = app;
 
 if (require.main === module) {
     const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => console.log(`Servidor rodando em http://localhost:${PORT}`));
+    app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
 }
