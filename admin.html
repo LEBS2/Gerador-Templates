@@ -383,6 +383,50 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
   #main{padding:1.25rem 1rem;}
   .stats-grid{grid-template-columns:repeat(2,1fr);}
 }
+
+/* ── Collapsible side menu ────────────────────────────────────────────────── */
+#layout{position:relative;}
+#sidebar{width:230px;overflow-x:hidden;border-right:2px solid var(--blue);}
+body.sb-ready #sidebar{transition:width .25s ease;}
+.nav-toggle{
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  width:44px;height:44px;margin:.6rem 0 .3rem 10px;
+  background:none;border:none;border-radius:var(--r);color:var(--text);cursor:pointer;
+  transition:background .2s;
+}
+.nav-toggle:hover{background:var(--blue-bg);}
+.nav-list{padding:.25rem 0;}
+#sidebar .nav-section-label{white-space:nowrap;padding:.6rem 1.3rem .35rem;}
+#sidebar .nav-item{
+  position:relative;gap:1rem;width:100%;margin:0 0 .1rem;padding:.8rem 0 .8rem 22px;
+  border-radius:0;border:none;font-size:.9rem;white-space:nowrap;min-height:48px;
+}
+#sidebar .nav-item svg{width:20px;height:20px;}
+#sidebar .nav-item:hover{background:var(--blue-bg);color:var(--text);}
+#sidebar .nav-item.active{background:var(--blue);color:#fff;border:none;}
+#sidebar .nav-item .nav-pending{margin-left:auto;margin-right:1rem;}
+.nav-label{transition:opacity .2s;}
+#sidebar .nav-footer{padding:.85rem .6rem;}
+#sidebar .user-chip{overflow:hidden;white-space:nowrap;}
+#sidebar .logout-btn{white-space:nowrap;overflow:hidden;}
+
+/* Collapsed: icon rail */
+body.sb-collapsed #sidebar{width:64px;}
+body.sb-collapsed .nav-label,
+body.sb-collapsed #sidebar .nav-section-label{opacity:0;pointer-events:none;}
+body.sb-collapsed #sidebar .nav-section-label{height:0;padding:0;overflow:hidden;}
+body.sb-collapsed #sidebar .nav-item{padding-left:21px;}
+body.sb-collapsed #sidebar .nav-item .nav-pending{position:absolute;top:6px;left:36px;margin:0;}
+body.sb-collapsed #sidebar .nav-footer{padding:.85rem .5rem;}
+body.sb-collapsed #sidebar .user-chip{justify-content:center;padding:.5rem 0;background:none;}
+body.sb-collapsed #sidebar .logout-btn{padding:.5rem 0;gap:0;}
+body.sb-collapsed #sidebar .nav-footer .nav-label{display:none;}
+
+@media(max-width:768px){
+  #sidebar{display:flex;position:absolute;top:0;bottom:0;left:0;z-index:300;background:var(--sidebar);box-shadow:var(--sh2);}
+  body.sb-collapsed #sidebar{box-shadow:none;}
+  #main{margin-left:64px;}
+}
 </style>
 </head>
 <body>
@@ -419,46 +463,47 @@ tbody td{padding:.7rem 1rem;vertical-align:middle;color:var(--text);}
   <div id="layout">
 
     <!-- Sidebar -->
-    <nav id="sidebar">
-      <div style="padding:.75rem .5rem .25rem;">
+    <nav id="sidebar" aria-label="Admin menu">
+      <button type="button" class="nav-toggle" id="nav-toggle" aria-controls="sidebar" aria-expanded="true" aria-label="Collapse menu"><svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" viewBox="0 0 24 24"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>
+      <div class="nav-list">
         <div class="nav-section-label">Navigation</div>
-        <button class="nav-item active" data-section="overview">
+        <button title="Overview" class="nav-item active" data-section="overview">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          Overview
+          <span class="nav-label">Overview</span>
         </button>
-        <button class="nav-item" data-section="users" id="nav-users-btn">
+        <button title="Users" class="nav-item" data-section="users" id="nav-users-btn">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-          Users
+          <span class="nav-label">Users</span>
           <span class="nav-pending" id="nav-pending-count" style="display:none">0</span>
         </button>
-        <button class="nav-item" data-section="logs">
+        <button title="Access Logs" class="nav-item" data-section="logs">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          Access Logs
+          <span class="nav-label">Access Logs</span>
         </button>
-        <button class="nav-item" data-section="audit">
+        <button title="Audit" class="nav-item" data-section="audit">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-          Audit
+          <span class="nav-label">Audit</span>
         </button>
-        <button class="nav-item" data-section="locks">
+        <button title="Send locks" class="nav-item" data-section="locks">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-          Send locks
+          <span class="nav-label">Send locks</span>
         </button>
-        <button class="nav-item" data-section="config">
+        <button title="Templates" class="nav-item" data-section="config">
           <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-          Templates
+          <span class="nav-label">Templates</span>
         </button>
       </div>
       <div class="nav-footer">
         <div class="user-chip">
           <div class="user-chip-avatar" id="sidebar-avatar">A</div>
-          <div>
+          <div class="nav-label user-chip-text">
             <div class="user-chip-name" id="sidebar-user">Admin</div>
             <div class="user-chip-role">Administrator</div>
           </div>
         </div>
-        <button class="logout-btn" id="sidebar-logout">
+        <button class="logout-btn" id="sidebar-logout" title="Sign out">
           <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Sign out
+          <span class="nav-label">Sign out</span>
         </button>
       </div>
     </nav>
@@ -1672,6 +1717,35 @@ window.getAdminTemplate = (oferta, primeira) => {
   const key = oferta + '_' + (primeira ? 'first' : 'renot');
   return templates[key] || DEFAULT_TEMPLATES[key] || null;
 };
+</script>
+<script>
+/* ── Collapsible side menu (icons only <-> icons + labels) ──────────────── */
+(function() {
+    var KEY = 'gt_admin_sidebar_collapsed';
+    var toggle = document.getElementById('nav-toggle');
+    var sb = document.getElementById('sidebar');
+    if (!toggle || !sb) return;
+    var mobile = window.matchMedia('(max-width:768px)');
+    function saved() { try { return localStorage.getItem(KEY); } catch (e) { return null; } }
+    function apply(collapsed) {
+        document.body.classList.toggle('sb-collapsed', collapsed);
+        toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        toggle.setAttribute('aria-label', collapsed ? 'Expand menu' : 'Collapse menu');
+    }
+    // Desktop: remembers the last choice (expanded by default). Mobile: starts collapsed.
+    apply(mobile.matches ? true : saved() === '1');
+    toggle.addEventListener('click', function() {
+        var collapsed = !document.body.classList.contains('sb-collapsed');
+        apply(collapsed);
+        if (!mobile.matches) { try { localStorage.setItem(KEY, collapsed ? '1' : '0'); } catch (e) {} }
+    });
+    // On mobile the expanded menu floats over the page: close it after picking an item.
+    sb.addEventListener('click', function(e) {
+        if (mobile.matches && e.target.closest('button') && e.target.closest('button') !== toggle) apply(true);
+    });
+    mobile.addEventListener('change', function(e) { apply(e.matches ? true : saved() === '1'); });
+    requestAnimationFrame(function() { document.body.classList.add('sb-ready'); });
+})();
 </script>
 </body>
 </html>
